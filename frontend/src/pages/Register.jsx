@@ -1,6 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import axios from "axios";
 import { serverUrl } from "../App";
 
@@ -10,11 +11,17 @@ function Register() {
   const bgColor = "#FFF9F6"; // Orange-50
   const borderColor = "#ddd"; // Light gray
 
+  const [showPassword, setShowPassword] = useState(false);
+
   const [role, setRole] = useState("user");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  };
 
   const handleRoleChange = (event) => {
     setRole(event.target.value);
@@ -92,10 +99,10 @@ function Register() {
             />
           </label>
 
-          <label className="block text-sm font-medium mb-1">
+          <label className="block text-sm font-medium mb-1 relative">
             Password
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               className="w-full mt-1 px-4 py-2 border rounded-lg focus:outline-none"
               placeholder="Enter your password"
               style={{ borderColor: borderColor }}
@@ -103,6 +110,13 @@ function Register() {
               value={password}
               required
             />
+            <button
+              type="button"
+              onClick={togglePasswordVisibility}
+              className="absolute right-3 top-9 text-sm text-gray-600"
+            >
+              {showPassword ? <FaRegEyeSlash /> : <FaRegEye />}
+            </button>
           </label>
 
           <label className="block text-sm font-medium mb-1">
@@ -121,7 +135,7 @@ function Register() {
 
           <button
             type="submit"
-            className="w-full py-2 rounded-lg text-white font-semibold cursor-pointer"
+            className="w-full mt-3 py-2 rounded-lg text-white font-semibold cursor-pointer"
             style={{ backgroundColor: primaryColor }}
             onMouseOver={(e) =>
               (e.currentTarget.style.backgroundColor = hoverColor)
@@ -135,7 +149,7 @@ function Register() {
 
           <button
             type="button"
-            className="w-full py-2 rounded-lg border font-semibold flex items-center justify-center cursor-pointer"
+            className="w-full py-2 rounded-lg border font-semibold flex items-center justify-center cursor-pointer hover:bg-gray-100"
             style={{ borderColor: borderColor }}
           >
             <FcGoogle size={24} className="inline mr-2" /> Sign up with Google
