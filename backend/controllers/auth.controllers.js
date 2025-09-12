@@ -201,7 +201,7 @@ export const googleAuthen = async (req, res) => {
       sameSite: "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     }); // 7 days
-    return res.status(201).json(user);
+    return res.status(201).json({ message: "User logged in successfully" });
   } catch (error) {
     return res
       .status(500)
