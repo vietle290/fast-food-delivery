@@ -7,6 +7,8 @@ import { serverUrl } from "../App";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../../firebase";
 import { ClipLoader } from "react-spinners";
+import { useDispatch } from "react-redux";
+import { setUserData } from "../redux/slice/userSlice";
 
 function Register() {
   const primaryColor = "#F59E0B"; // Orange-900
@@ -24,6 +26,7 @@ function Register() {
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
   const [err, setErr] = useState("");
+  const dispatch = useDispatch();
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
@@ -35,6 +38,7 @@ function Register() {
 
   const handleRegister = async (e) => {
     e.preventDefault(); // Prevent form submission
+    
     setLoading(true);
     try {
       const response = await axios.post(
@@ -50,7 +54,8 @@ function Register() {
           withCredentials: true,
         }
       );
-      console.log("response: ", response);
+      dispatch(setUserData(response.data));
+      setErr("");
       setLoading(false);
     } catch (error) {
       console.error(error);
@@ -73,7 +78,7 @@ function Register() {
         mobile,
         role,
       },{ withCredentials: true });
-      console.log("result: ", data);
+      dispatch(setUserData(data));
     } catch (error) {
       console.error(error);
       setErr("Google sign-in failed. Please try again.");

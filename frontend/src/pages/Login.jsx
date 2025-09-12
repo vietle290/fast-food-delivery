@@ -9,6 +9,8 @@ import { useNavigate } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
 import { GoogleAuthProvider, signInWithPopup, deleteUser } from "firebase/auth";
 import { auth } from "../../firebase";
+import { useDispatch } from "react-redux";
+import { setUserData } from "../redux/slice/userSlice";
 
 function Login() {
   const primaryColor = "#F59E0B"; // Orange-900
@@ -27,6 +29,7 @@ function Login() {
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
   const [showExtraInfo, setShowExtraInfo] = useState(false);
+  const dispatch = useDispatch();
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
@@ -50,7 +53,7 @@ function Login() {
           withCredentials: true,
         }
       );
-      console.log("response: ", response);
+      dispatch(setUserData(response.data));
       setLoading(false);
       setErr("");
     } catch (error) {
@@ -79,7 +82,7 @@ function Login() {
           },
           { withCredentials: true }
         );
-        console.log("result: ", data);
+        dispatch(setUserData(data));
       } else {
         setFullName(response.user.displayName);
         setEmail(response.user.email);
