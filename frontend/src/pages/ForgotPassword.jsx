@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { IoIosArrowRoundBack } from "react-icons/io";
 import { serverUrl } from "../App";
 import { useNavigate } from "react-router-dom";
+import { ClipLoader } from "react-spinners";
 
 function ForgotPassword() {
   const [step, setStep] = useState(1);
@@ -11,13 +12,17 @@ function ForgotPassword() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
+  const [err, setErr] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleStep = () => {
     setStep(step - 1);
     if (step == 1) window.location.href = "/login";
+    setErr("");
   };
 
   const handleSendOtp = async () => {
+    setLoading(true);
     try {
       const response = await axios.post(
         `${serverUrl}/api/auth/send-otp`,
@@ -27,13 +32,18 @@ function ForgotPassword() {
         { withCredentials: true }
       );
       console.log("response: ", response);
+      setErr("");
+      setLoading(false);
       setStep(2);
     } catch (error) {
       console.error(error);
+      setLoading(false);
+      setErr(error.response.data.message);
     }
   };
 
   const handleVerifyOtp = async () => {
+    setLoading(true);
     try {
       const response = await axios.post(
         `${serverUrl}/api/auth/verify-otp`,
@@ -44,17 +54,22 @@ function ForgotPassword() {
         { withCredentials: true }
       );
       console.log("response: ", response);
+      setErr("");
+      setLoading(false);
       setStep(3);
     } catch (error) {
       console.error(error);
+      setLoading(false);
+      setErr(error?.response?.data?.message);
     }
   };
 
   const handleResetPassword = async () => {
     if (newPassword !== confirmPassword) {
-        alert("Passwords do not match");
+        setErr("Confirm passwords do not match");
         return null;
     }
+    setLoading(true);
     try {
       const response = await axios.post(
         `${serverUrl}/api/auth/reset-password`,
@@ -65,9 +80,13 @@ function ForgotPassword() {
         { withCredentials: true }
       );
       console.log("response: ", response);
+      setErr("");
+      setLoading(false);
       navigate("/login");
     } catch (error) {
       console.error(error);
+      setLoading(false);
+      setErr(error?.response?.data?.message);
     }
   };
   return (
@@ -101,11 +120,13 @@ function ForgotPassword() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
+            {err && <p className="text-red-500 mt-2">{err}</p>}
             <button
               className="mt-4 bg-[#F59E0B] hover:bg-[#FBBF24] text-white py-2 px-4 rounded cursor-pointer"
               onClick={handleSendOtp}
+              disabled={loading}
             >
-              Next
+              {loading ? <ClipLoader color="#ffffff" size={20} /> : "Send OTP"}
             </button>
           </div>
         )}
@@ -120,16 +141,19 @@ function ForgotPassword() {
             <input
               type="text"
               id="otp"
+              maxLength={4}
               className="w-full p-2 border border-gray-300 rounded"
               placeholder="Enter your OTP"
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
             />
+            {err && <p className="text-red-500 mt-2">{err}</p>}
             <button
               className="mt-4 bg-[#F59E0B] hover:bg-[#FBBF24] text-white py-2 px-4 rounded cursor-pointer"
               onClick={handleVerifyOtp}
+              disabled={loading}
             >
-              Next
+              {loading ? <ClipLoader color="#ffffff" size={20} /> : "Verify OTP"}
             </button>
           </div>
         )}
@@ -163,8 +187,9 @@ function ForgotPassword() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
-            <button className="mt-4 bg-orange-500 hover:bg-orange-600 text-white py-2 px-4 rounded cursor-pointer" onClick={handleResetPassword}>
-              Reset Password
+            {err && <p className="text-red-500 mt-2">{err}</p>}
+            <button className="mt-4 bg-orange-500 hover:bg-orange-600 text-white py-2 px-4 rounded cursor-pointer" onClick={handleResetPassword} disabled={loading}>
+              {loading ? <ClipLoader color="#ffffff" size={20} /> : "Reset Password"}
             </button>
           </div>
         )}

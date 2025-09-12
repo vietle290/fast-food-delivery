@@ -4,6 +4,9 @@ import { FcGoogle } from "react-icons/fc";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import axios from "axios";
 import { serverUrl } from "../App";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth } from "../../firebase";
+import { ClipLoader } from "react-spinners";
 
 function Register() {
   const primaryColor = "#F59E0B"; // Orange-900
@@ -13,11 +16,14 @@ function Register() {
 
   const [showPassword, setShowPassword] = useState(false);
 
+  const [loading, setLoading] = useState(false);
+
   const [role, setRole] = useState("user");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
+  const [err, setErr] = useState("");
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
@@ -29,6 +35,7 @@ function Register() {
 
   const handleRegister = async (e) => {
     e.preventDefault(); // Prevent form submission
+    setLoading(true);
     try {
       const response = await axios.post(
         `${serverUrl}/api/auth/register`,
@@ -44,8 +51,32 @@ function Register() {
         }
       );
       console.log("response: ", response);
+      setLoading(false);
     } catch (error) {
       console.error(error);
+      setLoading(false);
+      setErr(error.response.data.message);
+    }
+  };
+
+  const handleGoogleRegister = async (e) => {
+    e.preventDefault();
+    if (!mobile) {
+      return setErr("Please enter your mobile number before signing up with Google.");
+    }
+    const provider = new GoogleAuthProvider();
+    const response = await signInWithPopup(auth, provider);
+    try {
+      const { data } = await axios.post(`${serverUrl}/api/auth/google-authen`, {
+        fullName: response.user.displayName,
+        email: response.user.email,
+        mobile,
+        role,
+      },{ withCredentials: true });
+      console.log("result: ", data);
+    } catch (error) {
+      console.error(error);
+      setErr("Google sign-in failed. Please try again.");
     }
   };
 
@@ -143,14 +174,19 @@ function Register() {
             onMouseOut={(e) =>
               (e.currentTarget.style.backgroundColor = primaryColor)
             }
+            disabled={loading}
           >
-            Register
+            {loading ? <ClipLoader color="#ffffff" size={20} /> : "Register"}
+
           </button>
+
+          {err && <p className="text-red-500 text-sm text-center">{err}</p>}
 
           <button
             type="button"
             className="w-full py-2 rounded-lg border font-semibold flex items-center justify-center cursor-pointer hover:bg-gray-100"
             style={{ borderColor: borderColor }}
+            onClick={handleGoogleRegister}
           >
             <FcGoogle size={24} className="inline mr-2" /> Sign up with Google
           </button>
@@ -172,3 +208,5 @@ function Register() {
 }
 
 export default Register;
+
+
