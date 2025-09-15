@@ -53,7 +53,7 @@ function Login() {
           withCredentials: true,
         }
       );
-      dispatch(setUserData(response.data));
+      dispatch(setUserData(response.data.user));
       setLoading(false);
       setErr("");
     } catch (error) {
@@ -82,7 +82,7 @@ function Login() {
           },
           { withCredentials: true }
         );
-        dispatch(setUserData(data));
+        dispatch(setUserData(data.user));
       } else {
         setFullName(response.user.displayName);
         setEmail(response.user.email);
@@ -118,6 +118,7 @@ function Login() {
       setLoading(false);
       setErr("");
       setShowExtraInfo(false);
+      dispatch(setUserData(response.data.user));
     } catch (error) {
       console.error(error);
       setLoading(false);
@@ -291,7 +292,7 @@ function Login() {
               }
               onClick={handleRegister}
             >
-              Register
+              {loading ? <ClipLoader color="#ffffff" size={20} /> : "Register"}
             </button>
           </div>
         </div>

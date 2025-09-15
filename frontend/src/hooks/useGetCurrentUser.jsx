@@ -1,5 +1,4 @@
 import axios from 'axios';
-import React from 'react'
 import { useEffect } from 'react'
 import { serverUrl } from '../App';
 import { useDispatch } from 'react-redux';

@@ -54,7 +54,7 @@ function Register() {
           withCredentials: true,
         }
       );
-      dispatch(setUserData(response.data));
+      dispatch(setUserData(response.data.user));
       setErr("");
       setLoading(false);
     } catch (error) {
@@ -78,7 +78,7 @@ function Register() {
         mobile,
         role,
       },{ withCredentials: true });
-      dispatch(setUserData(data));
+      dispatch(setUserData(data.user));
     } catch (error) {
       console.error(error);
       setErr("Google sign-in failed. Please try again.");

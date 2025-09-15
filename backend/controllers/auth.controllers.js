@@ -40,7 +40,7 @@ export const register = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     }); // 7 days
 
-    return res.status(201).json({ message: "User registered successfully" });
+    return res.status(201).json({ user});
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -75,7 +75,7 @@ export const register2 = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     }); // 7 days
 
-    return res.status(201).json({ message: "User registered successfully" });
+    return res.status(201).json({ user});
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -99,7 +99,7 @@ export const login = async (req, res) => {
       sameSite: "strict",
       maxAge: 3600000,
     });
-    return res.status(200).json({ message: "User logged in successfully" });
+    return res.status(200).json({ user });
   } catch (error) {
     res.status(500).json({ message: "Please set your password before login or Sign in with Google without password" });
   }
@@ -201,7 +201,7 @@ export const googleAuthen = async (req, res) => {
       sameSite: "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     }); // 7 days
-    return res.status(201).json({ message: "User logged in successfully" });
+    return res.status(201).json({ user });
   } catch (error) {
     return res
       .status(500)
