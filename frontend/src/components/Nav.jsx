@@ -22,7 +22,7 @@ function Nav() {
     } catch (error) {
       console.log(error);
     }
-  }
+  };
   return (
     <div className="w-full h-[80px] flex items-center justify-between md:justify-center gap-[30px] px-[20px] fixed top-0 z-[9999] bg-[#FFF9F6] overflow-visible">
       {showSearch && (
@@ -94,7 +94,10 @@ function Nav() {
               <div className="text-md font-semibold text-[#F59E0B] md:hidden cursor-pointer">
                 My Orders
               </div>
-              <div className="text-md font-semibold cursor-pointer text-[#F59E0B]" onClick={handleLogout}>
+              <div
+                className="text-md font-semibold cursor-pointer text-[#F59E0B]"
+                onClick={handleLogout}
+              >
                 Log out
               </div>
             </div>
