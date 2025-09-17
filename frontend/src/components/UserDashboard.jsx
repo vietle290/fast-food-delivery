@@ -3,9 +3,9 @@ import Nav from './Nav'
 
 function UserDashboard() {
   return (
-    <>
+    <div className='w-[100vw] h-[100vh] pt-[100px] flex flex-col items-center bg-[#FFF9F6]'>
       <Nav />
-    </>
+    </div>
   )
 }
 
