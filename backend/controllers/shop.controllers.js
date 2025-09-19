@@ -28,7 +28,7 @@ export const createAndUpdateShop = async (req, res) => {
         owner: req.userId,
       }, { new: true });
     }
-    await shop.populate("owner"); // populate the owner field
+    await shop.populate("owner items"); // populate the owner field
     return res.status(201).json(shop);
   } catch (error) {
     return res

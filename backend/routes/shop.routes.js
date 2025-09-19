@@ -5,7 +5,7 @@ import isAuth from "../middlewares/isAuth.js";
 
 const shopRouter = express.Router();
 
-shopRouter.get("/create-update", isAuth, upload.single("image"), createAndUpdateShop);
+shopRouter.post("/create-update-restaurant", isAuth, upload.single("image"), createAndUpdateShop);
 shopRouter.get("/get-shop", isAuth, getShop);
 
 

@@ -13,7 +13,7 @@ const uploadCloudinary = async (file) => {
         fs.unlinkSync(file) // delete image from server
         return result.secure_url
     } catch (error) {
-        rs.unlinkSync(file)
+        fs.unlinkSync(file)
         console.log(error)
     }
 }

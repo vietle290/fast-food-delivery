@@ -9,12 +9,15 @@ import { serverUrl } from "../App";
 import { setUserData } from "../redux/slice/userSlice";
 import { TiPlus } from "react-icons/ti";
 import { IoReceiptOutline } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
 
 function Nav() {
   const { userData, location } = useSelector((state) => state.user);
+  const { shopData } = useSelector((state) => state.owner);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const handleLogout = async () => {
     try {
       const res = await axios.get(`${serverUrl}/api/auth/logout`, {
@@ -81,13 +84,18 @@ function Nav() {
 
         {userData && userData.role === "owner" ? (
           <>
-            <button className="hidden md:flex items-center gap-[10px] bg-[#F59E0B]/10 text-[#F59E0B] px-[20px] py-[10px] rounded-lg cursor-pointer">
-              <TiPlus size={25} />
-              <span>Add Food</span>
-            </button>
-            <button className="md:hidden flex items-center bg-[#F59E0B]/10 text-[#F59E0B] px-[20px] py-[10px] rounded-lg cursor-pointer">
-              <TiPlus size={25} />
-            </button>
+            {shopData && (
+              <>
+                <button className="hidden md:flex items-center gap-[10px] bg-[#F59E0B]/10 text-[#F59E0B] px-[20px] py-[10px] rounded-lg cursor-pointer" onClick={() => navigate("/add-item")}>
+                  <TiPlus size={25} />
+                  <span>Add Food</span>
+                </button>
+                <button className="md:hidden flex items-center bg-[#F59E0B]/10 text-[#F59E0B] px-[20px] py-[10px] rounded-lg cursor-pointer">
+                  <TiPlus size={25} />
+                </button>
+              </>
+            )}
+
             <div className="hidden relative cursor-pointer md:flex items-center gap-2 text-[#F59E0B]">
               <IoReceiptOutline size={25} />
               <span>My Orders</span>

@@ -8,6 +8,8 @@ import { useSelector } from 'react-redux'
 import Home from './pages/Home'
 import useGetLocation from './hooks/useGetLocation'
 import useGetShop from './hooks/useGetShop'
+import CreateUpdateShop from './pages/CreateUpdateShop'
+import AddItem from './pages/AddItem'
 export const serverUrl = "http://localhost:8000"
 
 function App() {
@@ -22,6 +24,8 @@ function App() {
       <Route path="/login" element={!userData ? <Login /> : <Navigate to={"/"} />} />
       <Route path="/register" element={!userData ? <Register /> : <Navigate to={"/"} />} />
       <Route path="/forgot-password" element={!userData ? <ForgotPassword /> : <Navigate to={"/"} />} />
+      <Route path="/create-update-shop" element={userData ? <CreateUpdateShop /> : <Navigate to={"/login"} />} />
+      <Route path="/add-item" element={userData ? <AddItem /> : <Navigate to={"/login"} />} />
     </Routes>
   )
 }
