@@ -10,6 +10,7 @@ import useGetLocation from './hooks/useGetLocation'
 import useGetShop from './hooks/useGetShop'
 import CreateUpdateShop from './pages/CreateUpdateShop'
 import AddItem from './pages/AddItem'
+import UpdateItem from './pages/UpdateItem'
 export const serverUrl = "http://localhost:8000"
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
       <Route path="/forgot-password" element={!userData ? <ForgotPassword /> : <Navigate to={"/"} />} />
       <Route path="/create-update-shop" element={userData ? <CreateUpdateShop /> : <Navigate to={"/login"} />} />
       <Route path="/add-item" element={userData ? <AddItem /> : <Navigate to={"/login"} />} />
+      <Route path="/update-item/:itemId" element={userData ? <UpdateItem /> : <Navigate to={"/login"} />} />
     </Routes>
   )
 }

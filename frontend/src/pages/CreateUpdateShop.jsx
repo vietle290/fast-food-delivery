@@ -6,6 +6,7 @@ import { FaUtensils } from "react-icons/fa6";
 import axios from "axios";
 import { serverUrl } from "../App";
 import { setShopData } from "../redux/slice/ownerSlice";
+import { ClipLoader } from "react-spinners";
 
 function CreateUpdateShop() {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ function CreateUpdateShop() {
   const [address, setAddress] = useState(shopData ? shopData.address : currentAddress);
   const [state, setState] = useState(shopData ? shopData.state : currentState);
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -28,6 +30,7 @@ function CreateUpdateShop() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const formData = new FormData();
       formData.append("name", name);
@@ -44,8 +47,11 @@ function CreateUpdateShop() {
         withCredentials: true,
       });
       dispatch(setShopData(res.data));
+      setLoading(false);
+      navigate("/");
     } catch (error) {
       console.error(error);
+      setLoading(false);
     }
   };
   return (
@@ -170,8 +176,9 @@ function CreateUpdateShop() {
             <button
               type="submit"
               className="btn w-full bg-[#F59E0B] text-white py-2 rounded-md hover:bg-[#FBBF24] cursor-pointer transition font-semibold"
+              disabled={loading}
             >
-              Save
+              {loading ? <ClipLoader color="white" size={20} /> : "Save"}
             </button>
           </form>
         </div>

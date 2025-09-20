@@ -86,11 +86,17 @@ function Nav() {
           <>
             {shopData && (
               <>
-                <button className="hidden md:flex items-center gap-[10px] bg-[#F59E0B]/10 text-[#F59E0B] px-[20px] py-[10px] rounded-lg cursor-pointer" onClick={() => navigate("/add-item")}>
+                <button
+                  className="hidden md:flex items-center gap-[10px] bg-[#F59E0B]/10 text-[#F59E0B] px-[20px] py-[10px] rounded-lg cursor-pointer"
+                  onClick={() => navigate("/add-item")}
+                >
                   <TiPlus size={25} />
                   <span>Add Food</span>
                 </button>
-                <button className="md:hidden flex items-center bg-[#F59E0B]/10 text-[#F59E0B] px-[20px] py-[10px] rounded-lg cursor-pointer">
+                <button
+                  className="md:hidden flex items-center bg-[#F59E0B]/10 text-[#F59E0B] px-[20px] py-[10px] rounded-lg cursor-pointer"
+                  onClick={() => navigate("/add-item")}
+                >
                   <TiPlus size={25} />
                 </button>
               </>
@@ -135,9 +141,12 @@ function Nav() {
           <div className="fixed top-[80px] right-[10px] w-[181px] bg-white shadow-lg rounded-lg p-[20px] flex flex-col gap-[20px] z-[9999] md:right-[10%] lg:right-[20%]">
             <div className="w-full flex flex-col gap-[5px]">
               <div className="text-lg font-semibold">{userData?.fullName}</div>
-              <div className="text-md font-semibold text-[#F59E0B] md:hidden cursor-pointer">
-                My Orders
-              </div>
+              {userData.role == "user" && (
+                <div className="text-md font-semibold text-[#F59E0B] md:hidden cursor-pointer">
+                  My Orders
+                </div>
+              )}
+
               <div
                 className="text-md font-semibold cursor-pointer text-[#F59E0B]"
                 onClick={handleLogout}

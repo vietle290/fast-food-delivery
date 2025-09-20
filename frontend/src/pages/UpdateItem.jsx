@@ -1,14 +1,17 @@
 import React, { useState } from "react";
 import { IoMdArrowBack } from "react-icons/io";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { FaUtensils } from "react-icons/fa6";
 import axios from "axios";
 import { serverUrl } from "../App";
 import { setShopData } from "../redux/slice/ownerSlice";
+import { useEffect } from "react";
 import { ClipLoader } from "react-spinners";
 
-function AddItem() {
+function UpdateItem() {
+  const { itemId } = useParams();
+  const [currentItem, setCurrentItem] = useState(null);
   const navigate = useNavigate();
   const handleNavigateBack = () => navigate(-1);
   const [imagePreview, setImagePreview] = useState(null);
@@ -57,17 +60,48 @@ function AddItem() {
       if (backendImage) {
         formData.append("image", backendImage);
       }
-      const res = await axios.post(`${serverUrl}/api/item/create-item`, formData, {
-        withCredentials: true,
-      });
+      const res = await axios.post(
+        `${serverUrl}/api/item/update-item/${itemId}`,
+        formData,
+        {
+          withCredentials: true,
+        }
+      );
       dispatch(setShopData(res.data));
       setLoading(false);
       navigate("/");
     } catch (error) {
-      console.error(error);
       setLoading(false);
+      console.error(error);
     }
   };
+
+    useEffect(() => {
+    const handleGetItemById = async () => {
+      try {
+        const res = await axios.get(
+          `${serverUrl}/api/item/get-item-by-id/${itemId}`,
+          {
+            withCredentials: true,
+          }
+        );
+        setCurrentItem(res.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    handleGetItemById();
+  }, [itemId]);
+
+  useEffect(() => {
+    if (currentItem) {
+      setName(currentItem?.name || "");
+      setCategory(currentItem?.category || "");
+      setType(currentItem?.type || "Veg");
+      setPrice(currentItem?.price || 0);
+      setImagePreview(currentItem?.image || "");
+    }
+  }, [currentItem]);
   return (
     <div className="flex justify-center items-center flex-col p-[24px] bg-gradient-to-br from-orange-50 relative to-white min-h-screen">
       <div
@@ -86,7 +120,7 @@ function AddItem() {
               <FaUtensils size={50} className="text-[#F59E0B] w-full h-full" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-800">Add Food</h1>
+              <h1 className="text-3xl font-bold text-gray-800">Update Food</h1>
             </div>
           </div>
 
@@ -189,8 +223,9 @@ function AddItem() {
             <button
               type="submit"
               className="btn w-full bg-[#F59E0B] text-white py-2 rounded-md hover:bg-[#FBBF24] cursor-pointer transition font-semibold"
+              disabled={loading}
             >
-              {loading ? <ClipLoader color="white" size={20} /> : "Save"}
+              {loading ? <ClipLoader size={20} color="white" /> : "Save"}
             </button>
           </form>
         </div>
@@ -199,4 +234,4 @@ function AddItem() {
   );
 }
 
-export default AddItem;
+export default UpdateItem;

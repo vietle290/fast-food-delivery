@@ -4,13 +4,14 @@ import { useSelector } from "react-redux";
 import { FaUtensils } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import { MdEdit } from "react-icons/md";
+import OwnerItemCard from "./OwnerItemCard";
 
 function OwnerDashboard() {
   const { shopData } = useSelector((state) => state.owner);
   const navigate = useNavigate();
   const handleNavigateCreateUpdateShop = () => navigate("/create-update-shop");
   const handleNavigateAddFood = () => navigate("/add-item");
-  console.log("food", shopData?.items);
+
   return (
     <div className="w-[100vw] h-[100vh] flex flex-col items-center bg-[#FFF9F6]">
       <Nav />
@@ -62,23 +63,32 @@ function OwnerDashboard() {
               <MdEdit size={25} className="text-white" />
             </button>
           </div>
-        </div>
-      )}
-      {shopData?.items.length == 0 && (
-        <div className="flex justify-center items-center p-[1rem] sm:p-[1.5rem]">
-          <div className="w-full max-w-md shadow-lg rounded-xl bg-white p-[24px] border border-gray-100 hover:shadow-2xl transition-shadow duration-300">
-            <div className="flex flex-col items-center text-center gap-4">
-              <FaUtensils size={50} className="text-[#F59E0B]" />
-              <h1 className="text-2xl font-bold">No Foods</h1>
-              <p className="text-gray-600">You have not added a food yet.</p>
-              <button
-                className="bg-[#F59E0B] text-white py-2 px-4 rounded-md hover:bg-[#FBBF24] transition-colors duration-300"
-                onClick={handleNavigateAddFood}
-              >
-                Add Food
-              </button>
+          {shopData.items.length == 0 && (
+            <div className="flex justify-center items-center p-[1rem] sm:p-[1.5rem]">
+              <div className="w-full max-w-md shadow-lg rounded-xl bg-white p-[24px] border border-gray-100 hover:shadow-2xl transition-shadow duration-300">
+                <div className="flex flex-col items-center text-center gap-4">
+                  <FaUtensils size={50} className="text-[#F59E0B]" />
+                  <h1 className="text-2xl font-bold">No Foods</h1>
+                  <p className="text-gray-600">
+                    You have not added a food yet.
+                  </p>
+                  <button
+                    className="bg-[#F59E0B] text-white py-2 px-4 rounded-md hover:bg-[#FBBF24] transition-colors duration-300"
+                    onClick={handleNavigateAddFood}
+                  >
+                    Add Food
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
+          )}
+          {shopData.items.length > 0 && (
+            <div className="w-full max-w-lg flex flex-col items-center gap-4 mt-3 mb-3">
+              {shopData.items.map((item, index) => (
+                <OwnerItemCard key={index} item={item} />
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
