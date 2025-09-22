@@ -17,23 +17,22 @@ function AddItem() {
   const [type, setType] = useState("Veg");
   const [loading, setLoading] = useState(false);
   const categories = [
+    "Burgers and Fries",
     "Pizza",
-    "Burger",
-    "Dessert",
-    "Drink",
-    "Snack",
-    "Chicken nuts",
-    "Pasta",
-    "Egg Tart",
-    "Milk shake",
-    "Ice cream",
-    "Bacon",
-    "Chips",
-    "Sandwich",
-    "Noodles",
-    "Soda",
-    "Sausage",
-    "Others",
+    "Fried Chicken",
+    "Tacos and Mexican Food",
+    "Sandwiches and Subs",
+    "Hot Dogs",
+    "Seafood (e.g., Fish and Chips)",
+    "Asian Fusion (e.g., Chinese, Japanese takeout)",
+    "Breakfast Items (e.g., Muffins, Burritos)",
+    "Salads and Healthy Options",
+    "Ice Cream and Desserts",
+    "Coffee and Beverages",
+    "Donuts and Pastries",
+    "Wraps and Pitas",
+    "Barbecue and Grilled Meats",
+    "All",
   ];
   const [name, setName] = useState("");
   const [price, setPrice] = useState(0);
@@ -57,9 +56,13 @@ function AddItem() {
       if (backendImage) {
         formData.append("image", backendImage);
       }
-      const res = await axios.post(`${serverUrl}/api/item/create-item`, formData, {
-        withCredentials: true,
-      });
+      const res = await axios.post(
+        `${serverUrl}/api/item/create-item`,
+        formData,
+        {
+          withCredentials: true,
+        }
+      );
       dispatch(setShopData(res.data));
       setLoading(false);
       navigate("/");

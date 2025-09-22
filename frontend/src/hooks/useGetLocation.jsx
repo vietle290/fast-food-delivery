@@ -14,9 +14,8 @@ function useGetLocation() {
             dispatch(setLocation(result?.data?.results[0].city));
             dispatch(setCurrentState(result?.data?.results[0].country));
             dispatch(setCurrentAddress(result?.data?.results[0].address_line2 + " " + result?.data?.results[0].address_line1));
-            console.log(result?.data?.results[0]);
         })
-    }, [userData])
+    }, [userData, dispatch, apiKey])
 }
 
 export default useGetLocation

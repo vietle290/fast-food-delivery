@@ -1,12 +1,157 @@
-import React from 'react'
-import Nav from './Nav'
+import React, { useRef } from "react";
+import Nav from "./Nav";
+import { categories } from "../category";
+import CategoryCard from "./CategoryCard";
+import { IoIosArrowDropleftCircle } from "react-icons/io";
+import { IoIosArrowDroprightCircle } from "react-icons/io";
+import { useState } from "react";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { ClipLoader } from "react-spinners";
+import FoodCard from "./FoodCard";
 
 function UserDashboard() {
+  const { location, shopInCity, loading, itemInCity } = useSelector((state) => state.user);
+  const scrollRef = useRef(null);
+  const shopScrollRef = useRef(null);
+  const [showScrollLeft, setShowScrollLeft] = useState(false);
+  const [showScrollRight, setShowScrollRight] = useState(false);
+  const [showShopScrollLeft, setShowShopScrollLeft] = useState(false);
+  const [showShopScrollRight, setShowShopScrollRight] = useState(false);
+  const handleScroll = (ref, direction) => {
+    if (ref.current) {
+      ref.current.scrollBy({
+        left: direction === "left" ? -200 : 200,
+        behavior: "smooth",
+      });
+    }
+  };
+  const updateButton = (ref, setLeftButton, setRightButton) => {
+    if (ref.current) {
+      const scrollLeft = ref.current.scrollLeft;
+      const scrollWidth = ref.current.scrollWidth;
+      const clientWidth = ref.current.clientWidth;
+      setLeftButton(scrollLeft > 0);
+      setRightButton(scrollLeft + clientWidth < scrollWidth);
+    }
+  };
+
+  useEffect(() => {
+    const scrollElement = scrollRef.current;
+    const shopScrollElement = shopScrollRef.current;
+    if (scrollElement) {
+      const handleScroll = () => {
+        updateButton(scrollRef, setShowScrollLeft, setShowScrollRight);
+      };
+      const handleShopScroll = () => {
+        updateButton(
+          shopScrollRef,
+          setShowShopScrollLeft,
+          setShowShopScrollRight
+        );
+      };
+      updateButton(scrollRef, setShowScrollLeft, setShowScrollRight);
+      updateButton(
+        shopScrollRef,
+        setShowShopScrollLeft,
+        setShowShopScrollRight
+      );
+      scrollElement.addEventListener("scroll", handleScroll);
+      shopScrollElement.addEventListener("scroll", handleShopScroll);
+      return () => {
+        scrollElement.removeEventListener("scroll", handleScroll);
+        shopScrollElement.removeEventListener("scroll", handleShopScroll);
+      };
+    }
+  }, []);
+
   return (
-    <div className='w-[100vw] h-[100vh] pt-[100px] flex flex-col items-center bg-[#FFF9F6]'>
+    <div className="w-screen min-h-screen flex flex-col items-center gap-5 bg-[#FFF9F6] overflow-y-auto">
       <Nav />
+      <div className="w-full max-w-7xl gap-5 flex flex-col items-start p-[10px]">
+        <h1 className="text-xl text-gray-800 sm:text-2xl font-medium">
+          Fast Food Categories
+        </h1>
+
+        {/* Horizontal Scroll Wrapper */}
+        <div className="flex w-full">
+          {showScrollLeft && (
+            <button onClick={() => handleScroll(scrollRef, "left")}>
+              <IoIosArrowDropleftCircle size={30} className="text-[#F59E0B]" />
+            </button>
+          )}
+
+          <div
+            className="w-full flex gap-4 overflow-x-auto pb-2"
+            ref={scrollRef}
+          >
+            <div className="flex gap-4 w-full px-1">
+              {categories.map((category, index) => (
+                <CategoryCard
+                  key={index}
+                  name={category.category}
+                  image={category.image}
+                />
+              ))}
+            </div>
+          </div>
+          {showScrollRight && (
+            <button onClick={() => handleScroll(scrollRef, "right")}>
+              <IoIosArrowDroprightCircle size={30} className="text-[#F59E0B]" />
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="w-full max-w-7xl gap-5 flex flex-col items-start p-[10px]">
+        <h1 className="text-xl text-gray-800 sm:text-2xl font-medium">
+          Best Shops in {location}
+        </h1>
+        {loading && <ClipLoader color="#F59E0B" size={30} />}
+        <div className="flex w-full">
+          {showShopScrollLeft && (
+            <button onClick={() => handleScroll(shopScrollRef, "left")}>
+              <IoIosArrowDropleftCircle size={30} className="text-[#F59E0B]" />
+            </button>
+          )}
+
+          <div
+            className="w-full flex gap-4 overflow-x-auto pb-2"
+            ref={shopScrollRef}
+          >
+            <div className="flex gap-4 w-full px-1">
+              {shopInCity?.map((shops, index) => (
+                <CategoryCard
+                  key={index}
+                  name={shops.name}
+                  image={shops.image}
+                />
+              ))}
+            </div>
+          </div>
+          {showShopScrollRight && (
+            <button onClick={() => handleScroll(shopScrollRef, "right")}>
+              <IoIosArrowDroprightCircle size={30} className="text-[#F59E0B]" />
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="w-full max-w-7xl gap-5 flex flex-col items-start p-[10px]">
+        <h1 className="text-xl text-gray-800 sm:text-2xl font-medium">
+          Suggestions Food For You
+        </h1>
+        <div className="flex flex-wrap gap-4 w-full h-auto justify-center">
+          {itemInCity?.map((food, index) => (
+            <FoodCard
+              key={index}
+              item={food}
+            />
+          ))}
+        </div>
+      </div>
     </div>
-  )
+  );
 }
 
-export default UserDashboard
+export default UserDashboard;

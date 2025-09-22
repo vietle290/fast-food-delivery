@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RxCross2 } from "react-icons/rx";
 import axios from "axios";
 import { serverUrl } from "../App";
-import { setUserData } from "../redux/slice/userSlice";
+import { setUserData, setLocation, setCurrentState, setCurrentAddress, setShopInCity, setItemInCity } from "../redux/slice/userSlice";
 import { TiPlus } from "react-icons/ti";
 import { IoReceiptOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
@@ -24,6 +24,11 @@ function Nav() {
         withCredentials: true,
       });
       dispatch(setUserData(null));
+      dispatch(setLocation(null));
+      dispatch(setCurrentState(null));
+      dispatch(setCurrentAddress(null));
+      dispatch(setShopInCity(null));
+      dispatch(setItemInCity(null));
     } catch (error) {
       console.log(error);
     }
