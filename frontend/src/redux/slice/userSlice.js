@@ -9,6 +9,8 @@ const userSlice = createSlice({
     currentAddress: null,
     shopInCity: null,
     itemInCity: null,
+    cartItems: [],
+    total: 0,
     loading: false,
     error: null,
   },
@@ -31,6 +33,32 @@ const userSlice = createSlice({
     setItemInCity: (state, action) => {
       state.itemInCity = action.payload;
     },
+    addToCart: (state, action) => {
+      const cartItem = action.payload;
+      const existingItem = state.cartItems.find(item => item.id == cartItem.id);
+      if (existingItem) {
+        existingItem.quantity += cartItem.quantity;
+      } else {
+        state.cartItems.push(cartItem);
+      }
+
+      state.total += cartItem.price * cartItem.quantity;
+    },
+    updateQuantity: (state, action) => {
+      const { id, quantity } = action.payload;
+      const cartItem = state.cartItems.find(item => item.id == id);
+      if (cartItem) {
+        cartItem.quantity = quantity;
+      }
+
+      state.total = state.cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+    },
+    removeCart: (state, action) => {
+      const id = action.payload;
+      state.cartItems = state.cartItems.filter(item => item.id !== id);
+
+      state.total = state.cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+    },
     setLoading: (state, action) => {
       state.loading = action.payload;
     },
@@ -40,6 +68,6 @@ const userSlice = createSlice({
   },
 });
 
-export const { setUserData, setLoading, setError, setLocation, setCurrentState, setCurrentAddress, setShopInCity, setItemInCity } =
+export const { setUserData, setLoading, setError, setLocation, setCurrentState, setCurrentAddress, setShopInCity, setItemInCity, addToCart, updateQuantity, removeCart } =
   userSlice.actions;
 export default userSlice.reducer;

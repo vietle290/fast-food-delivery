@@ -3,11 +3,16 @@ import { FaLeaf } from "react-icons/fa";
 import { IoFastFood } from "react-icons/io5";
 import { MdOutlineStarPurple500 } from "react-icons/md";
 import { MdOutlineStarOutline } from "react-icons/md";
-import { FaShoppingCart } from 'react-icons/fa';
-import { FaMinus } from 'react-icons/fa';
-import { FaPlus } from 'react-icons/fa';
+import { FaShoppingCart } from "react-icons/fa";
+import { FaMinus } from "react-icons/fa";
+import { FaPlus } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart } from "../redux/slice/userSlice";
 
 function FoodCard({ item }) {
+  const dispatch = useDispatch();
+  const cartItems = useSelector((state) => state.user);
+  console.log("cartItems", cartItems);
   const [quantity, setQuantity] = useState(0);
   const handleDecrement = () => {
     if (quantity > 0) setQuantity(quantity - 1);
@@ -17,10 +22,18 @@ function FoodCard({ item }) {
     setQuantity(quantity + 1);
   };
 
-  const handleAddToCart = () => {
-    // Add to cart logic here
-    console.log(`Added ${quantity} items to cart`);
-  };
+  // const handleAddToCart = (item) => {
+  //   console.log("adddddddddddddddddddddddd")
+  //   dispatch(addToCart({
+  //     id: item._id,
+  //     name: item.name,
+  //     price: item.price,
+  //     quantity: quantity,
+  //     image: item.image,
+  //     type: item.type,
+  //     shop: item.shop
+  //   }))
+  // };
   const renderStars = (rating) => {
     const stars = [];
     for (let i = 0; i <= 5; i++) {
@@ -69,8 +82,25 @@ function FoodCard({ item }) {
           <button className="px-2 py-1 bg-white text-gray-800 hover:bg-gray-100 trasition">
             <FaPlus onClick={handleIncrement} />
           </button>
-          <button className="px-3 py-2 bg-[#F59E0B] text-gray-800 hover:bg-[#FBBF24] transition">
-            <FaShoppingCart onClick={handleAddToCart} />
+          <button
+            className="px-3 py-2 bg-[#F59E0B] text-gray-800 hover:bg-[#FBBF24] transition cursor-pointer"
+            onClick={() => {
+              if (quantity > 0) {
+                dispatch(
+                  addToCart({
+                    id: item._id,
+                    name: item.name,
+                    price: item.price,
+                    quantity: quantity,
+                    image: item.image,
+                    type: item.type,
+                    shop: item.shop,
+                  })
+                );
+              }
+            }}
+          >
+            <FaShoppingCart />
           </button>
         </div>
       </div>

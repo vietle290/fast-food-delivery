@@ -6,13 +6,20 @@ import { useDispatch, useSelector } from "react-redux";
 import { RxCross2 } from "react-icons/rx";
 import axios from "axios";
 import { serverUrl } from "../App";
-import { setUserData, setLocation, setCurrentState, setCurrentAddress, setShopInCity, setItemInCity } from "../redux/slice/userSlice";
+import {
+  setUserData,
+  setLocation,
+  setCurrentState,
+  setCurrentAddress,
+  setShopInCity,
+  setItemInCity,
+} from "../redux/slice/userSlice";
 import { TiPlus } from "react-icons/ti";
 import { IoReceiptOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 
 function Nav() {
-  const { userData, location } = useSelector((state) => state.user);
+  const { userData, location, cartItems } = useSelector((state) => state.user);
   const { shopData } = useSelector((state) => state.owner);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
@@ -123,11 +130,18 @@ function Nav() {
           </>
         ) : (
           <>
-            <div className="relative cursor-pointer">
+            <div className="relative cursor-pointer" onClick={() => navigate("/cart-page")}>
               <FiShoppingCart size={25} className="text-[#F59E0B]" />
-              <span className="absolute top-[-13px] right-[-8px] text-white rounded-full bg-[#f50b0b] px-[5px]">
-                0
-              </span>
+              {cartItems.length > 0 ? (
+                <span className="absolute top-[-13px] right-[-8px] text-white rounded-full bg-[#f50b0b] px-[7px]">
+                  {cartItems.length}
+                </span>
+              ) : (
+                <span className="absolute top-[-13px] right-[-12px] text-[#F59E0B] px-[5px]">
+                  0
+                </span>
+              )
+              }
             </div>
 
             <button className="rounded-lg md:block hidden text-[#F59E0B]">
