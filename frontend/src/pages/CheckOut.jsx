@@ -7,7 +7,8 @@ import { MdMyLocation } from "react-icons/md";
 import { MapContainer, Marker, TileLayer, useMap } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 import "leaflet/dist/leaflet.css";
-import { setNewLocation } from '../redux/slice/mapSlice';
+import { setAddress, setNewLocation } from '../redux/slice/mapSlice';
+import axios from 'axios';
 
 function RecenterAutomatically({ center }) {
         const map = useMap();
@@ -27,7 +28,19 @@ function CheckOut() {
     const onDragEnd = (e) => {
         console.log(e.target._latlng);
         dispatch(setNewLocation({ latitude: e.target._latlng.lat, longitude: e.target._latlng.lng }));
+        getAddressByLatLng(e.target._latlng.lat, e.target._latlng.lng);
     }
+
+    const getAddressByLatLng = async (latitude, longitude) => {
+        try {
+            const apiKey = import.meta.env.VITE_GEOAPIFY_API_KEY;
+            const result = await axios.get(`https://api.geoapify.com/v1/geocode/reverse?lat=${latitude}&lon=${longitude}&format=json&apiKey=${apiKey}`);
+                const address = result?.data?.results[0].formatted;
+                dispatch(setAddress(address));
+        } catch (error) {
+            console.error(error);
+        }
+    };
   return (
     <div className='min-h-screen flex items-center justify-center bg-[#FFF9F6] p-6'>
             <div
