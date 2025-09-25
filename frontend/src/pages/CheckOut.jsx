@@ -1,18 +1,32 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { IoMdArrowBack } from 'react-icons/io'
 import { useNavigate } from 'react-router-dom'
 import { IoLocationSharp } from 'react-icons/io5';
 import { IoIosSearch } from "react-icons/io";
 import { MdMyLocation } from "react-icons/md";
-import { MapContainer, Marker, TileLayer } from 'react-leaflet';
-import { useSelector } from 'react-redux';
+import { MapContainer, Marker, TileLayer, useMap } from 'react-leaflet';
+import { useDispatch, useSelector } from 'react-redux';
 import "leaflet/dist/leaflet.css";
+import { setNewLocation } from '../redux/slice/mapSlice';
+
+function RecenterAutomatically({ center }) {
+        const map = useMap();
+        useEffect(() => {
+            map.setView([center.latitude, center.longitude], map.getZoom(), { animate: true });
+        }, [center,map]);
+        return null;
+    }
 
 function CheckOut() {
     const {newLocation, address} = useSelector(state => state.map);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const handleNavigateBack = () => {
         navigate(-1)
+    }
+    const onDragEnd = (e) => {
+        console.log(e.target._latlng);
+        dispatch(setNewLocation({ latitude: e.target._latlng.lat, longitude: e.target._latlng.lng }));
     }
   return (
     <div className='min-h-screen flex items-center justify-center bg-[#FFF9F6] p-6'>
@@ -32,7 +46,7 @@ function CheckOut() {
                         <IoLocationSharp size={20} className='text-[#F59E0B]'/> Delivery Location
                     </h2>
                     <div className='flex gap-2 mb-3'>
-                        <input type='text' className='flex-1 border border-gray-400 px-2 py-1 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#F59E0B]' placeholder='Enter your address'/>
+                        <input type='text' className='flex-1 border border-gray-400 px-2 py-1 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#F59E0B]' placeholder='Enter your address' value={address}/>
                         <button className='bg-[#F59E0B] rounded-lg px-2 py-2 text-white flex items-center justify-center hover:bg-[#FBBF24] cursor-pointer'><IoIosSearch size={20}/></button>
                         <button className='bg-blue-500 rounded-lg px-2 py-2 text-white flex items-center justify-center hover:bg-blue-600 cursor-pointer'><MdMyLocation size={20}/></button>
                     </div>
@@ -43,7 +57,8 @@ function CheckOut() {
                                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                 />
-                                <Marker position={[newLocation?.latitude, newLocation?.longitude]} />
+                                <RecenterAutomatically center={newLocation} />
+                                <Marker position={[newLocation?.latitude, newLocation?.longitude]} draggable eventHandlers={{dragend:onDragEnd}}/>
                             </MapContainer>
                         </div>
                     </div>
