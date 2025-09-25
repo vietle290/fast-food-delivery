@@ -12,6 +12,10 @@ function CartPage() {
     navigate(-1);
   };
 
+  const handleNavigateCheckOut = () => {
+    navigate("/check-out");
+  };
+
   // const subtotal = cartItems.reduce(
   //   (acc, item) => acc + item.price * item.quantity,
   //   0
@@ -113,8 +117,8 @@ function CartPage() {
                   </div> */}
 
                   {total > 0 && (
-                    <button className="h-12 w-full bg-[#F59E0B] cursor-pointer rounded focus:outline-none text-white hover:bg-[#FBBF24]">
-                      Check Out
+                    <button className="h-12 w-full bg-[#F59E0B] cursor-pointer rounded focus:outline-none text-white hover:bg-[#FBBF24]" onClick={handleNavigateCheckOut}>
+                      Process to Check Out
                     </button>
                   )}
                 </div>
