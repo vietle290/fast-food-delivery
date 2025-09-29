@@ -11,6 +11,7 @@ import { setAddress, setNewLocation } from "../redux/slice/mapSlice";
 import axios from "axios";
 import { FaMoneyBillWaveAlt } from "react-icons/fa";
 import { FaCreditCard } from "react-icons/fa6";
+import { serverUrl } from "../App";
 
 function RecenterAutomatically({ center }) {
   const map = useMap();
@@ -113,6 +114,28 @@ function CheckOut() {
     setSearchResults([]);
     dispatch(setNewLocation({ latitude: lat, longitude: lon }));
     dispatch(setAddress(formatted));
+  };
+
+  const handlePlaceOrder = async () => {
+    try {
+      const res = await axios.post(`${serverUrl}/api/order/place-order`, {
+        cartItems,
+        paymentMethod,
+        deliveryAddress: {
+          text: addressInput,
+          latitude: newLocation.latitude,
+          longitude: newLocation.longitude,
+        },
+        totalAmount,
+      },
+      { withCredentials: true });
+      if (res.status === 201) {
+        navigate("/order-placed");
+      }
+      // console.log("Place Order: ", res.data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   useEffect(() => {
@@ -287,7 +310,7 @@ function CheckOut() {
         </section>
         <button
           className="bg-[#F59E0B] text-white py-2 px-4 rounded-md hover:bg-[#FBBF24] transition-colors duration-300 w-full"
-          // onClick={handlePlaceOrder}
+          onClick={handlePlaceOrder}
         >
           {paymentMethod === "cod" ? "Place Order" : "Pay Now"}
         </button>
