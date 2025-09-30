@@ -114,23 +114,26 @@ function Nav() {
               </>
             )}
 
-            <div className="hidden relative cursor-pointer md:flex items-center gap-2 text-[#F59E0B]">
+            <div className="hidden relative cursor-pointer md:flex items-center gap-2 bg-gradient-to-r from-[#F59E0B] to-[#F59E0B]/50 hover:bg-gradient-to-r hover:from-[#F59E0B]/50 hover:to-[#F59E0B] text-white px-[10px] py-[5px] rounded-lg" onClick={() => navigate("/my-orders")}>
               <IoReceiptOutline size={25} />
               <span>My Orders</span>
-              <span className="absolute top-[-13px] right-[-18px] text-white rounded-full bg-[#f50b0b] px-[5px]">
+              <span className="absolute top-[-13px] right-[-15px] text-white rounded-full bg-[#f50b0b] px-[5px]">
                 0
               </span>
             </div>
-            <div className="md:hidden relative cursor-pointer flex items-center gap-2 text-[#F59E0B]">
+            <div className="md:hidden relative cursor-pointer flex items-center gap-2 text-[#F59E0B]" onClick={() => navigate("/my-orders")}>
               <IoReceiptOutline size={25} />
-              <span className="absolute top-[-13px] right-[-18px] text-white rounded-full bg-[#f50b0b] px-[5px]">
+              <span className="absolute top-[-13px] right-[-15px] text-white rounded-full bg-[#f50b0b] px-[5px]">
                 0
               </span>
             </div>
           </>
         ) : (
           <>
-            <div className="relative cursor-pointer" onClick={() => navigate("/cart-page")}>
+            <div
+              className="relative cursor-pointer"
+              onClick={() => navigate("/cart-page")}
+            >
               <FiShoppingCart size={25} className="text-[#F59E0B]" />
               {cartItems.length > 0 ? (
                 <span className="absolute top-[-13px] right-[-8px] text-white rounded-full bg-[#f50b0b] px-[7px]">
@@ -140,11 +143,13 @@ function Nav() {
                 <span className="absolute top-[-13px] right-[-12px] text-[#F59E0B] px-[5px]">
                   0
                 </span>
-              )
-              }
+              )}
             </div>
 
-            <button className="rounded-lg md:block hidden text-[#F59E0B]">
+            <button
+              className="rounded-lg md:block hidden bg-gradient-to-r from-[#F59E0B] to-[#F59E0B]/50 hover:bg-gradient-to-r hover:from-[#F59E0B]/50 hover:to-[#F59E0B] text-white px-[10px] py-[5px] cursor-pointer"
+              onClick={() => navigate("/my-orders")}
+            >
               My Orders
             </button>
           </>
@@ -161,7 +166,13 @@ function Nav() {
             <div className="w-full flex flex-col gap-[5px]">
               <div className="text-lg font-semibold">{userData?.fullName}</div>
               {userData.role == "user" && (
-                <div className="text-md font-semibold text-[#F59E0B] md:hidden cursor-pointer">
+                <div
+                  className="text-md font-semibold text-[#F59E0B] md:hidden cursor-pointer"
+                  onClick={() => {
+                    setIsDropdownOpen(false);
+                    navigate("/my-orders");
+                  }}
+                >
                   My Orders
                 </div>
               )}

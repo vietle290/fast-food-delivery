@@ -2,6 +2,8 @@ import React from "react";
 import { MdOutlineRemoveShoppingCart } from "react-icons/md";
 import { useDispatch } from "react-redux";
 import { updateQuantity, removeCart } from "../redux/slice/userSlice";
+import { FaPlus } from "react-icons/fa6";
+import { FaMinus } from "react-icons/fa6";
 
 
 function CartItemCard({ item }) {
@@ -32,28 +34,28 @@ function CartItemCard({ item }) {
 
       {/* Right side - qty + price + remove */}
       <div className="flex justify-center items-center">
-        <div className="pr-8">
+        <div className="MD:pr-8">
           <button
-            className="font-semibold px-2 cursor-pointer hover:text-red-500 text-xl"
+            className="font-semibold px-2 cursor-pointer hover:text-red-500"
             onClick={() => handleDecrement(item.id, item.quantity)}
           >
-            -
+            <FaMinus />
           </button>
           <input
             type="text"
             readOnly
-            className="focus:outline-none bg-gray-100 border h-6 w-8 rounded text-sm px-2 mx-2 text-center"
+            className="focus:outline-none bg-gray-100 border h-6 w-8 rounded text-sm lg:px-2 lg:mx-2 text-center"
             value={item.quantity}
           />
           <button
-            className="font-semibold px-2 cursor-pointer hover:text-green-500 text-xl"
+            className="font-semibold px-2 cursor-pointer hover:text-green-500"
             onClick={() => handleIncrement(item.id, item.quantity)}
           >
-            +
+            <FaPlus />
           </button>
         </div>
 
-        <div className="pr-8">
+        <div className="md:pr-8">
           <span className="text-xs font-medium">
             ${(item.price * item.quantity).toFixed(2)}
           </span>

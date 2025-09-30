@@ -43,10 +43,10 @@ function CartPage() {
                   {/* Continue + Subtotal */}
                   <div className="flex justify-between items-center mt-6 pt-6 border-t">
                     <div
-                      className="flex items-center cursor-pointer"
+                      className="flex cursor-pointer"
                       onClick={handleNavigateBack}
                     >
-                      <IoMdArrowBack className="text-sm mr-2" />
+                      <IoMdArrowBack size={25} className="text-sm mr-2" />
                       <span className="text-md font-medium text-[#F59E0B]">
                         Continue Shopping
                       </span>

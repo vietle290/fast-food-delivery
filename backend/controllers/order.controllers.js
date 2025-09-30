@@ -1,5 +1,6 @@
 import Order from "../models/order.model.js";
 import Shop from "../models/shop.model.js";
+import User from "../models/user.model.js";
 
 export const placeOrder = async (req, res) => {
   try {
@@ -17,7 +18,7 @@ export const placeOrder = async (req, res) => {
 
     const listItemsShop = {};
 
-    cartItems.forEach(item => {
+    cartItems.forEach((item) => {
       const shopId = item.shop._id;
       if (!listItemsShop[shopId]) {
         listItemsShop[shopId] = [];
@@ -46,10 +47,11 @@ export const placeOrder = async (req, res) => {
           owner: shop.owner._id,
           subtotal,
           shopItems: items.map((item) => ({
-            item: item._id,
+            item: item.id,
             name: item.name,
             price: item.price,
             quantity: item.quantity,
+            image: item.image,
           })),
         };
       })
@@ -66,5 +68,31 @@ export const placeOrder = async (req, res) => {
     return res
       .status(500)
       .json({ message: `Error creating order: ${error.message}` });
+  }
+};
+
+export const getUserOrders = async (req, res) => {
+  try {
+    const user = await User.findById(req.userId);
+    if (user.role == "user") {
+      const orders = await Order.find({ user: req.userId })
+        .sort({ createdAt: -1 })
+        .populate("shopOrders.shop", "name")
+        .populate("shopOrders.owner", "fullName email mobile")
+        .populate("shopOrders.shopItems.item", "name image price")
+        .populate("user", "fullName email mobile role isOtpVerified");
+      return res.status(200).json(orders);
+    } else if (user.role == "owner") {
+      const orders = await Order.find({ "shopOrders.owner": req.userId })
+        .sort({ createdAt: -1 })
+        .populate("shopOrders.shop", "name")
+        .populate("user")
+        .populate("shopOrders.shopItems.item", "name image price");
+      return res.status(200).json(orders);
+    }
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: `Error getting user orders: ${error.message}` });
   }
 };
