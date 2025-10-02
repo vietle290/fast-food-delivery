@@ -1,19 +1,24 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { FaPhone } from "react-icons/fa";
+import axios from "axios";
+import { serverUrl } from "../App";
+import {  updateOrderStatuss } from "../redux/slice/userSlice";
 
 function OwnerOrderCard({ data }) {
-  const userData = useSelector((state) => state.user);
-  console.log("sdadcf", data.shopOrders);
-  const formatDate = (dateString) => {
-    const options = {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    };
-    return new Date(dateString).toLocaleDateString(undefined, options);
+const dispatch = useDispatch();
+  const handleUpdateStatus = async (orderId, shopId, status) => {
+    console.log(orderId, shopId, status);
+    try {
+      const res = await axios.post(
+        `${serverUrl}/api/order/update-status/${orderId}/${shopId}`,
+        { status: status },
+        { withCredentials: true }
+      );
+      dispatch(updateOrderStatuss({ orderId, shopId, status }));
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden p-4 font-sans">
@@ -108,6 +113,7 @@ function OwnerOrderCard({ data }) {
           <select
             value={data.shopOrders[0].status}
             className="border border-gray-300 rounded-md px-3 py-1 text-sm focus:ountline-none focus:ring-2 focus:ring-[#F59E0B] text-[#F59E0B]"
+            onChange={(e) => handleUpdateStatus(data._id, data.shopOrders[0].shop._id, e.target.value)}
           >
             <option value="pending">Pending</option>
             <option value="preparing">Preparing</option>

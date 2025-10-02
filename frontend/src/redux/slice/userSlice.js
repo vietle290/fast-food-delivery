@@ -66,6 +66,16 @@ const userSlice = createSlice({
     addOrder: (state, action) => {
       state.myOrders = [action.payload, ...state.myOrders];
     },
+    updateOrderStatuss: (state, action) => {
+      const { orderId, shopId, status } = action.payload;
+      const order = state.myOrders.find(order => order._id == orderId);
+      if (order) {
+        const shopOrder = order.shopOrders.find(shopOrder => shopOrder.shop._id == shopId);
+        if (shopOrder) {
+          shopOrder.status = status;
+        }
+      }
+    },
     setLoading: (state, action) => {
       state.loading = action.payload;
     },
@@ -75,6 +85,6 @@ const userSlice = createSlice({
   },
 });
 
-export const { setUserData, setLoading, setError, setLocation, setCurrentState, setCurrentAddress, setShopInCity, setItemInCity, addToCart, updateQuantity, removeCart, setMyOrders, addOrder } =
+export const { setUserData, setLoading, setError, setLocation, setCurrentState, setCurrentAddress, setShopInCity, setItemInCity, addToCart, updateQuantity, removeCart, setMyOrders, addOrder, updateOrderStatuss } =
   userSlice.actions;
 export default userSlice.reducer;

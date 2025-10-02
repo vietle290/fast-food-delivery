@@ -113,3 +113,28 @@ export const getUserOrders = async (req, res) => {
       .json({ message: `Error getting user orders: ${error.message}` });
   }
 };
+
+export const updateOrderStatus = async (req, res) => {
+  try {
+    const { orderId, shopId } = req.params;
+    const { status } = req.body;
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+    const shopOrder = order.shopOrders.find(
+      (shopOrder) => shopOrder.shop == shopId
+    );
+    if (!shopOrder) {
+      return res.status(404).json({ message: "Shop order not found" });
+    }
+    shopOrder.status = status;
+    await shopOrder.save();
+    await order.save();
+    return res.status(200).json(shopOrder.status);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: `Error updating order status: ${error.message}` });
+  }
+};
