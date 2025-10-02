@@ -22,7 +22,7 @@ function useGetMyOrders() {
       }
     };
     fetchOrders();
-  }, [dispatch, userData]);
+  }, [userData]);
 }
 
 export default useGetMyOrders;

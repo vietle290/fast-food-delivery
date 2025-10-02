@@ -15,7 +15,7 @@ const shopOrderSchema = new mongoose.Schema(
     owner: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     subtotal: Number,
     shopItems: [shopItemSchema],
-    status: { type: String, enum: ["pending", "preparing", "out for delivery", "delivered"], default: "pending" },
+    status: { type: String, enum: ["pending", "preparing", "out-for-delivery", "delivered"], default: "pending" },
   },
   { timestamps: true }
 );

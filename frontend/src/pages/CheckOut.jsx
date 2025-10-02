@@ -12,6 +12,7 @@ import axios from "axios";
 import { FaMoneyBillWaveAlt } from "react-icons/fa";
 import { FaCreditCard } from "react-icons/fa6";
 import { serverUrl } from "../App";
+import { addOrder } from "../redux/slice/userSlice";
 
 function RecenterAutomatically({ center }) {
   const map = useMap();
@@ -129,6 +130,7 @@ function CheckOut() {
         totalAmount,
       },
       { withCredentials: true });
+      dispatch(addOrder(res.data));
       if (res.status === 201) {
         navigate("/order-placed");
       }

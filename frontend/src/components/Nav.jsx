@@ -13,6 +13,7 @@ import {
   setCurrentAddress,
   setShopInCity,
   setItemInCity,
+  setMyOrders
 } from "../redux/slice/userSlice";
 import { TiPlus } from "react-icons/ti";
 import { IoReceiptOutline } from "react-icons/io5";
@@ -30,6 +31,7 @@ function Nav() {
       const res = await axios.get(`${serverUrl}/api/auth/logout`, {
         withCredentials: true,
       });
+      dispatch(setMyOrders(null));
       dispatch(setUserData(null));
       dispatch(setLocation(null));
       dispatch(setCurrentState(null));

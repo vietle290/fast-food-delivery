@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { IoMdArrowBack } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import UserOrderCard from "../components/UserOrderCard";
+import OwnerOrderCard from "../components/OwnerOrderCard";
 
 function MyOrders() {
   const { userData, myOrders } = useSelector((state) => state.user);
@@ -29,9 +30,9 @@ function MyOrders() {
         <div className="space-y-6">
           {myOrders?.map((order, index) =>
             userData.role == "user" ? (
-              <UserOrderCard key={index} data={order} role="user" />
+              <UserOrderCard data={order} key={index} />
             ) : userData.role == "owner" ? (
-              <UserOrderCard key={index} data={order} role="owner" />
+              <OwnerOrderCard data={order} key={index} />
             ) : null
           )}
         </div>

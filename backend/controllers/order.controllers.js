@@ -63,6 +63,8 @@ export const placeOrder = async (req, res) => {
       totalAmount,
       shopOrders,
     });
+    await order.populate("shopOrders.shopItems.item", "name image price");
+    await order.populate("shopOrders.shop", "name");
     return res.status(201).json(order);
   } catch (error) {
     return res
@@ -88,7 +90,22 @@ export const getUserOrders = async (req, res) => {
         .populate("shopOrders.shop", "name")
         .populate("user")
         .populate("shopOrders.shopItems.item", "name image price");
-      return res.status(200).json(orders);
+
+        const filteredOrders = orders.map((order => ({
+          _id: order._id,
+          user: order.user,
+          paymentMethod: order.paymentMethod,
+          shopOrders: order.shopOrders.filter(shopOrder => shopOrder.owner == req.userId),
+          createdAt: order.createdAt,
+          deliveryAddress: order.deliveryAddress,
+          totalAmount: order.shopOrders.reduce((total, shopOrder) => {
+            if (shopOrder.owner == req.userId) {
+              return total + shopOrder.subtotal;
+            }
+            return total;
+          }, 0),
+        })))
+      return res.status(200).json(filteredOrders);
     }
   } catch (error) {
     return res
