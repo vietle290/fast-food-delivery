@@ -4,9 +4,11 @@ import { FaPhone } from "react-icons/fa";
 import axios from "axios";
 import { serverUrl } from "../App";
 import {  updateOrderStatuss } from "../redux/slice/userSlice";
+import { useState } from "react";
 
 function OwnerOrderCard({ data }) {
 const dispatch = useDispatch();
+const [avaibleShippers, setAvaibleShippers] = useState([]);
   const handleUpdateStatus = async (orderId, shopId, status) => {
     console.log(orderId, shopId, status);
     try {
@@ -16,6 +18,8 @@ const dispatch = useDispatch();
         { withCredentials: true }
       );
       dispatch(updateOrderStatuss({ orderId, shopId, status }));
+      setAvaibleShippers(res.data.avaibleShippers);
+      console.log(res.data);
     } catch (error) {
       console.log(error);
     }
@@ -106,6 +110,21 @@ const dispatch = useDispatch();
           </div> */}
         </div>
       ))}
+
+      {data.shopOrders[0].status == "out-for-delivery" && (
+        <div className="mt-3 p-2 border rounded-lg text-sm bg-orange-50">
+          <span className="font-semibold">Available Shippers:</span>
+          {avaibleShippers.length === 0 ? (
+            <p className="mt-1">No available shippers at the moment.</p>
+          ) : (
+            avaibleShippers.map((shipper, index) => (
+              <p key={index} className="mt-1">
+                {shipper.fullName} - {shipper.mobile}
+              </p>
+            ))
+          )}
+        </div>
+      )}
 
       <div className="flex justify-between items-center mt-4 pt-4">
         <span className="text-lg font-bold">Total: ${data.totalAmount}</span>

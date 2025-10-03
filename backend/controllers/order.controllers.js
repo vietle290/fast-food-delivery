@@ -1,3 +1,4 @@
+import DeliveryAssign from "../models/deliveryAssign.model.js";
 import Order from "../models/order.model.js";
 import Shop from "../models/shop.model.js";
 import User from "../models/user.model.js";
@@ -91,20 +92,22 @@ export const getUserOrders = async (req, res) => {
         .populate("user")
         .populate("shopOrders.shopItems.item", "name image price");
 
-        const filteredOrders = orders.map((order => ({
-          _id: order._id,
-          user: order.user,
-          paymentMethod: order.paymentMethod,
-          shopOrders: order.shopOrders.filter(shopOrder => shopOrder.owner == req.userId),
-          createdAt: order.createdAt,
-          deliveryAddress: order.deliveryAddress,
-          totalAmount: order.shopOrders.reduce((total, shopOrder) => {
-            if (shopOrder.owner == req.userId) {
-              return total + shopOrder.subtotal;
-            }
-            return total;
-          }, 0),
-        })))
+      const filteredOrders = orders.map((order) => ({
+        _id: order._id,
+        user: order.user,
+        paymentMethod: order.paymentMethod,
+        shopOrders: order.shopOrders.filter(
+          (shopOrder) => shopOrder.owner == req.userId
+        ),
+        createdAt: order.createdAt,
+        deliveryAddress: order.deliveryAddress,
+        totalAmount: order.shopOrders.reduce((total, shopOrder) => {
+          if (shopOrder.owner == req.userId) {
+            return total + shopOrder.subtotal;
+          }
+          return total;
+        }, 0),
+      }));
       return res.status(200).json(filteredOrders);
     }
   } catch (error) {
@@ -116,7 +119,7 @@ export const getUserOrders = async (req, res) => {
 
 export const updateOrderStatus = async (req, res) => {
   try {
-    const { orderId, shopId } = req.params;
+    const { orderId, shopId } = req.params; // shopId is the id of the shop in the shopOrders array
     const { status } = req.body;
     const order = await Order.findById(orderId);
     if (!order) {
@@ -129,9 +132,73 @@ export const updateOrderStatus = async (req, res) => {
       return res.status(404).json({ message: "Shop order not found" });
     }
     shopOrder.status = status;
-    await shopOrder.save();
+    let shippersPayload = [];
+    if (status === "out-for-delivery" || !shopOrder.assignment) {
+      const { longitude, latitude } = order.deliveryAddress;
+      const nearestDriver = await User.find({ // Find users with role "shipper" within a radius of 1 km
+        role: "shipper",
+        location: {
+          $near: {
+            $geometry: {
+              type: "Point",
+              coordinates: [longitude, latitude],
+            },
+            $maxDistance: 10000, // 1 km
+          },
+        },
+      });
+      const nearestDriversId = nearestDriver.map((driver) => driver._id); // Extract their IDs
+      // Find busy drivers who are already assigned to other orders
+      // Exclude drivers who are in "broadcasted" or "completed" status
+      const busyDriversId = await DeliveryAssign.find({
+        assignedTo: { $in: nearestDriversId }, // Only consider drivers in the nearby list
+        status: { $nin: ["broadcasted", "completed"] }, // Exclude "broadcasted" and "completed"
+      }).distinct("assignedTo");
+
+      const busyIdSet = new Set(busyDriversId.map((id) => id.toString())); // Convert to string for easier comparison
+      // Filter out busy drivers from the nearest drivers list
+      // Only keep drivers who are not busy
+      const availableDrivers = nearestDriver.filter(
+        (b) => !busyIdSet.has(b._id.toString())
+      );
+      const cadidateDriver = availableDrivers.map((d) => d._id); // Extract their IDs
+
+      if (cadidateDriver.length == 0) {
+        await order.save();
+        return res.status(404).json({ message: "No available drivers found" });
+      }
+      const deliveryAssign = await DeliveryAssign.create({
+        shop: shopOrder.shop,
+        order: orderId,
+        shopOrderId: shopOrder._id,
+        broadcastedTo: cadidateDriver,
+        status: "broadcasted",
+      });
+      shopOrder.assignedShipper = deliveryAssign.assignedTo; // Initially null
+      shopOrder.assignment = deliveryAssign._id;
+      shippersPayload = availableDrivers.map((driver) => ({
+        id: driver._id,
+        fullName: driver.fullName,
+        mobile: driver.mobile,
+        email: driver.email,
+        longitude: driver.location.coordinates[0],
+        latitude: driver.location.coordinates[1],
+      }));
+    }
+    // await shopOrder.save();
     await order.save();
-    return res.status(200).json(shopOrder.status);
+    const updateShopOrder = order.shopOrders.find(
+      (shopOrder) => shopOrder.shop == shopId
+    );
+    await order.populate("shopOrders.shop", "name");
+    await order.populate("shopOrders.assignedShipper", "fullName email mobile");
+
+    return res.status(200).json({
+      shopOrder: updateShopOrder,
+      assignedShipper: updateShopOrder?.assignedShipper,
+      avaibleShippers: shippersPayload,
+      assignment: updateShopOrder?.assignment._id,
+    });
   } catch (error) {
     return res
       .status(500)
