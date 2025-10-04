@@ -13,7 +13,7 @@ import {
   setCurrentAddress,
   setShopInCity,
   setItemInCity,
-  setMyOrders
+  setMyOrders,
 } from "../redux/slice/userSlice";
 import { TiPlus } from "react-icons/ti";
 import { IoReceiptOutline } from "react-icons/io5";
@@ -116,14 +116,20 @@ function Nav() {
               </>
             )}
 
-            <div className="hidden relative cursor-pointer md:flex items-center gap-2 bg-gradient-to-r from-[#F59E0B] to-[#F59E0B]/50 hover:bg-gradient-to-r hover:from-[#F59E0B]/50 hover:to-[#F59E0B] text-white px-[10px] py-[5px] rounded-lg" onClick={() => navigate("/my-orders")}>
+            <div
+              className="hidden relative cursor-pointer md:flex items-center gap-2 bg-gradient-to-r from-[#F59E0B] to-[#F59E0B]/50 hover:bg-gradient-to-r hover:from-[#F59E0B]/50 hover:to-[#F59E0B] text-white px-[10px] py-[5px] rounded-lg"
+              onClick={() => navigate("/my-orders")}
+            >
               <IoReceiptOutline size={25} />
               <span>My Orders</span>
               <span className="absolute top-[-13px] right-[-15px] text-white rounded-full bg-[#f50b0b] px-[5px]">
                 0
               </span>
             </div>
-            <div className="md:hidden relative cursor-pointer flex items-center gap-2 text-[#F59E0B]" onClick={() => navigate("/my-orders")}>
+            <div
+              className="md:hidden relative cursor-pointer flex items-center gap-2 text-[#F59E0B]"
+              onClick={() => navigate("/my-orders")}
+            >
               <IoReceiptOutline size={25} />
               <span className="absolute top-[-13px] right-[-15px] text-white rounded-full bg-[#f50b0b] px-[5px]">
                 0
@@ -132,21 +138,23 @@ function Nav() {
           </>
         ) : (
           <>
-            <div
-              className="relative cursor-pointer"
-              onClick={() => navigate("/cart-page")}
-            >
-              <FiShoppingCart size={25} className="text-[#F59E0B]" />
-              {cartItems.length > 0 ? (
-                <span className="absolute top-[-13px] right-[-8px] text-white rounded-full bg-[#f50b0b] px-[7px]">
-                  {cartItems.length}
-                </span>
-              ) : (
-                <span className="absolute top-[-13px] right-[-12px] text-[#F59E0B] px-[5px]">
-                  0
-                </span>
-              )}
-            </div>
+            {userData && userData.role === "user" && (
+              <div
+                className="relative cursor-pointer"
+                onClick={() => navigate("/cart-page")}
+              >
+                <FiShoppingCart size={25} className="text-[#F59E0B]" />
+                {cartItems.length > 0 ? (
+                  <span className="absolute top-[-13px] right-[-8px] text-white rounded-full bg-[#f50b0b] px-[7px]">
+                    {cartItems.length}
+                  </span>
+                ) : (
+                  <span className="absolute top-[-13px] right-[-12px] text-[#F59E0B] px-[5px]">
+                    0
+                  </span>
+                )}
+              </div>
+            )}
 
             <button
               className="rounded-lg md:block hidden bg-gradient-to-r from-[#F59E0B] to-[#F59E0B]/50 hover:bg-gradient-to-r hover:from-[#F59E0B]/50 hover:to-[#F59E0B] text-white px-[10px] py-[5px] cursor-pointer"
@@ -164,7 +172,7 @@ function Nav() {
           {userData?.fullName.slice(0, 1).toUpperCase()}
         </div>
         {isDropdownOpen && (
-          <div className="fixed top-[80px] right-[10px] w-[181px] bg-white shadow-lg rounded-lg p-[20px] flex flex-col gap-[20px] z-[9999] md:right-[10%] lg:right-[20%]">
+          <div className={`fixed top-[80px] right-[10px] ${userData.role == "shipper" ? "md:right-[20%] lg:right-[30%]" : "md:right-[10%] lg:right-[20%]"} w-[181px] bg-white shadow-lg rounded-lg p-[20px] flex flex-col gap-[20px] z-[9999]`}>
             <div className="w-full flex flex-col gap-[5px]">
               <div className="text-lg font-semibold">{userData?.fullName}</div>
               {userData.role == "user" && (

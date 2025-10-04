@@ -133,7 +133,25 @@ export const updateOrderStatus = async (req, res) => {
     }
     shopOrder.status = status;
     let shippersPayload = [];
-    if (status === "out-for-delivery" || !shopOrder.assignment) {
+    if ((status === "pending" || status === "preparing") && shopOrder.assignment) {
+      // If order is set back to pending or preparing, remove assignment
+      console.log("Removing assignmentttttttttttttttttttttttttttttt");
+      await DeliveryAssign.findByIdAndDelete(shopOrder.assignment);
+      shopOrder.assignment = null;
+      shopOrder.assignedShipper = null;
+      await order.save();
+      const updateShopOrder = order.shopOrders.find(
+        (shopOrder) => shopOrder.shop == shopId
+      );
+      return res.status(200).json({
+        shopOrder: updateShopOrder,
+        assignedShipper: null,
+        avaibleShippers: [],
+        assignment: null,
+      });
+    }
+    console.log("assignment:", shopOrder.assignment);
+    if (status === "out-for-delivery" && !shopOrder.assignment) {
       const { longitude, latitude } = order.deliveryAddress;
       const nearestDriver = await User.find({ // Find users with role "shipper" within a radius of 1 km
         role: "shipper",
@@ -203,5 +221,31 @@ export const updateOrderStatus = async (req, res) => {
     return res
       .status(500)
       .json({ message: `Error updating order status: ${error.message}` });
+  }
+};
+
+export const getAssignmentOrders = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const assignments = await DeliveryAssign.find({
+      broadcastedTo: userId, // Only get orders assigned to the shipper
+      status: "broadcasted", // Only get active assignments
+    })
+    .populate("order")
+    .populate("shop")
+
+    const formattedAssignment = assignments.map(a => ({
+      assignmentId: a._id,
+      orderId: a.order._id,
+      shopName: a.shop.name,
+      deliveryAddress: a.order.deliveryAddress,
+      items: a.order.shopOrders.find(so => so.shop.toString() === a.shop._id.toString())?.shopItems || [],
+      subtotal: a.order.shopOrders.find(so => so.shop.toString() === a.shop._id.toString())?.subtotal || 0,
+    }));
+    return res.status(200).json(formattedAssignment);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: `Error getting assignment orders: ${error.message}` });
   }
 };
