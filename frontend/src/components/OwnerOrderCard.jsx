@@ -3,14 +3,14 @@ import { useDispatch } from "react-redux";
 import { FaPhone } from "react-icons/fa";
 import axios from "axios";
 import { serverUrl } from "../App";
-import {  updateOrderStatuss } from "../redux/slice/userSlice";
+import { updateOrderStatuss } from "../redux/slice/userSlice";
 import { useState } from "react";
 
 function OwnerOrderCard({ data }) {
-const dispatch = useDispatch();
-const [avaibleShippers, setAvaibleShippers] = useState([]);
+  console.log("data in order card:", data.shopOrders?.[0]?.assignedShipper);
+  const dispatch = useDispatch();
+  const [avaibleShippers, setAvaibleShippers] = useState([]);
   const handleUpdateStatus = async (orderId, shopId, status) => {
-    console.log(orderId, shopId, status);
     try {
       const res = await axios.post(
         `${serverUrl}/api/order/update-status/${orderId}/${shopId}`,
@@ -19,7 +19,6 @@ const [avaibleShippers, setAvaibleShippers] = useState([]);
       );
       dispatch(updateOrderStatuss({ orderId, shopId, status }));
       setAvaibleShippers(res.data.avaibleShippers);
-      console.log(res.data);
     } catch (error) {
       console.log(error);
     }
@@ -113,15 +112,25 @@ const [avaibleShippers, setAvaibleShippers] = useState([]);
 
       {data.shopOrders[0].status == "out-for-delivery" && (
         <div className="mt-3 p-2 border rounded-lg text-sm bg-orange-50">
-          <span className="font-semibold">Available Shippers:</span>
-          {avaibleShippers.length === 0 ? (
-            <p className="mt-1">No available shippers at the moment.</p>
+          {data.shopOrders?.[0]?.assignedShipper ? (
+            <span className="font-semibold">Assigned Shippers:</span>
           ) : (
+            <span className="font-semibold">Available Shippers:</span>
+          )}
+
+          {avaibleShippers.length > 0 ? (
             avaibleShippers.map((shipper, index) => (
               <p key={index} className="mt-1">
                 {shipper.fullName} - {shipper.mobile}
               </p>
             ))
+          ) : data.shopOrders?.[0]?.assignedShipper ? (
+            <p className="mt-1">
+              {data.shopOrders?.[0]?.assignedShipper.fullName} -{" "}
+              {data.shopOrders?.[0]?.assignedShipper.mobile}
+            </p>
+          ) : (
+            <p className="mt-1">No available shippers at the moment.</p>
           )}
         </div>
       )}
@@ -132,7 +141,13 @@ const [avaibleShippers, setAvaibleShippers] = useState([]);
           <select
             value={data.shopOrders[0].status}
             className="border border-gray-300 rounded-md px-3 py-1 text-sm focus:ountline-none focus:ring-2 focus:ring-[#F59E0B] text-[#F59E0B]"
-            onChange={(e) => handleUpdateStatus(data._id, data.shopOrders[0].shop._id, e.target.value)}
+            onChange={(e) =>
+              handleUpdateStatus(
+                data._id,
+                data.shopOrders[0].shop._id,
+                e.target.value
+              )
+            }
           >
             <option value="pending">Pending</option>
             <option value="preparing">Preparing</option>

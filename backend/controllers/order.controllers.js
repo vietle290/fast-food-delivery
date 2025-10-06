@@ -90,7 +90,8 @@ export const getUserOrders = async (req, res) => {
         .sort({ createdAt: -1 })
         .populate("shopOrders.shop", "name")
         .populate("user")
-        .populate("shopOrders.shopItems.item", "name image price");
+        .populate("shopOrders.shopItems.item", "name image price")
+        .populate("shopOrders.assignedShipper", "fullName mobile");
 
       const filteredOrders = orders.map((order) => ({
         _id: order._id,
@@ -215,7 +216,7 @@ export const updateOrderStatus = async (req, res) => {
       shopOrder: updateShopOrder,
       assignedShipper: updateShopOrder?.assignedShipper,
       avaibleShippers: shippersPayload,
-      assignment: updateShopOrder?.assignment._id,
+      assignment: updateShopOrder?.assignment?._id,
     });
   } catch (error) {
     return res
@@ -249,3 +250,95 @@ export const getAssignmentOrders = async (req, res) => {
       .json({ message: `Error getting assignment orders: ${error.message}` });
   }
 };
+
+export const acceptAssignment = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { assignmentId } = req.params;
+    const assignment = await DeliveryAssign.findById(assignmentId);
+    if (!assignment) {
+      return res.status(404).json({ message: "Assignment not found" });
+    }
+    if (assignment.status !== "broadcasted") {
+      return res.status(400).json({ message: "Assignment already accepted or completed" });
+    }
+    // if (assignment.assignedTo !== userId) {
+    //   return res.status(401).json({ message: "Unauthorized" });
+    // }
+    const alreadyAssigned = await DeliveryAssign.findOne({
+      assignedTo: userId,
+      status: { $nin: ["broadcasted", "completed"] },
+    });
+    if (alreadyAssigned) {
+      return res.status(400).json({ message: "You already have an active assignment" });
+    }
+    assignment.assignedTo = userId;
+    assignment.status = "assigned";
+    assignment.acceptedAt = new Date();
+    await assignment.save();
+    const order = await Order.findById(assignment.order);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+    const shopOrder = order.shopOrders.id(assignment.shopOrderId);
+    shopOrder.assignedShipper = userId;
+    await order.save();
+    return res.status(200).json({ message: "Order accepted successfully" });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: `Error accepting assignment: ${error.message}` });
+  }
+};
+
+export const getCurrentOrder = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const currentAssignment = await DeliveryAssign.findOne({
+      assignedTo: userId,
+      status: "assigned",
+    })
+    .populate("shop", "name")
+    .populate("assignedTo", "fullName email mobile location")
+    .populate({
+      path: "order",
+      populate: { path: "user", select: "fullName email mobile location" }
+    });
+
+    if (!currentAssignment) {
+      return res.status(404).json({ message: "No current assignment found" });
+    }
+
+    if(!currentAssignment.order) {
+      return res.status(404).json({ message: "No order found for this assignment" });
+    }
+    const shopOrder = currentAssignment.order.shopOrders.id(currentAssignment.shopOrderId);
+    if (!shopOrder) {
+      return res.status(404).json({ message: "No shop order found for this assignment" });
+    }
+    let shipperLocation = {latitude: null, longitude: null};
+    if (currentAssignment.assignedTo?.location?.coordinates) {
+    shipperLocation.latitude = currentAssignment.assignedTo?.location?.coordinates[1] || null;
+    shipperLocation.longitude = currentAssignment.assignedTo?.location?.coordinates[0] || null;
+    }
+
+    let customerLocation = {latitude: null, longitude: null};
+    if (currentAssignment.order?.deliveryAddress) {
+    customerLocation.latitude = currentAssignment.order?.deliveryAddress?.latitude || null;
+    customerLocation.longitude = currentAssignment.order?.deliveryAddress?.longitude || null;
+    }
+    return res.status(200).json({
+      _id: currentAssignment.order._id,
+      user: currentAssignment.order.user,
+      shop: currentAssignment.shop,
+      shopOrder,
+      deliveryAddress: currentAssignment.order.deliveryAddress,
+      shipperLocation,
+      customerLocation,
+    });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: `Error getting current order: ${error.message}` });
+  }
+}
