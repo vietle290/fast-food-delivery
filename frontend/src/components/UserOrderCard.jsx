@@ -1,7 +1,8 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 function UserOrderCard({data}) {
-  console.log("sdadcf", data);
+  const navigate = useNavigate();
   const formatDate = (dateString) => {
     const options = {
       year: "numeric",
@@ -92,7 +93,7 @@ function UserOrderCard({data}) {
 
       <div className="flex justify-between items-center mt-4 pt-4">
         <span className="text-lg font-bold">Total: ${data.totalAmount}</span>
-        <button className="bg-[#F59E0B] text-white px-4 py-2 rounded-md hover:bg-[#FBBF24] transition">
+        <button className="bg-[#F59E0B] text-white px-4 py-2 rounded-md hover:bg-[#FBBF24] transition" onClick={() => navigate(`/track-order/${data._id}`)}>
           Track Order
         </button>
       </div>

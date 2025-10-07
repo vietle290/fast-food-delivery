@@ -9,8 +9,7 @@ function ShipperDashboard() {
   const { userData } = useSelector((state) => state.user);
   const [orders, setOrders] = useState([]);
   const [currentOrder, setCurrentOrder] = useState(null);
-
-  console.log("User Data:", currentOrder);
+  const [showOtpBox, setShowOtpBox] = useState(false);
 
   const getCurrentOrder = async () => {
     try {
@@ -39,6 +38,10 @@ function ShipperDashboard() {
       console.error("Error accepting order:", error);
     }
   };
+
+  const handleSendOtp = async () => {
+    setShowOtpBox(true);
+  }
 
   useEffect(() => {
     getCurrentOrder();
@@ -158,6 +161,28 @@ function ShipperDashboard() {
             </p>
           </div>
           <ShipperTracking data={currentOrder} />
+          {!showOtpBox ? (
+                      <button className="mt-4 w-full px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition" onClick={handleSendOtp}>
+            Mark As Delivered
+          </button>
+          ) : (
+            <div className="mt-4 flex flex-col items-center">
+              <input
+                type="text"
+                placeholder="Enter OTP"
+                // value={otp}
+                // onChange={(e) => setOtp(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+              />
+              <button
+                // onClick={handleMarkAsDelivered}
+                className="mt-4 w-full px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition"
+              >
+                Submit OTP
+              </button>
+            </div>
+          )}
+
         </div>
       )}
     </div>

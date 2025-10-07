@@ -14,7 +14,7 @@ function MyOrders() {
   };
   return (
     <div className="w-full min-h-[80vh] flex justify-center bg-[#FFF9F6]">
-      <div className="w-full max-w-5xl p-4">
+      <div className="w-full max-w-4xl p-4">
         <div className="flex items-center mb-6">
           <div className="cursor-pointer" onClick={handleNavigateBack}>
             <IoMdArrowBack
