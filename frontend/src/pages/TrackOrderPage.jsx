@@ -81,7 +81,7 @@ function TrackOrderPage() {
           )}
           </div>
           <div className="w-full rounded-2xl overflow-hidden shadow-md">
-          {shopOrder.assignedShipper && (
+          {shopOrder.assignedShipper && shopOrder.status !== "delivered" && (
             <ShipperTracking data={{shipperLocation: {latitude: shopOrder.assignedShipper.location.coordinates[1], longitude: shopOrder.assignedShipper.location.coordinates[0]}, customerLocation: {latitude: orderData.deliveryAddress.latitude, longitude: orderData.deliveryAddress.longitude}}} />
           )}
           </div>

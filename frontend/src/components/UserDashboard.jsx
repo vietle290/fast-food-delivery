@@ -9,6 +9,7 @@ import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { ClipLoader } from "react-spinners";
 import FoodCard from "./FoodCard";
+import { useNavigate } from "react-router-dom";
 
 function UserDashboard() {
   const { location, shopInCity, loading, itemInCity } = useSelector((state) => state.user);
@@ -18,6 +19,20 @@ function UserDashboard() {
   const [showScrollRight, setShowScrollRight] = useState(false);
   const [showShopScrollLeft, setShowShopScrollLeft] = useState(false);
   const [showShopScrollRight, setShowShopScrollRight] = useState(false);
+  const [filterItems, setFilterItems] = useState([]);
+  const navigate = useNavigate();
+
+  const handleFilterByCategory = (category) => {
+    if (category === "All") {
+      setFilterItems(itemInCity);
+    } else {
+      setFilterItems(itemInCity.filter((item) => item.category === category));
+    }
+  };
+
+  useEffect(() => {
+    handleFilterByCategory("All");
+  }, [itemInCity]);
   const handleScroll = (ref, direction) => {
     if (ref.current) {
       ref.current.scrollBy({
@@ -91,6 +106,7 @@ function UserDashboard() {
                   key={index}
                   name={category.category}
                   image={category.image}
+                  onClick={() => handleFilterByCategory(category.category)}
                 />
               ))}
             </div>
@@ -125,6 +141,7 @@ function UserDashboard() {
                   key={index}
                   name={shops.name}
                   image={shops.image}
+                  onClick={() => navigate(`/shop/${shops._id}`)}
                 />
               ))}
             </div>
@@ -142,7 +159,7 @@ function UserDashboard() {
           Suggestions Food For You
         </h1>
         <div className="flex flex-wrap gap-4 w-full h-auto justify-center">
-          {itemInCity?.map((food, index) => (
+          {filterItems?.map((food, index) => (
             <FoodCard
               key={index}
               item={food}

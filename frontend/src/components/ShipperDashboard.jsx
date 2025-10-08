@@ -10,6 +10,9 @@ function ShipperDashboard() {
   const [orders, setOrders] = useState([]);
   const [currentOrder, setCurrentOrder] = useState(null);
   const [showOtpBox, setShowOtpBox] = useState(false);
+  const [otp, setOtp] = useState("");
+
+  console.log("Current Order:", currentOrder);
 
   const getCurrentOrder = async () => {
     try {
@@ -32,20 +35,51 @@ function ShipperDashboard() {
           withCredentials: true,
         }
       );
-      console.log("Order accepted:", res.data);
       await getCurrentOrder();
     } catch (error) {
       console.error("Error accepting order:", error);
     }
   };
 
-  const handleSendOtp = async () => {
-    setShowOtpBox(true);
-  }
+  const sendOtp = async () => {
+    try {
+      const res = await axios.post(
+        `${serverUrl}/api/order/send-delivery-otp`,
+        {
+          orderId: currentOrder._id,
+          shopOrderId: currentOrder.shopOrder._id,
+        },
+        {
+          params: { userId: userData._id },
+          withCredentials: true,
+        }
+      );
+      setShowOtpBox(true);
 
-  useEffect(() => {
-    getCurrentOrder();
-  }, [userData]);
+    } catch (error) {
+      console.error("Error accepting order:", error);
+    }
+  };
+
+  const verifyOtp = async () => {
+    try {
+      const res = await axios.post(
+        `${serverUrl}/api/order/verify-delivery-otp`,
+        {
+          orderId: currentOrder._id,
+          shopOrderId: currentOrder.shopOrder._id,
+          otp: otp,
+        },
+        {
+          params: { userId: userData._id },
+          withCredentials: true,
+        }
+      );
+
+    } catch (error) {
+      console.error("Error accepting order:", error);
+    }
+  };
 
   useEffect(() => {
     const handleGetAssignments = async () => {
@@ -68,6 +102,10 @@ function ShipperDashboard() {
     if (userData && userData.role === "shipper") {
       handleGetAssignments();
     }
+  }, [userData]);
+
+  useEffect(() => {
+    getCurrentOrder();
   }, [userData]);
 
   return (
@@ -143,7 +181,9 @@ function ShipperDashboard() {
             <h4 className="font-semibold text-sm text-gray-800">
               {currentOrder.shopName}
             </h4>
-            <p className="text-sm font-semibold text-gray-800 mt-2">{currentOrder?.shop.name}</p>
+            <p className="text-sm font-semibold text-gray-800 mt-2">
+              {currentOrder?.shop.name}
+            </p>
             <p className="text-sm text-gray-600 mt-1">
               Delivery Address: {currentOrder.deliveryAddress.text}
             </p>
@@ -162,27 +202,29 @@ function ShipperDashboard() {
           </div>
           <ShipperTracking data={currentOrder} />
           {!showOtpBox ? (
-                      <button className="mt-4 w-full px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition" onClick={handleSendOtp}>
-            Mark As Delivered
-          </button>
+            <button
+              className="mt-4 w-full px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition"
+              onClick={sendOtp}
+            >
+              Mark As Delivered
+            </button>
           ) : (
             <div className="mt-4 flex flex-col items-center">
               <input
                 type="text"
                 placeholder="Enter OTP"
-                // value={otp}
-                // onChange={(e) => setOtp(e.target.value)}
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg"
               />
               <button
-                // onClick={handleMarkAsDelivered}
-                className="mt-4 w-full px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition"
+                onClick={verifyOtp}
+                className="mt-4 w-full px-4 py-2 bg-[#F59E0B] text-white rounded-lg shadow hover:bg-[#FBBF24] transition"
               >
                 Submit OTP
               </button>
             </div>
           )}
-
         </div>
       )}
     </div>

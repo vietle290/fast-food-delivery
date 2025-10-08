@@ -1,8 +1,8 @@
 import React from "react";
 
-function CategoryCard({ name, image }) {
+function CategoryCard({ name, image, onClick }) {
   return (
-    <div className="min-w-[120px] sm:min-w-[250px] max-w-[250px] bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer">
+    <div className="min-w-[120px] sm:min-w-[250px] max-w-[250px] bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer" onClick={onClick}>
       {/* Responsive height: h-20 for small screens, h-40 from sm and up */}
       <div className="h-20 sm:h-40 w-full overflow-hidden rounded-t-lg">
         <img

@@ -90,7 +90,7 @@ function OwnerOrderCard({ data }) {
                 className="bg-gray-50 rounded-lg p-2 text-center shadow-sm"
               >
                 <img
-                  src={items.item.image}
+                  src={items.item?.image}
                   alt={items.name}
                   className="w-full h-45 object-cover rounded-md mb-2"
                 />

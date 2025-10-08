@@ -31,6 +31,15 @@ export const sendOtpEmail = async (to, otp) => {
     from: process.env.EMAIL,
     to,
     subject: "Your Password Reset OTP",
-    html: `<b>Your OTP is: ${otp}. Please do not share with anyone</b>`,
+    html: `<b>Your OTP is: <b>${otp}</b>. Please do not share with anyone. It will expire in 5 minutes</b>`,
+  });
+};
+
+export const sendDeliveryOtpEmail = async (user, otp) => {
+  await transporter.sendMail({
+    from: process.env.EMAIL,
+    to: user.email,
+    subject: "Delivery verification OTP",
+    html: `<b>Your OTP is: <b>${otp}</b>. Please do not share with anyone. It will expire in 5 minutes</b>`,
   });
 };

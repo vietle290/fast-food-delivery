@@ -124,3 +124,23 @@ export const getItemByLocation = async (req, res) => {
       .json({ message: `Error getting items by location: ${error.message}` });
   }
 };
+
+export const getItemByShop = async (req, res) => {
+  try {
+    const { shopId } = req.params;
+    const shop = await Shop.find({ shop: shopId }).populate("items");
+    if (!shop) {
+      return res.status(404).json({ message: "Shop not found" });
+    }
+    const items = await Item.find({ shop: shopId }).populate("shop");
+    if (!items) {
+      return res.status(404).json({ message: "Items not found" });
+    } else {
+      return res.status(200).json({ shop, items });
+    }
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: `Error getting items by shop: ${error.message}` });
+  }
+};
