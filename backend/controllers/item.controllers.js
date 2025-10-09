@@ -110,8 +110,10 @@ export const deleteItem = async (req, res) => {
 export const getItemByLocation = async (req, res) => {
   try {
     const { city } = req.params;
-    if(!city) return res.status(404).json({ message: "City not found" });
-    const shop = await Shop.find({ city: { $regex: new RegExp(`^${city}$`, "i") } }).populate("items");
+    if (!city) return res.status(404).json({ message: "City not found" });
+    const shop = await Shop.find({
+      city: { $regex: new RegExp(`^${city}$`, "i") },
+    }).populate("items");
     if (!shop) {
       return res.status(404).json({ message: "Shop not found" });
     }
@@ -128,19 +130,40 @@ export const getItemByLocation = async (req, res) => {
 export const getItemByShop = async (req, res) => {
   try {
     const { shopId } = req.params;
-    const shop = await Shop.find({ shop: shopId }).populate("items");
+    const shop = await Shop.findById(shopId).populate("items");
     if (!shop) {
       return res.status(404).json({ message: "Shop not found" });
     }
-    const items = await Item.find({ shop: shopId }).populate("shop");
-    if (!items) {
-      return res.status(404).json({ message: "Items not found" });
-    } else {
-      return res.status(200).json({ shop, items });
-    }
+    return res.status(200).json({ shop, items: shop.items });
   } catch (error) {
     return res
       .status(500)
       .json({ message: `Error getting items by shop: ${error.message}` });
+  }
+};
+
+export const searchItems = async (req, res) => {
+  try {
+    const { query, city } = req.query;
+    if (!query || !city) return null;
+    const shop = await Shop.find({
+      city: { $regex: new RegExp(`^${city}$`, "i") },
+    }).populate("items");
+    if (!shop) {
+      return res.status(404).json({ message: "Shop not found" });
+    }
+    const shopId = shop.map((shop) => shop._id);
+    const items = await Item.find({
+      shop: { $in: shopId },
+      $or: [
+        { name: { $regex: query, $options: "i" } },
+        { category: { $regex: query, $options: "i" } },
+      ]
+    }).populate("shop");
+    return res.status(200).json(items);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: `Error searching items: ${error.message}` });
   }
 };

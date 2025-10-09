@@ -14,16 +14,19 @@ import {
   setShopInCity,
   setItemInCity,
   setMyOrders,
+  setSearchItems,
 } from "../redux/slice/userSlice";
 import { TiPlus } from "react-icons/ti";
 import { IoReceiptOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 function Nav() {
   const { userData, location, cartItems } = useSelector((state) => state.user);
   const { shopData } = useSelector((state) => state.owner);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [query, setQuery] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleLogout = async () => {
@@ -42,6 +45,25 @@ function Nav() {
       console.log(error);
     }
   };
+
+    const handleSearchItems = async () => {
+      try {
+        const res = await axios.get(`${serverUrl}/api/item/search-item?query=${query}&city=${location}`, {
+          withCredentials: true,
+        });
+        dispatch(setSearchItems(res.data));
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    useEffect(() => {
+      if (query) {
+        handleSearchItems();
+      } else {
+        dispatch(setSearchItems(null));
+      }
+    }, [query])
   return (
     <div className="w-full h-[80px] flex items-center justify-between md:justify-center gap-[30px] px-[20px] fixed top-0 z-[9999] bg-[#FFF9F6] overflow-visible">
       {showSearch && userData.role === "user" && (
@@ -56,6 +78,8 @@ function Nav() {
               type="text"
               placeholder="search food..."
               className="w-full px-[10px] text-gray-700 outline-0"
+              onChange={(e) => setQuery(e.target.value)}
+              value={query}
             />
           </div>
         </div>
@@ -74,6 +98,8 @@ function Nav() {
               type="text"
               placeholder="search food..."
               className="w-full px-[10px] text-gray-700 outline-0"
+              onChange={(e) => setQuery(e.target.value)}
+              value={query}
             />
           </div>
         </div>

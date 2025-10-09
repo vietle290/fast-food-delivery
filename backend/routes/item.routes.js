@@ -1,5 +1,5 @@
 import express from "express";
-import { addItem, deleteItem, getItemById, getItemByLocation, getItemByShop, updateItem } from "../controllers/item.controllers.js";
+import { addItem, deleteItem, getItemById, getItemByLocation, getItemByShop, searchItems, updateItem } from "../controllers/item.controllers.js";
 import { upload } from "../middlewares/multer.js";
 import isAuth from "../middlewares/isAuth.js";
 
@@ -11,5 +11,6 @@ itemRouter.get("/get-item-by-id/:itemId", isAuth, getItemById);
 itemRouter.get("/delete-item/:itemId", isAuth, deleteItem);
 itemRouter.get("/get-item-by-location/:city", isAuth, getItemByLocation);
 itemRouter.get("/get-item-by-shop/:shopId", isAuth, getItemByShop);
+itemRouter.get("/search-item", isAuth, searchItems);
 
 export default itemRouter;

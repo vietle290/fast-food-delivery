@@ -12,7 +12,7 @@ import FoodCard from "./FoodCard";
 import { useNavigate } from "react-router-dom";
 
 function UserDashboard() {
-  const { location, shopInCity, loading, itemInCity } = useSelector((state) => state.user);
+  const { location, shopInCity, loading, itemInCity, searchItems } = useSelector((state) => state.user);
   const scrollRef = useRef(null);
   const shopScrollRef = useRef(null);
   const [showScrollLeft, setShowScrollLeft] = useState(false);
@@ -21,7 +21,8 @@ function UserDashboard() {
   const [showShopScrollRight, setShowShopScrollRight] = useState(false);
   const [filterItems, setFilterItems] = useState([]);
   const navigate = useNavigate();
-
+console.log("dws", searchItems)
+console.log("filter", filterItems)
   const handleFilterByCategory = (category) => {
     if (category === "All") {
       setFilterItems(itemInCity);
@@ -83,6 +84,23 @@ function UserDashboard() {
   return (
     <div className="w-screen min-h-screen flex flex-col items-center gap-5 bg-[#FFF9F6] overflow-y-auto">
       <Nav />
+      {searchItems && searchItems.length > 0 && (
+        <div className="w-full max-w-7xl gap-5 flex flex-col items-start p-[10px] bg-white">
+          <h1 className="text-xl text-gray-800 sm:text-2xl font-medium">
+            Search Results
+          </h1>
+          <div className="w-full flex gap-4 overflow-x-auto pb-2">
+            <div className="flex gap-4 w-full px-1">
+              {searchItems.map((item, index) => (
+                <FoodCard
+                  item={item}
+                  key={index}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
       <div className="w-full max-w-7xl gap-5 flex flex-col items-start p-[10px]">
         <h1 className="text-xl text-gray-800 sm:text-2xl font-medium">
           Fast Food Categories
