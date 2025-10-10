@@ -21,6 +21,8 @@ import useGetMyOrders from './hooks/useGetMyOrders'
 import useUpdateLocation from './hooks/useUpdateLocation'
 import TrackOrderPage from './pages/TrackOrderPage'
 import Shop from './pages/Shop'
+import PaymentSuccess from './pages/PaymentSuccess'
+import PaymentCancel from './pages/PaymentCancel'
 export const serverUrl = "http://localhost:8000"
 
 function App() {
@@ -48,6 +50,9 @@ function App() {
       <Route path="/my-orders" element={userData ? <MyOrders /> : <Navigate to={"/login"} />} />
       <Route path="/track-order/:orderId" element={userData ? <TrackOrderPage /> : <Navigate to={"/login"} />} />
       <Route path="/shop/:shopId" element={userData ? <Shop /> : <Navigate to={"/login"} />} />
+      <Route path="/shop/:shopId" element={userData ? <Shop /> : <Navigate to={"/login"} />} />
+      <Route path="/payment-success" element={userData ? <PaymentSuccess /> : <Navigate to={"/login"} />} />
+      <Route path="/payment-cancel" element={userData ? <PaymentCancel /> : <Navigate to={"/login"} />} />
     </Routes>
   )
 }

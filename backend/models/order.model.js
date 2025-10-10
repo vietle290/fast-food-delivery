@@ -31,6 +31,9 @@ const orderSchema = new mongoose.Schema(
     deliveryAddress: { text: String, latitude: Number, longitude: Number },
     totalAmount: { type: Number },
     shopOrders: [shopOrderSchema],
+    payment:  { type: Boolean, default: false },
+    payosOrderId: { type: String, default: "" },
+    payosPaymentId: {type: String, default: "" },
   },
   { timestamps: true }
 );

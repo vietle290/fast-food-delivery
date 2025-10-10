@@ -25,7 +25,7 @@ function RecenterAutomatically({ center }) {
 }
 
 function CheckOut() {
-  const { cartItems, total } = useSelector((state) => state.user);
+  const { cartItems, total, userData } = useSelector((state) => state.user);
   const { newLocation, address } = useSelector((state) => state.map);
   const [addressInput, setAddressInput] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -54,7 +54,10 @@ function CheckOut() {
       const result = await axios.get(
         `https://api.geoapify.com/v1/geocode/reverse?lat=${latitude}&lon=${longitude}&format=json&apiKey=${apiKey}`
       );
-      const address = result?.data?.results[0].formatted;
+      const address =
+        result?.data?.results[0].county +
+        ", " +
+        result?.data?.results[0].formatted;
       dispatch(setAddress(address));
     } catch (error) {
       console.error(error);
@@ -62,17 +65,15 @@ function CheckOut() {
   };
 
   const getCurrentLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        dispatch(
-          setNewLocation({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          })
-        );
-        getAddressByLatLng(position.coords.latitude, position.coords.longitude);
-      });
-    }
+    const latitude = userData.location.coordinates[1];
+    const longitude = userData.location.coordinates[0];
+    dispatch(
+      setNewLocation({
+        latitude: latitude,
+        longitude: longitude,
+      })
+    );
+    getAddressByLatLng(latitude, longitude);
   };
 
   const getAddressBySearch = async () => {
@@ -101,9 +102,10 @@ function CheckOut() {
       const result = await axios.get(
         `https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(
           query
-        )}&apiKey=${apiKey}`
+        )}&filter=countrycode:vn&apiKey=${apiKey}`
       );
       setSearchResults(result.data.features || []);
+      console.log("search results:", result.data);
     } catch (error) {
       console.error(error);
     }
@@ -119,25 +121,41 @@ function CheckOut() {
 
   const handlePlaceOrder = async () => {
     try {
-      const res = await axios.post(`${serverUrl}/api/order/place-order`, {
-        cartItems,
-        paymentMethod,
-        deliveryAddress: {
-          text: addressInput,
-          latitude: newLocation.latitude,
-          longitude: newLocation.longitude,
+      const res = await axios.post(
+        `${serverUrl}/api/order/place-order`,
+        {
+          cartItems,
+          paymentMethod,
+          deliveryAddress: {
+            text: addressInput,
+            latitude: newLocation.latitude,
+            longitude: newLocation.longitude,
+          },
+          totalAmount,
         },
-        totalAmount,
-      },
-      { withCredentials: true });
-      dispatch(addOrder(res.data));
-      if (res.status === 201) {
-        navigate("/order-placed");
+        { withCredentials: true }
+      );
+      if (paymentMethod == "cod") {
+        dispatch(addOrder(res.data));
+        if (res.status === 201) {
+          navigate("/order-placed");
+        }
+      } else {
+        const orderId = res.data.orderId;
+        const payosOrder = res.data.payosOrder;
+        openPayosWindow(orderId, payosOrder);
       }
+
       // console.log("Place Order: ", res.data);
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const openPayosWindow = (orderId, payosOrder) => {
+
+    window.location.href = payosOrder.checkoutUrl;
+
   };
 
   useEffect(() => {
@@ -166,7 +184,7 @@ function CheckOut() {
               type="text"
               className="flex-1 border border-gray-400 px-2 py-1 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#F59E0B]"
               placeholder="Enter your address"
-              value={addressInput}
+              value={addressInput || ""}
               onChange={(e) => {
                 setAddressInput(e.target.value);
                 getAddressSuggestions(e.target.value);
@@ -198,6 +216,7 @@ function CheckOut() {
               <MdMyLocation size={20} />
             </button>
           </div>
+          {newLocation?.latitude && newLocation?.longitude ? (
           <div className="rounded-xl border overflow-hidden">
             <div className="h-64 w-full flex items-center justify-center">
               <MapContainer
@@ -218,6 +237,7 @@ function CheckOut() {
               </MapContainer>
             </div>
           </div>
+          ) : <></>}
         </section>
         <section>
           <h2 className="text-lg font-semibold text-gray-600">

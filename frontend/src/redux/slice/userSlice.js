@@ -1,16 +1,28 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const savedUserData = sessionStorage.getItem("userData")
+  ? JSON.parse(sessionStorage.getItem("userData"))
+  : null;
+
+const savedCartItems = sessionStorage.getItem("cartItems")
+  ? JSON.parse(sessionStorage.getItem("cartItems"))
+  : [];
+
+const total = sessionStorage.getItem("total")
+  ? JSON.parse(sessionStorage.getItem("total"))
+  : 0;
+
 const userSlice = createSlice({
   name: "user",
   initialState: {
-    userData: null,
+    userData: savedUserData,
     location: null,
     currentState: null,
     currentAddress: null,
     shopInCity: null,
     itemInCity: null,
-    cartItems: [],
-    total: 0,
+    cartItems: savedCartItems,
+    total: total,
     myOrders: [],
     searchItems: null,
     loading: false,
@@ -19,6 +31,17 @@ const userSlice = createSlice({
   reducers: {
     setUserData: (state, action) => {
       state.userData = action.payload;
+      if (action.payload) {
+        sessionStorage.setItem("userData", JSON.stringify(action.payload));
+      } else {
+        sessionStorage.removeItem("userData");
+      }
+    },
+    clearUserData: (state) => {
+      state.userData = null;
+      state.loading = false;
+      state.error = null;
+      sessionStorage.removeItem("userData");
     },
     setLocation: (state, action) => {
       state.location = action.payload;
@@ -37,7 +60,9 @@ const userSlice = createSlice({
     },
     addToCart: (state, action) => {
       const cartItem = action.payload;
-      const existingItem = state.cartItems.find(item => item.id == cartItem.id);
+      const existingItem = state.cartItems.find(
+        (item) => item.id == cartItem.id
+      );
       if (existingItem) {
         existingItem.quantity += cartItem.quantity;
       } else {
@@ -45,21 +70,35 @@ const userSlice = createSlice({
       }
 
       state.total += cartItem.price * cartItem.quantity;
+      sessionStorage.setItem("cartItems", JSON.stringify(state.cartItems));
+      sessionStorage.setItem("total", JSON.stringify(state.total));
+    },
+    clearCart: (state) => {
+      state.cartItems = [];
+      state.total = 0;
+      sessionStorage.removeItem("cartItems");
+      sessionStorage.removeItem("total");
     },
     updateQuantity: (state, action) => {
       const { id, quantity } = action.payload;
-      const cartItem = state.cartItems.find(item => item.id == id);
+      const cartItem = state.cartItems.find((item) => item.id == id);
       if (cartItem) {
         cartItem.quantity = quantity;
       }
 
-      state.total = state.cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+      state.total = state.cartItems.reduce(
+        (total, item) => total + item.price * item.quantity,
+        0
+      );
     },
     removeCart: (state, action) => {
       const id = action.payload;
-      state.cartItems = state.cartItems.filter(item => item.id !== id);
+      state.cartItems = state.cartItems.filter((item) => item.id !== id);
 
-      state.total = state.cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+      state.total = state.cartItems.reduce(
+        (total, item) => total + item.price * item.quantity,
+        0
+      );
     },
     setMyOrders: (state, action) => {
       state.myOrders = action.payload;
@@ -69,9 +108,11 @@ const userSlice = createSlice({
     },
     updateOrderStatuss: (state, action) => {
       const { orderId, shopId, status } = action.payload;
-      const order = state.myOrders.find(order => order._id == orderId);
+      const order = state.myOrders.find((order) => order._id == orderId);
       if (order) {
-        const shopOrder = order.shopOrders.find(shopOrder => shopOrder.shop._id == shopId);
+        const shopOrder = order.shopOrders.find(
+          (shopOrder) => shopOrder.shop._id == shopId
+        );
         if (shopOrder) {
           shopOrder.status = status;
         }
@@ -89,6 +130,22 @@ const userSlice = createSlice({
   },
 });
 
-export const { setUserData, setLoading, setError, setLocation, setCurrentState, setCurrentAddress, setShopInCity, setItemInCity, addToCart, updateQuantity, removeCart, setMyOrders, addOrder, updateOrderStatuss, setSearchItems } =
-  userSlice.actions;
+export const {
+  setUserData,
+  setLoading,
+  setError,
+  setLocation,
+  setCurrentState,
+  setCurrentAddress,
+  setShopInCity,
+  setItemInCity,
+  addToCart,
+  updateQuantity,
+  removeCart,
+  setMyOrders,
+  addOrder,
+  updateOrderStatuss,
+  setSearchItems,
+  clearUserData,
+} = userSlice.actions;
 export default userSlice.reducer;

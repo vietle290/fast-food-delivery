@@ -3,6 +3,16 @@ import Order from "../models/order.model.js";
 import Shop from "../models/shop.model.js";
 import User from "../models/user.model.js";
 import { sendDeliveryOtpEmail } from "../utils/mail.js";
+import { PayOS } from "@payos/node";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const payos = new PayOS({
+  clientId: process.env.PAYOS_CLIENT_ID,
+  apiKey: process.env.PAYOS_API_KEY,
+  checksumKey: process.env.PAYOS_CHECKSUM_KEY,
+});
 
 export const placeOrder = async (req, res) => {
   try {
@@ -58,6 +68,44 @@ export const placeOrder = async (req, res) => {
         };
       })
     );
+
+    if (paymentMethod == "online") {
+      const orders = await Order.create({
+        user: req.userId,
+        paymentMethod,
+        deliveryAddress,
+        totalAmount,
+        shopOrders,
+        payment: false,
+      });
+      const payosOrder = await payos.paymentRequests.create({
+        // amount: Math.round(totalAmount * 100),
+        // currency: "VND",
+        // receipt: `receipt_${Date.now()}`,
+        orderCode: Date.now(),
+        amount: Math.round(totalAmount),
+        description: "Thanh toán đơn hàng",
+        // returnUrl: "http://localhost:5173/order-placed",
+        returnUrl: "http://localhost:5173/payment-success?orderId=" + orders._id,
+        cancelUrl: "http://localhost:5173/payment-cancel",
+      });
+
+      // const order = await Order.create({
+      //   user: req.userId,
+      //   paymentMethod,
+      //   deliveryAddress,
+      //   totalAmount,
+      //   shopOrders,
+      //   payosOrderId: payosOrder.id,
+      //   payment: false,
+      // });
+
+      return res.status(201).json({
+        payosOrder,
+        orderId: orders._id,
+      });
+    }
+
     const order = await Order.create({
       user: req.userId,
       paymentMethod,
@@ -72,6 +120,30 @@ export const placeOrder = async (req, res) => {
     return res
       .status(500)
       .json({ message: `Error creating order: ${error.message}` });
+  }
+};
+
+export const verifyPayment = async (req, res) => {
+  try {
+    const { payos_payment_id, orderId } = req.body;
+    // const payment = await payos.paymentRequests.get(payos_payment_id);
+    // if (!payment || payment.status != "captured") {
+    //   return res.status(400).json({ message: "Payment not captured" });
+    // }
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+    order.payment = true;
+    order.payosPaymentId = payos_payment_id;
+    await order.save();
+    await order.populate("shopOrders.shopItems.item", "name image price");
+    await order.populate("shopOrders.shop", "name");
+    return res.status(200).json(order);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: `Error verifying payment: ${error.message}` });
   }
 };
 
@@ -135,7 +207,10 @@ export const updateOrderStatus = async (req, res) => {
     }
     shopOrder.status = status;
     let shippersPayload = [];
-    if ((status === "pending" || status === "preparing") && shopOrder.assignment) {
+    if (
+      (status === "pending" || status === "preparing") &&
+      shopOrder.assignment
+    ) {
       // If order is set back to pending or preparing, remove assignment
       console.log("Removing assignmentttttttttttttttttttttttttttttt");
       await DeliveryAssign.findByIdAndDelete(shopOrder.assignment);
@@ -155,7 +230,8 @@ export const updateOrderStatus = async (req, res) => {
     console.log("assignment:", shopOrder.assignment);
     if (status === "out-for-delivery" && !shopOrder.assignment) {
       const { longitude, latitude } = order.deliveryAddress;
-      const nearestDriver = await User.find({ // Find users with role "shipper" within a radius of 1 km
+      const nearestDriver = await User.find({
+        // Find users with role "shipper" within a radius of 1 km
         role: "shipper",
         location: {
           $near: {
@@ -233,16 +309,22 @@ export const getAssignmentOrders = async (req, res) => {
       broadcastedTo: userId, // Only get orders assigned to the shipper
       status: "broadcasted", // Only get active assignments
     })
-    .populate("order")
-    .populate("shop")
+      .populate("order")
+      .populate("shop");
 
-    const formattedAssignment = assignments.map(a => ({
+    const formattedAssignment = assignments.map((a) => ({
       assignmentId: a._id,
       orderId: a.order._id,
       shopName: a.shop.name,
       deliveryAddress: a.order.deliveryAddress,
-      items: a.order.shopOrders.find(so => so.shop.toString() === a.shop._id.toString())?.shopItems || [],
-      subtotal: a.order.shopOrders.find(so => so.shop.toString() === a.shop._id.toString())?.subtotal || 0,
+      items:
+        a.order.shopOrders.find(
+          (so) => so.shop.toString() === a.shop._id.toString()
+        )?.shopItems || [],
+      subtotal:
+        a.order.shopOrders.find(
+          (so) => so.shop.toString() === a.shop._id.toString()
+        )?.subtotal || 0,
     }));
     return res.status(200).json(formattedAssignment);
   } catch (error) {
@@ -261,7 +343,9 @@ export const acceptAssignment = async (req, res) => {
       return res.status(404).json({ message: "Assignment not found" });
     }
     if (assignment.status !== "broadcasted") {
-      return res.status(400).json({ message: "Assignment already accepted or completed" });
+      return res
+        .status(400)
+        .json({ message: "Assignment already accepted or completed" });
     }
     // if (assignment.assignedTo !== userId) {
     //   return res.status(401).json({ message: "Unauthorized" });
@@ -271,7 +355,9 @@ export const acceptAssignment = async (req, res) => {
       status: { $nin: ["broadcasted", "completed"] },
     });
     if (alreadyAssigned) {
-      return res.status(400).json({ message: "You already have an active assignment" });
+      return res
+        .status(400)
+        .json({ message: "You already have an active assignment" });
     }
     assignment.assignedTo = userId;
     assignment.status = "assigned";
@@ -299,34 +385,44 @@ export const getCurrentOrder = async (req, res) => {
       assignedTo: userId,
       status: "assigned",
     })
-    .populate("shop", "name")
-    .populate("assignedTo", "fullName email mobile location")
-    .populate({
-      path: "order",
-      populate: { path: "user", select: "fullName email mobile location" }
-    });
+      .populate("shop", "name")
+      .populate("assignedTo", "fullName email mobile location")
+      .populate({
+        path: "order",
+        populate: { path: "user", select: "fullName email mobile location" },
+      });
 
     if (!currentAssignment) {
       return res.status(404).json({ message: "No current assignment found" });
     }
 
-    if(!currentAssignment.order) {
-      return res.status(404).json({ message: "No order found for this assignment" });
+    if (!currentAssignment.order) {
+      return res
+        .status(404)
+        .json({ message: "No order found for this assignment" });
     }
-    const shopOrder = currentAssignment.order.shopOrders.id(currentAssignment.shopOrderId);
+    const shopOrder = currentAssignment.order.shopOrders.id(
+      currentAssignment.shopOrderId
+    );
     if (!shopOrder) {
-      return res.status(404).json({ message: "No shop order found for this assignment" });
+      return res
+        .status(404)
+        .json({ message: "No shop order found for this assignment" });
     }
-    let shipperLocation = {latitude: null, longitude: null};
+    let shipperLocation = { latitude: null, longitude: null };
     if (currentAssignment.assignedTo?.location?.coordinates) {
-    shipperLocation.latitude = currentAssignment.assignedTo?.location?.coordinates[1] || null;
-    shipperLocation.longitude = currentAssignment.assignedTo?.location?.coordinates[0] || null;
+      shipperLocation.latitude =
+        currentAssignment.assignedTo?.location?.coordinates[1] || null;
+      shipperLocation.longitude =
+        currentAssignment.assignedTo?.location?.coordinates[0] || null;
     }
 
-    let customerLocation = {latitude: null, longitude: null};
+    let customerLocation = { latitude: null, longitude: null };
     if (currentAssignment.order?.deliveryAddress) {
-    customerLocation.latitude = currentAssignment.order?.deliveryAddress?.latitude || null;
-    customerLocation.longitude = currentAssignment.order?.deliveryAddress?.longitude || null;
+      customerLocation.latitude =
+        currentAssignment.order?.deliveryAddress?.latitude || null;
+      customerLocation.longitude =
+        currentAssignment.order?.deliveryAddress?.longitude || null;
     }
     return res.status(200).json({
       _id: currentAssignment.order._id,
@@ -342,27 +438,27 @@ export const getCurrentOrder = async (req, res) => {
       .status(500)
       .json({ message: `Error getting current order: ${error.message}` });
   }
-}
+};
 
 export const getOrderById = async (req, res) => {
   try {
     const { orderId } = req.params;
     const order = await Order.findById(orderId)
-    .populate("user")
-    .populate({
-      path: "shopOrders.shop",
-      model: "Shop",
-    })
-    .populate({
-      path: "shopOrders.assignedShipper",
-      model: "User",
-    })
-    .populate({
-      path: "shopOrders.shopItems.item",
-      model: "Item",
-    })
-    .lean();
-    
+      .populate("user")
+      .populate({
+        path: "shopOrders.shop",
+        model: "Shop",
+      })
+      .populate({
+        path: "shopOrders.assignedShipper",
+        model: "User",
+      })
+      .populate({
+        path: "shopOrders.shopItems.item",
+        model: "Item",
+      })
+      .lean();
+
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
@@ -372,7 +468,7 @@ export const getOrderById = async (req, res) => {
       .status(500)
       .json({ message: `Error getting order: ${error.message}` });
   }
-}
+};
 
 export const sendShipperOtp = async (req, res) => {
   try {
@@ -390,14 +486,16 @@ export const sendShipperOtp = async (req, res) => {
     shopOrder.otpExpiry = Date.now() + 5 * 60 * 1000;
     await order.save();
     await sendDeliveryOtpEmail(order.user, otp);
-    return res.status(200).json({ message: "OTP sent successfully to customer" });
+    return res
+      .status(200)
+      .json({ message: "OTP sent successfully to customer" });
   } catch (error) {
     console.log(error);
     return res
       .status(500)
       .json({ message: `Error sending OTP: ${error.message}` });
   }
-}
+};
 
 export const verifyShipperOtp = async (req, res) => {
   try {
@@ -419,7 +517,11 @@ export const verifyShipperOtp = async (req, res) => {
     shopOrder.status = "delivered";
     shopOrder.deliveredAt = Date.now();
     await order.save();
-    await DeliveryAssign.deleteOne({ order: order._id, shopOrderId: shopOrder._id, assignedTo: shopOrder.assignedShipper });
+    await DeliveryAssign.deleteOne({
+      order: order._id,
+      shopOrderId: shopOrder._id,
+      assignedTo: shopOrder.assignedShipper,
+    });
     return res.status(200).json({ message: "Order delivered successfully" });
   } catch (error) {
     console.log(error);
@@ -427,4 +529,4 @@ export const verifyShipperOtp = async (req, res) => {
       .status(500)
       .json({ message: `Error verifying OTP: ${error.message}` });
   }
-}
+};

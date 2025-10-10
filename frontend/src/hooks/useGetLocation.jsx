@@ -16,7 +16,8 @@ function useGetLocation() {
             dispatch(setLocation(result?.data?.results[0].city || result?.data?.results[0].county));
             dispatch(setCurrentState(result?.data?.results[0].country));
             dispatch(setCurrentAddress(result?.data?.results[0].formatted));
-            dispatch(setAddress(result?.data?.results[0].formatted));
+            dispatch(setAddress(result?.data?.results[0].county + ", " + result?.data?.results[0].formatted));
+            console.log(result?.data?.results[0].county);
         })
     }, [userData])
 }

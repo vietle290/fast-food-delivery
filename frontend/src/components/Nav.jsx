@@ -15,6 +15,7 @@ import {
   setItemInCity,
   setMyOrders,
   setSearchItems,
+  clearUserData,
 } from "../redux/slice/userSlice";
 import { TiPlus } from "react-icons/ti";
 import { IoReceiptOutline } from "react-icons/io5";
@@ -34,6 +35,7 @@ function Nav() {
       const res = await axios.get(`${serverUrl}/api/auth/logout`, {
         withCredentials: true,
       });
+      dispatch(clearUserData());
       dispatch(setMyOrders(null));
       dispatch(setUserData(null));
       dispatch(setLocation(null));

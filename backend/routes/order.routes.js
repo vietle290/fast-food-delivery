@@ -1,6 +1,6 @@
 import express from "express";
 import isAuth from "../middlewares/isAuth.js";
-import { acceptAssignment, getAssignmentOrders, getCurrentOrder, getOrderById, getUserOrders, placeOrder, sendShipperOtp, updateOrderStatus, verifyShipperOtp } from "../controllers/order.controllers.js";
+import { acceptAssignment, getAssignmentOrders, getCurrentOrder, getOrderById, getUserOrders, placeOrder, sendShipperOtp, updateOrderStatus, verifyPayment, verifyShipperOtp } from "../controllers/order.controllers.js";
 
 const orderRouter = express.Router();
 
@@ -13,6 +13,7 @@ orderRouter.get("/get-shipper-assignments", isAuth, getAssignmentOrders);
 orderRouter.get("/accept-assignment/:assignmentId", isAuth, acceptAssignment);
 orderRouter.get("/get-current-order", isAuth, getCurrentOrder);
 orderRouter.get("/get-order-by-id/:orderId", isAuth, getOrderById);
+orderRouter.post("/verify-payment", isAuth, verifyPayment);
 
 
 export default orderRouter;

@@ -21,8 +21,7 @@ function UserDashboard() {
   const [showShopScrollRight, setShowShopScrollRight] = useState(false);
   const [filterItems, setFilterItems] = useState([]);
   const navigate = useNavigate();
-console.log("dws", searchItems)
-console.log("filter", filterItems)
+
   const handleFilterByCategory = (category) => {
     if (category === "All") {
       setFilterItems(itemInCity);
