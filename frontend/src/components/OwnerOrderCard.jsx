@@ -7,7 +7,6 @@ import { updateOrderStatuss } from "../redux/slice/userSlice";
 import { useState } from "react";
 
 function OwnerOrderCard({ data }) {
-  console.log("data in order card:", data.shopOrders?.[0]?.assignedShipper);
   const dispatch = useDispatch();
   const [avaibleShippers, setAvaibleShippers] = useState([]);
   const handleUpdateStatus = async (orderId, shopId, status) => {
@@ -40,6 +39,9 @@ function OwnerOrderCard({ data }) {
             <span>{data.user.mobile}</span>
           </p>
           <span>{data?.deliveryAddress?.text}</span>
+          {data.paymentMethod == "online" ? (
+            <p>Payment: {data.payment ? <span className="font-medium text-green-500">Paid</span> : <span className="font-medium text-red-500">Unpaid</span>}</p>
+          ) : <span>PaymentMethod: Cash on delivery</span> }
         </div>
         <div className="space-x-2 flex items-center">
           {/* <span className="text-sm font-medium text-blue-600 bg-blue-100 px-2 py-1 rounded">

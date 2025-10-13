@@ -26,6 +26,7 @@ function RecenterAutomatically({ center }) {
 
 function CheckOut() {
   const { cartItems, total, userData } = useSelector((state) => state.user);
+  console.log("cartItems: ", cartItems);
   const { newLocation, address } = useSelector((state) => state.map);
   const [addressInput, setAddressInput] = useState("");
   const [searchResults, setSearchResults] = useState([]);

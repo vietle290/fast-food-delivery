@@ -1,9 +1,20 @@
 import React from "react";
 import { FaCheckCircle } from "react-icons/fa";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { clearCart } from "../redux/slice/userSlice";
 
 function OrderPlaced() {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const handleNavigateHome = () => {
+      dispatch(clearCart());
+      navigate("/");
+    }
+    const handleNavigateMyOrders = () => {
+      dispatch(clearCart());
+      navigate("/my-orders");
+    }
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 px-4">
       <div className="bg-white p-8 rounded-lg shadow-lg text-center">
@@ -20,13 +31,13 @@ function OrderPlaced() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button
             className="bg-[#F59E0B] hover:bg-[#FBBF24] text-white px-6 py-2 rounded-md transition"
-            onClick={() => navigate("/")}
+            onClick={handleNavigateHome}
           >
             Go to Home
           </button>
           <button
             className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded-md transition"
-            onClick={() => navigate("/my-orders")}
+            onClick={handleNavigateMyOrders}
           >
             Track Order
           </button>

@@ -16,7 +16,8 @@ const payos = new PayOS({
 
 export const placeOrder = async (req, res) => {
   try {
-    const { cartItems, paymentMethod, deliveryAddress, totalAmount } = req.body;
+    const { id, cartItems, paymentMethod, deliveryAddress, totalAmount } =
+      req.body;
     if (cartItems.length === 0 || !cartItems) {
       return res.status(400).json({ message: "Cart is empty" });
     }
@@ -69,36 +70,52 @@ export const placeOrder = async (req, res) => {
       })
     );
 
+    // if (paymentMethod == "online") {
+    //   const orders = await Order.create({
+    //     user: req.userId,
+    //     paymentMethod,
+    //     deliveryAddress,
+    //     totalAmount,
+    //     shopOrders,
+    //     payment: false,
+    //   });
+    //   const payosOrder = await payos.paymentRequests.create({
+    //     orderCode: Date.now(),
+    //     amount: Math.round(totalAmount),
+    //     description: "Thanh toán đơn hàng",
+    //     // returnUrl: "http://localhost:5173/order-placed",
+    //     returnUrl: "http://localhost:5173/payment-success?orderId=" + orders._id,
+    //     cancelUrl: "http://localhost:5173/payment-cancel",
+    //   });
+
+    //   return res.status(201).json({
+    //     payosOrder,
+    //     orderId: orders._id,
+    //   });
+    // }
+
     if (paymentMethod == "online") {
-      const orders = await Order.create({
-        user: req.userId,
-        paymentMethod,
-        deliveryAddress,
-        totalAmount,
-        shopOrders,
-        payment: false,
-      });
+      let orders;
+      if (id) {
+        orders = await Order.findById(id);
+      }
+      if (!orders) {
+        orders = await Order.create({
+          user: req.userId,
+          paymentMethod,
+          deliveryAddress,
+          totalAmount,
+          shopOrders,
+          payment: false,
+        });
+      }
       const payosOrder = await payos.paymentRequests.create({
-        // amount: Math.round(totalAmount * 100),
-        // currency: "VND",
-        // receipt: `receipt_${Date.now()}`,
         orderCode: Date.now(),
         amount: Math.round(totalAmount),
         description: "Thanh toán đơn hàng",
-        // returnUrl: "http://localhost:5173/order-placed",
-        returnUrl: "http://localhost:5173/payment-success?orderId=" + orders._id,
+        returnUrl: `http://localhost:5173/payment-success?orderId=${orders._id}`,
         cancelUrl: "http://localhost:5173/payment-cancel",
       });
-
-      // const order = await Order.create({
-      //   user: req.userId,
-      //   paymentMethod,
-      //   deliveryAddress,
-      //   totalAmount,
-      //   shopOrders,
-      //   payosOrderId: payosOrder.id,
-      //   payment: false,
-      // });
 
       return res.status(201).json({
         payosOrder,
@@ -170,6 +187,7 @@ export const getUserOrders = async (req, res) => {
         _id: order._id,
         user: order.user,
         paymentMethod: order.paymentMethod,
+        payment: order.payment,
         shopOrders: order.shopOrders.filter(
           (shopOrder) => shopOrder.owner == req.userId
         ),

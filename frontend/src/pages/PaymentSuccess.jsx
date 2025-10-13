@@ -34,5 +34,26 @@ export default function PaymentSuccess() {
     }
   }, [orderId, payos_payment_id]);
 
-  return <div>Đang xác minh thanh toán, vui lòng chờ...</div>;
+  return (
+        <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4">
+      <div className="bg-white shadow-md rounded-2xl p-8 text-center max-w-sm w-full">
+        {/* Spinner */}
+        <div className="flex justify-center mb-6">
+          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+
+        {/* Message */}
+        <h2 className="text-xl font-semibold text-gray-800 mb-2">
+          Verifying Payment
+        </h2>
+        <p className="text-gray-600">
+          Please wait a moment while we verify your transaction...
+        </p>
+      </div>
+
+      <p className="text-gray-400 text-sm mt-6">
+        Do not leave this page until the verification is complete.
+      </p>
+    </div>
+  );
 }

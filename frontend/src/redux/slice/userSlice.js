@@ -147,5 +147,6 @@ export const {
   updateOrderStatuss,
   setSearchItems,
   clearUserData,
+  clearCart,
 } = userSlice.actions;
 export default userSlice.reducer;

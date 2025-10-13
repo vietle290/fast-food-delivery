@@ -16,6 +16,7 @@ import {
   setMyOrders,
   setSearchItems,
   clearUserData,
+  clearCart,
 } from "../redux/slice/userSlice";
 import { TiPlus } from "react-icons/ti";
 import { IoReceiptOutline } from "react-icons/io5";
@@ -36,6 +37,7 @@ function Nav() {
         withCredentials: true,
       });
       dispatch(clearUserData());
+      dispatch(clearCart());
       dispatch(setMyOrders(null));
       dispatch(setUserData(null));
       dispatch(setLocation(null));
