@@ -40,8 +40,17 @@ function OwnerOrderCard({ data }) {
           </p>
           <span>{data?.deliveryAddress?.text}</span>
           {data.paymentMethod == "online" ? (
-            <p>Payment: {data.payment ? <span className="font-medium text-green-500">Paid</span> : <span className="font-medium text-red-500">Unpaid</span>}</p>
-          ) : <span>PaymentMethod: Cash on delivery</span> }
+            <p>
+              Payment:{" "}
+              {data.payment ? (
+                <span className="font-medium text-green-500">Paid</span>
+              ) : (
+                <span className="font-medium text-red-500">Unpaid</span>
+              )}
+            </p>
+          ) : (
+            <span>PaymentMethod: Cash on delivery</span>
+          )}
         </div>
         <div className="space-x-2 flex items-center">
           {/* <span className="text-sm font-medium text-blue-600 bg-blue-100 px-2 py-1 rounded">
@@ -103,11 +112,17 @@ function OwnerOrderCard({ data }) {
               </div>
             ))}
           </div>
-          {/* <div className="flex justify-between items-center">
-            <span className="text-sm font-semibold">
-              Subtotal: ${shop.subtotal}
-            </span>
-            <span className="text-sm font-medium text-orange-600 bg-orange-100 px-2 py-1 rounded">{shop.status}</span>
+          {/* <div className="flex justify-end items-center">
+            <span className="text-sm font-medium text-orange-600 bg-orange-100 px-2 py-1 rounded">{data.payment}</span>
+            {data.payment == true ? (
+              <span className="text-sm font-medium text-green-600 bg-green-100 px-2 py-1 rounded">
+                Paid
+              </span>
+            ) : (
+              <span className="text-sm font-medium text-red-600 bg-red-100 px-2 py-1 rounded">
+                Waiting for payment
+              </span>
+            )}
           </div> */}
         </div>
       ))}
@@ -139,23 +154,25 @@ function OwnerOrderCard({ data }) {
 
       <div className="flex justify-between items-center mt-4 pt-4">
         <span className="text-lg font-bold">Total: ${data.totalAmount}</span>
-        <div>
-          <select
-            value={data.shopOrders[0].status}
-            className="border border-gray-300 rounded-md px-3 py-1 text-sm focus:ountline-none focus:ring-2 focus:ring-[#F59E0B] text-[#F59E0B]"
-            onChange={(e) =>
-              handleUpdateStatus(
-                data._id,
-                data.shopOrders[0].shop._id,
-                e.target.value
-              )
-            }
-          >
-            <option value="pending">Pending</option>
-            <option value="preparing">Preparing</option>
-            <option value="out-for-delivery">Out for Delivery</option>
-          </select>
-        </div>
+        {data.payment == true && (
+          <div>
+            <select
+              value={data.shopOrders[0].status}
+              className="border border-gray-300 rounded-md px-3 py-1 text-sm focus:ountline-none focus:ring-2 focus:ring-[#F59E0B] text-[#F59E0B]"
+              onChange={(e) =>
+                handleUpdateStatus(
+                  data._id,
+                  data.shopOrders[0].shop._id,
+                  e.target.value
+                )
+              }
+            >
+              <option value="pending">Pending</option>
+              <option value="preparing">Preparing</option>
+              <option value="out-for-delivery">Out for Delivery</option>
+            </select>
+          </div>
+        )}
       </div>
     </div>
   );
