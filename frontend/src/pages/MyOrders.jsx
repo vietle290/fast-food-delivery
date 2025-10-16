@@ -1,13 +1,28 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { IoMdArrowBack } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import UserOrderCard from "../components/UserOrderCard";
 import OwnerOrderCard from "../components/OwnerOrderCard";
+import { useEffect } from "react";
+import { setMyOrders } from "../redux/slice/userSlice";
 
 function MyOrders() {
-  const { userData, myOrders } = useSelector((state) => state.user);
+  const { userData, myOrders, socket } = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  
+  useEffect(() => {
+    socket?.on("newOrder", (data) => {
+
+      
+      if (data.shopOrders[0]?.owner?._id == userData._id) {
+        dispatch(setMyOrders([data, ...myOrders]));
+  
+      }
+    })
+    return () => socket?.off("newOrder");
+  }, [socket, dispatch, myOrders, userData._id]);
 
   const handleNavigateBack = () => {
     navigate(-1);

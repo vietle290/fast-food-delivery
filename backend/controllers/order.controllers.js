@@ -132,6 +132,34 @@ export const placeOrder = async (req, res) => {
     });
     await order.populate("shopOrders.shopItems.item", "name image price");
     await order.populate("shopOrders.shop", "name");
+    await order.populate("shopOrders.owner", "fullName socketId");
+    await order.populate("user", "fullName email mobile");
+
+    const io = req.app.get("io");
+    if (io) {
+      order.shopOrders.forEach(shopOrderss => {
+        console.log(shopOrderss);
+        const ownerSocketId = shopOrderss.owner.socketId;
+        if (ownerSocketId) {
+          io.to(ownerSocketId).emit("newOrder", {
+            _id: order._id,
+            user: order.user,
+            paymentMethod: order.paymentMethod,
+            payment: order.payment,
+            shopOrders: [shopOrderss],
+            createdAt: order.createdAt,
+            deliveryAddress: order.deliveryAddress,
+            totalAmount: order.shopOrders.reduce((total, shopOrder) => {
+              if (shopOrder.owner == req.userId) {
+                return total + shopOrder.subtotal;
+              }
+              return total;
+            }, 0),
+          }); // Emit the new order to the owner
+        }
+      });
+    }
+
     return res.status(201).json(order);
   } catch (error) {
     return res

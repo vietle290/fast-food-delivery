@@ -154,7 +154,7 @@ function OwnerOrderCard({ data }) {
 
       <div className="flex justify-between items-center mt-4 pt-4">
         <span className="text-lg font-bold">Total: ${data.totalAmount}</span>
-        {data.payment == true && (
+        {/* {data.payment == false && data.paymentMethod == "cod" && ( */}
           <div>
             <select
               value={data.shopOrders[0].status}
@@ -172,7 +172,7 @@ function OwnerOrderCard({ data }) {
               <option value="out-for-delivery">Out for Delivery</option>
             </select>
           </div>
-        )}
+        {/* )} */}
       </div>
     </div>
   );
