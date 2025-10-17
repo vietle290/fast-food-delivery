@@ -7,6 +7,7 @@ import { updateOrderStatuss } from "../redux/slice/userSlice";
 import { useState } from "react";
 
 function OwnerOrderCard({ data }) {
+  console.log("data shop owner", data);
   const dispatch = useDispatch();
   const [avaibleShippers, setAvaibleShippers] = useState([]);
   const handleUpdateStatus = async (orderId, shopId, status) => {
@@ -16,7 +17,8 @@ function OwnerOrderCard({ data }) {
         { status: status },
         { withCredentials: true }
       );
-      dispatch(updateOrderStatuss({ orderId, shopId, status }));
+      const assignment = res.data.assignment;
+      dispatch(updateOrderStatuss({ orderId, shopId, status, assignment}));
       setAvaibleShippers(res.data.avaibleShippers);
     } catch (error) {
       console.log(error);
@@ -105,7 +107,7 @@ function OwnerOrderCard({ data }) {
                   alt={items.name}
                   className="w-full h-45 object-cover rounded-md mb-2"
                 />
-                <p className="text-sm font-medium">{items.name}</p>
+                <p className="text-sm font-medium overflow-auto">{items.name}</p>
                 <p className="text-xs text-gray-600">
                   Qty: {items.quantity} x ${items.price}
                 </p>
@@ -154,7 +156,7 @@ function OwnerOrderCard({ data }) {
 
       <div className="flex justify-between items-center mt-4 pt-4">
         <span className="text-lg font-bold">Total: ${data.totalAmount}</span>
-        {/* {data.payment == false && data.paymentMethod == "cod" && ( */}
+        {data.shopOrders[0].status != "delivered" ? (
           <div>
             <select
               value={data.shopOrders[0].status}
@@ -172,7 +174,9 @@ function OwnerOrderCard({ data }) {
               <option value="out-for-delivery">Out for Delivery</option>
             </select>
           </div>
-        {/* )} */}
+        ) : (
+          <></>
+        )}
       </div>
     </div>
   );

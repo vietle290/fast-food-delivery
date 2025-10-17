@@ -137,8 +137,7 @@ export const placeOrder = async (req, res) => {
 
     const io = req.app.get("io");
     if (io) {
-      order.shopOrders.forEach(shopOrderss => {
-        console.log(shopOrderss);
+      order.shopOrders.forEach((shopOrderss) => {
         const ownerSocketId = shopOrderss.owner.socketId;
         if (ownerSocketId) {
           io.to(ownerSocketId).emit("newOrder", {
@@ -149,12 +148,7 @@ export const placeOrder = async (req, res) => {
             shopOrders: [shopOrderss],
             createdAt: order.createdAt,
             deliveryAddress: order.deliveryAddress,
-            totalAmount: order.shopOrders.reduce((total, shopOrder) => {
-              if (shopOrder.owner == req.userId) {
-                return total + shopOrder.subtotal;
-              }
-              return total;
-            }, 0),
+            totalAmount: order.shopOrders[0]?.subtotal,
           }); // Emit the new order to the owner
         }
       });
@@ -184,6 +178,27 @@ export const verifyPayment = async (req, res) => {
     await order.save();
     await order.populate("shopOrders.shopItems.item", "name image price");
     await order.populate("shopOrders.shop", "name");
+    await order.populate("shopOrders.owner", "fullName socketId");
+    await order.populate("user", "fullName email mobile");
+
+    const io = req.app.get("io");
+    if (io) {
+      order.shopOrders.forEach((shopOrderss) => {
+        const ownerSocketId = shopOrderss.owner.socketId;
+        if (ownerSocketId) {
+          io.to(ownerSocketId).emit("newOrder", {
+            _id: order._id,
+            user: order.user,
+            paymentMethod: order.paymentMethod,
+            payment: order.payment,
+            shopOrders: [shopOrderss],
+            createdAt: order.createdAt,
+            deliveryAddress: order.deliveryAddress,
+            totalAmount: order.shopOrders[0]?.subtotal,
+          }); // Emit the new order to the owner
+        }
+      });
+    }
     return res.status(200).json(order);
   } catch (error) {
     return res
@@ -258,7 +273,6 @@ export const updateOrderStatus = async (req, res) => {
       shopOrder.assignment
     ) {
       // If order is set back to pending or preparing, remove assignment
-      console.log("Removing assignmentttttttttttttttttttttttttttttt");
       await DeliveryAssign.findByIdAndDelete(shopOrder.assignment);
       shopOrder.assignment = null;
       shopOrder.assignedShipper = null;
@@ -266,6 +280,28 @@ export const updateOrderStatus = async (req, res) => {
       const updateShopOrder = order.shopOrders.find(
         (shopOrder) => shopOrder.shop == shopId
       );
+
+      //---------------------------------------------------------------
+      await order.populate("shopOrders.shop", "name");
+      await order.populate(
+        "shopOrders.assignedShipper",
+        "fullName email mobile"
+      );
+      await order.populate("user", "socketId");
+      const io = req.app.get("io");
+      if (io) {
+        const userSocketId = order.user.socketId;
+        if (userSocketId) {
+          io.to(userSocketId).emit("update-status", {
+            orderId: order._id,
+            shopId: updateShopOrder.shop._id,
+            status: updateShopOrder.status,
+            userId: order.user._id,
+            assignment: updateShopOrder?.assignment?._id,
+          });
+        }
+      }
+      //---------------------------------------------------------------
       return res.status(200).json({
         shopOrder: updateShopOrder,
         assignedShipper: null,
@@ -273,8 +309,9 @@ export const updateOrderStatus = async (req, res) => {
         assignment: null,
       });
     }
-    console.log("assignment:", shopOrder.assignment);
+
     if (status === "out-for-delivery" && !shopOrder.assignment) {
+      console.log("create assignment");
       const { longitude, latitude } = order.deliveryAddress;
       const nearestDriver = await User.find({
         // Find users with role "shipper" within a radius of 1 km
@@ -334,6 +371,21 @@ export const updateOrderStatus = async (req, res) => {
     );
     await order.populate("shopOrders.shop", "name");
     await order.populate("shopOrders.assignedShipper", "fullName email mobile");
+    await order.populate("user", "socketId");
+
+    const io = req.app.get("io");
+    if (io) {
+      const userSocketId = order.user.socketId;
+      if (userSocketId) {
+        io.to(userSocketId).emit("update-status", {
+          orderId: order._id,
+          shopId: updateShopOrder.shop._id,
+          status: updateShopOrder.status,
+          userId: order.user._id,
+          assignment: updateShopOrder?.assignment?._id,
+        });
+      }
+    }
 
     return res.status(200).json({
       shopOrder: updateShopOrder,

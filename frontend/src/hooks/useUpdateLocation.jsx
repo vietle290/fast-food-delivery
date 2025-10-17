@@ -15,7 +15,7 @@ function useUpdateLocation() {
             }, {
                 withCredentials: true,
             })
-            console.log(res.data);
+           
         }
         navigator.geolocation.watchPosition(async (position) => { // Watch for location changes
             const { latitude, longitude } = position.coords;

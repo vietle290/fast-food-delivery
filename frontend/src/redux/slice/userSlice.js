@@ -111,7 +111,7 @@ const userSlice = createSlice({
       state.myOrders = [action.payload, ...state.myOrders];
     },
     updateOrderStatuss: (state, action) => {
-      const { orderId, shopId, status } = action.payload;
+      const { orderId, shopId, status, assignment } = action.payload;
       const order = state.myOrders.find((order) => order._id == orderId);
       if (order) {
         const shopOrder = order.shopOrders.find(
@@ -119,6 +119,20 @@ const userSlice = createSlice({
         );
         if (shopOrder) {
           shopOrder.status = status;
+          shopOrder.assignment = assignment;
+        }
+      }
+    },
+    updateRealtimeOrderStatus: (state, action) => {
+      const { orderId, shopId, status, assignment } = action.payload;
+      const order = state.myOrders.find((order) => order._id == orderId);
+      if (order) {
+        const shopOrder = order.shopOrders.find(
+          (shopOrder) => shopOrder.shop._id == shopId
+        );
+        if (shopOrder) {
+          shopOrder.status = status;
+          shopOrder.assignment = assignment;
         }
       }
     },
@@ -152,6 +166,7 @@ export const {
   setSearchItems,
   clearUserData,
   clearCart,
-  setSocket
+  setSocket,
+  updateRealtimeOrderStatus,
 } = userSlice.actions;
 export default userSlice.reducer;

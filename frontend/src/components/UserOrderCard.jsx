@@ -188,12 +188,11 @@ import { useSelector } from "react-redux";
 
 function UserOrderCard({ data }) {
 
-  console.log("data", data);
+  console.log("data shop user", data);
   const { total, userData } = useSelector((state) => state.user);
   const { newLocation, address } = useSelector((state) => state.map);
 
   const navigate = useNavigate();
-  const [cartItems, setCartItems] = useState([]);
 
   const formatDate = (dateString) => {
     const options = {
@@ -221,11 +220,9 @@ function UserOrderCard({ data }) {
       }))
     );
 
-    // 2️⃣ Set to state
     // setCartItems(allItems);
     console.log("Collected cart items:", allItems);
 
-    // 3️⃣ Optional: Trigger payment request
     try {
       const res = await axios.post(
         `${serverUrl}/api/order/place-order`,
