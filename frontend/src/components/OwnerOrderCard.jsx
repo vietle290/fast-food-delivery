@@ -1,15 +1,17 @@
 import React from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { FaPhone } from "react-icons/fa";
 import axios from "axios";
 import { serverUrl } from "../App";
 import { updateOrderStatuss } from "../redux/slice/userSlice";
 import { useState } from "react";
+import { setAvailableShippers } from "../redux/slice/ownerSlice";
 
 function OwnerOrderCard({ data }) {
-  console.log("data shop owner", data);
+  // console.log("data shop owner", data);
   const dispatch = useDispatch();
-  const [avaibleShippers, setAvaibleShippers] = useState([]);
+  // const [avaibleShippers, setAvaibleShippers] = useState([]);
+  const { avaibleShippers } = useSelector((state) => state.owner);
   const handleUpdateStatus = async (orderId, shopId, status) => {
     try {
       const res = await axios.post(
@@ -19,7 +21,8 @@ function OwnerOrderCard({ data }) {
       );
       const assignment = res.data.assignment;
       dispatch(updateOrderStatuss({ orderId, shopId, status, assignment}));
-      setAvaibleShippers(res.data.avaibleShippers);
+      // setAvaibleShippers(res.data.avaibleShippers);
+      dispatch(setAvailableShippers(res.data.avaibleShippers));
     } catch (error) {
       console.log(error);
     }

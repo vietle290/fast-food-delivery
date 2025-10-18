@@ -342,10 +342,10 @@ export const updateOrderStatus = async (req, res) => {
       );
       const cadidateDriver = availableDrivers.map((d) => d._id); // Extract their IDs
 
-      if (cadidateDriver.length == 0) {
-        await order.save();
-        return res.status(404).json({ message: "No available drivers found" });
-      }
+      // if (cadidateDriver.length == 0) {
+      //   await order.save();
+      //   return res.status(404).json({ message: "No available drivers found" });
+      // }
       const deliveryAssign = await DeliveryAssign.create({
         shop: shopOrder.shop,
         order: orderId,
