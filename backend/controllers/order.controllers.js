@@ -363,6 +363,33 @@ export const updateOrderStatus = async (req, res) => {
         longitude: driver.location.coordinates[0],
         latitude: driver.location.coordinates[1],
       }));
+
+      await deliveryAssign.populate("order")
+      await deliveryAssign.populate("shop");
+
+      const io = req.app.get("io");
+      if (io) {
+        availableDrivers.forEach((driver) => {
+          const driverSocketId = driver.socketId;
+          if (driverSocketId) {
+            io.to(driverSocketId).emit("new-assignment", {
+              sendTo: driver._id,
+              assignmentId: deliveryAssign._id,
+              orderId: deliveryAssign.order._id,
+              shopName: deliveryAssign.shop.name,
+              deliveryAddress: deliveryAssign.order.deliveryAddress,
+              items:
+                deliveryAssign.order.shopOrders.find(
+                  (so) => so.shop.toString() === deliveryAssign.shop._id.toString()
+                )?.shopItems || [],
+              subtotal:
+                deliveryAssign.order.shopOrders.find(
+                  (so) => so.shop.toString() === deliveryAssign.shop._id.toString()
+                )?.subtotal || 0,
+            });
+          }
+        });
+      }
     }
     // await shopOrder.save();
     await order.save();

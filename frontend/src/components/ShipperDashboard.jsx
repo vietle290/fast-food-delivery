@@ -6,7 +6,7 @@ import { serverUrl } from "../App";
 import ShipperTracking from "./ShipperTracking";
 
 function ShipperDashboard() {
-  const { userData } = useSelector((state) => state.user);
+  const { userData, socket } = useSelector((state) => state.user);
   const [orders, setOrders] = useState([]);
   const [currentOrder, setCurrentOrder] = useState(null);
   const [showOtpBox, setShowOtpBox] = useState(false);
@@ -91,7 +91,7 @@ function ShipperDashboard() {
             withCredentials: true,
           }
         );
-        console.log("Assignments:", res.data);
+
         setOrders(res.data);
         return res.data;
       } catch (error) {
@@ -105,11 +105,22 @@ function ShipperDashboard() {
   }, [userData]);
 
   useEffect(() => {
+    socket?.on("new-assignment", (data) => {
+      if (data.sendTo == userData._id) {
+        setOrders((prevOrders) => [...prevOrders, data]);
+      }
+    });
+    return () => {
+      socket?.off("new-assignment");
+    }
+  }, [socket]);
+
+  useEffect(() => {
     getCurrentOrder();
   }, [userData]);
 
   return (
-    <div className="w-[100vw] h-[100vh] pt-[100px] flex flex-col items-center bg-[#FFF9F6]">
+    <div className="w-[100vw] h-auto pt-[100px] flex flex-col items-center bg-[#FFF9F6] pb-[100px]">
       <Nav />
       <div className="w-full max-w-2xl bg-white rounded-xl shadow-md p-6 flex flex-col items-center text-center">
         <h2 className="text-lg font-semibold text-gray-800">
