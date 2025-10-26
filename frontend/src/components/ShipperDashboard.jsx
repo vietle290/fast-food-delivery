@@ -11,8 +11,37 @@ function ShipperDashboard() {
   const [currentOrder, setCurrentOrder] = useState(null);
   const [showOtpBox, setShowOtpBox] = useState(false);
   const [otp, setOtp] = useState("");
+  const [shipperLocation, setShipperLocation] = useState(null);
 
-  console.log("Current Order:", currentOrder);
+  useEffect(() => {
+    if (!socket || userData.role !== "shipper") return;
+    console.log("socket connected");
+    let watchId;
+    if (navigator.geolocation) {
+      (watchId = navigator.geolocation.watchPosition((position) => {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+        setShipperLocation({ latitude, longitude });
+        socket.emit("update-location", {
+          latitude,
+          longitude,
+          userId: userData._id,
+        });
+      })),
+        (error) => {
+          console.error("Error getting location:", error);
+        },
+        {
+          enableHighAccuracy: true,
+        };
+    }
+
+    return () => {
+      if (watchId) {
+        navigator.geolocation.clearWatch(watchId);
+      }
+    };
+  }, [socket, userData]);
 
   const getCurrentOrder = async () => {
     try {
@@ -55,7 +84,6 @@ function ShipperDashboard() {
         }
       );
       setShowOtpBox(true);
-
     } catch (error) {
       console.error("Error accepting order:", error);
     }
@@ -75,7 +103,6 @@ function ShipperDashboard() {
           withCredentials: true,
         }
       );
-
     } catch (error) {
       console.error("Error accepting order:", error);
     }
@@ -112,7 +139,7 @@ function ShipperDashboard() {
     });
     return () => {
       socket?.off("new-assignment");
-    }
+    };
   }, [socket]);
 
   useEffect(() => {
@@ -211,7 +238,18 @@ function ShipperDashboard() {
               total: ${currentOrder.shopOrder.subtotal}
             </p>
           </div>
-          <ShipperTracking data={currentOrder} />
+          <ShipperTracking
+            data={{
+              shipperLocation: shipperLocation || {
+                latitude: userData.location.coordinates[1],
+                longitude: userData.location.coordinates[0],
+              },
+              customerLocation: {
+                latitude: currentOrder.deliveryAddress.latitude,
+                longitude: currentOrder.deliveryAddress.longitude,
+              },
+            }}
+          />
           {!showOtpBox ? (
             <button
               className="mt-4 w-full px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition"
