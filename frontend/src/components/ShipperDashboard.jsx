@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { serverUrl } from "../App";
 import ShipperTracking from "./ShipperTracking";
+import { ClipLoader } from "react-spinners";
 
 function ShipperDashboard() {
   const { userData, socket } = useSelector((state) => state.user);
@@ -12,6 +13,7 @@ function ShipperDashboard() {
   const [showOtpBox, setShowOtpBox] = useState(false);
   const [otp, setOtp] = useState("");
   const [shipperLocation, setShipperLocation] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!socket || userData.role !== "shipper") return;
@@ -71,6 +73,7 @@ function ShipperDashboard() {
   };
 
   const sendOtp = async () => {
+    setLoading(true);
     try {
       const res = await axios.post(
         `${serverUrl}/api/order/send-delivery-otp`,
@@ -83,13 +86,16 @@ function ShipperDashboard() {
           withCredentials: true,
         }
       );
+      setLoading(false);
       setShowOtpBox(true);
     } catch (error) {
+      setLoading(false);
       console.error("Error accepting order:", error);
     }
   };
 
   const verifyOtp = async () => {
+    setLoading(true);
     try {
       const res = await axios.post(
         `${serverUrl}/api/order/verify-delivery-otp`,
@@ -103,7 +109,10 @@ function ShipperDashboard() {
           withCredentials: true,
         }
       );
+      setLoading(false);
+      setShowOtpBox(false);
     } catch (error) {
+      setLoading(false);
       console.error("Error accepting order:", error);
     }
   };
@@ -154,8 +163,8 @@ function ShipperDashboard() {
           Welcome, <span className="text-[#F59E0B]">{userData.fullName}</span>
         </h2>
         <p className="text-sm text-red-500 mt-2">
-          Latitude: {userData.location.coordinates[1]}, Longitude:{" "}
-          {userData.location.coordinates[0]}
+          Latitude: {shipperLocation?.latitude}, Longitude:{" "}
+          {shipperLocation?.longitude}
         </p>
       </div>
       {!currentOrder && (
@@ -250,12 +259,16 @@ function ShipperDashboard() {
               },
             }}
           />
-          {!showOtpBox ? (
+          {!showOtpBox && !loading ? (
             <button
               className="mt-4 w-full px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition"
               onClick={sendOtp}
             >
               Mark As Delivered
+            </button>
+          ) : !showOtpBox && loading ? (
+            <button className="mt-4 w-full px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition" disabled>
+              <ClipLoader size={20} color={"#F59E0B"} />
             </button>
           ) : (
             <div className="mt-4 flex flex-col items-center">
