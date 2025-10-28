@@ -35,7 +35,7 @@ function FoodCard({ item }) {
   // };
   const renderStars = (rating) => {
     const stars = [];
-    for (let i = 0; i <= 5; i++) {
+    for (let i = 1; i <= 5; i++) {
       stars.push(
         i <= rating ? (
           <MdOutlineStarPurple500 key={i} className="text-yellow-500" />

@@ -167,3 +167,23 @@ export const searchItems = async (req, res) => {
       .json({ message: `Error searching items: ${error.message}` });
   }
 };
+
+export const rating = async (req, res) => {
+  try {
+    const { rating, itemId } = req.body;
+    const item = await Item.findById(itemId);
+    if (!item) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+    const newCount = item.rating.count + 1;
+    const newAverage = (item.rating.average * item.rating.count + rating) / newCount;
+    item.rating.count = newCount;
+    item.rating.average = newAverage;
+    await item.save();
+    return res.status(200).json(item);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: `Error rating item: ${error.message}` });
+  }
+}

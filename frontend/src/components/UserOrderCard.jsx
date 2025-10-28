@@ -194,6 +194,8 @@ function UserOrderCard({ data }) {
 
   const navigate = useNavigate();
 
+  const [selectedRate, setSelectedRate] = useState({}); //itemId:rating 
+
   const formatDate = (dateString) => {
     const options = {
       year: "numeric",
@@ -256,6 +258,22 @@ function UserOrderCard({ data }) {
 
   };
 
+  const handleRating = async (itemId, rating) => {
+    try {
+      const res = await axios.post(
+        `${serverUrl}/api/item/rating`,
+        {
+          itemId,
+          rating,
+        },
+        { withCredentials: true }
+      )
+      setSelectedRate(pre => ({...pre, [itemId]: rating}));
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   return (
     <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden p-4 font-sans">
       <div className="flex justify-between items-center mb-4">
@@ -309,6 +327,15 @@ function UserOrderCard({ data }) {
                 <p className="text-xs text-gray-600">
                   Qty: {items.quantity} x ${items.price}
                 </p>
+                {shop.status === "delivered" && (
+                  <div className="flex space-x-1 mt-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button className={`${selectedRate[items.item._id] >= star ? "text-yellow-500" : "text-gray-300"}`} key={star} onClick={() => handleRating(items.item._id, star)}>
+                        ★
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
           </div>
