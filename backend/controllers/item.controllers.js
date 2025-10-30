@@ -6,6 +6,12 @@ export const addItem = async (req, res) => {
   try {
     const { name, category, type, price } = req.body;
     let image;
+    if (!name || !category || !type || !price) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+    if (!req.file) {
+      return res.status(400).json({ message: "Image is required" });
+    }
     if (req.file) {
       image = await uploadCloudinary(req.file.path);
     }
@@ -41,6 +47,12 @@ export const updateItem = async (req, res) => {
   try {
     const { name, category, type, price } = req.body;
     let image;
+    if (!name || !category || !type) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+    if (price <= 0) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
     if (req.file) {
       image = await uploadCloudinary(req.file.path);
     }
@@ -81,6 +93,17 @@ export const getItemById = async (req, res) => {
     return res
       .status(500)
       .json({ message: `Error getting item: ${error.message}` });
+  }
+};
+
+export const getAllItems = async (req, res) => {
+  try {
+    const items = await Item.find().sort({ updatedAt: -1 }); // Sort items by updatedAt in descending order
+    return res.status(200).json(items);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: `Error getting items: ${error.message}` });
   }
 };
 

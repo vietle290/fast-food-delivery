@@ -25,6 +25,7 @@ import PaymentSuccess from './pages/PaymentSuccess'
 import PaymentCancel from './pages/PaymentCancel'
 import { io } from 'socket.io-client'
 import { setSocket } from './redux/slice/userSlice'
+import NotFound from './pages/NotFound'
 export const serverUrl = "http://localhost:8000"
 
 function App() {
@@ -68,6 +69,7 @@ function App() {
       <Route path="/shop/:shopId" element={userData ? <Shop /> : <Navigate to={"/login"} />} />
       <Route path="/payment-success" element={userData ? <PaymentSuccess /> : <Navigate to={"/login"} />} />
       <Route path="/payment-cancel" element={userData ? <PaymentCancel /> : <Navigate to={"/login"} />} />
+      <Route path="/not-found" element={userData ? <NotFound /> : <Navigate to={"/login"} />} />
     </Routes>
   )
 }

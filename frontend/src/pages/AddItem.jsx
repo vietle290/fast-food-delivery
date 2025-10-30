@@ -16,6 +16,7 @@ function AddItem() {
   const [category, setCategory] = useState("");
   const [type, setType] = useState("Veg");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const categories = [
     "Burgers and Fries",
     "Pizza",
@@ -45,6 +46,7 @@ function AddItem() {
   };
 
   const handleSubmit = async (e) => {
+    setError(null);
     e.preventDefault();
     setLoading(true);
     try {
@@ -68,6 +70,7 @@ function AddItem() {
       navigate("/");
     } catch (error) {
       console.error(error);
+      setError(error.response.data.message);
       setLoading(false);
     }
   };
@@ -189,6 +192,7 @@ function AddItem() {
                 />
               </div>
             )}
+            {error && <p className="text-red-500">{error}</p>}
             <button
               type="submit"
               className="btn w-full bg-[#F59E0B] text-white py-2 rounded-md hover:bg-[#FBBF24] cursor-pointer transition font-semibold"

@@ -19,6 +19,7 @@ function UpdateItem() {
   const [category, setCategory] = useState("");
   const [type, setType] = useState("Veg");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const categories = [
     "Burgers and Fries",
     "Pizza",
@@ -48,6 +49,7 @@ function UpdateItem() {
   };
 
   const handleSubmit = async (e) => {
+    setError(null);
     e.preventDefault();
     setLoading(true);
     try {
@@ -71,6 +73,7 @@ function UpdateItem() {
       navigate("/");
     } catch (error) {
       setLoading(false);
+      setError(error.response.data.message);
       console.error(error);
     }
   };
@@ -87,6 +90,9 @@ function UpdateItem() {
         setCurrentItem(res.data);
       } catch (error) {
         console.error(error);
+        if (error.response.status === 404) {
+          navigate("/not-found");
+        }
       }
     };
     handleGetItemById();
@@ -219,6 +225,7 @@ function UpdateItem() {
                 />
               </div>
             )}
+            {error && <p className="text-red-500">{error}</p>}
             <button
               type="submit"
               className="btn w-full bg-[#F59E0B] text-white py-2 rounded-md hover:bg-[#FBBF24] cursor-pointer transition font-semibold"
