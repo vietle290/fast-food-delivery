@@ -26,10 +26,10 @@ function RecenterAutomatically({ center }) {
 
 function CheckOut() {
   const { cartItems, total, userData } = useSelector((state) => state.user);
-  console.log("cartItems: ", cartItems);
   const { newLocation, address } = useSelector((state) => state.map);
   const [addressInput, setAddressInput] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [paymentMethod, setPaymentMethod] = useState("cod");
@@ -150,6 +150,7 @@ function CheckOut() {
       // console.log("Place Order: ", res.data);
     } catch (error) {
       console.error(error);
+      setMessage(error.response.data.message || "Failed to place order.");
     }
   };
 
@@ -337,6 +338,9 @@ function CheckOut() {
         >
           {paymentMethod === "cod" ? "Place Order" : "Pay Now"}
         </button>
+        {message && (
+        <p className="text-red-500 text-center font-semibold">{message}</p>
+      )}
       </div>
     </div>
   );

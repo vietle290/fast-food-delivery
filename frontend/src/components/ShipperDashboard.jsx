@@ -5,6 +5,7 @@ import axios from "axios";
 import { serverUrl } from "../App";
 import ShipperTracking from "./ShipperTracking";
 import { ClipLoader } from "react-spinners";
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 function ShipperDashboard() {
   const { userData, socket } = useSelector((state) => state.user);
@@ -13,6 +14,7 @@ function ShipperDashboard() {
   const [showOtpBox, setShowOtpBox] = useState(false);
   const [otp, setOtp] = useState("");
   const [shipperLocation, setShipperLocation] = useState(null);
+  const [todayDeliveries, setTodayDeliveries] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -44,6 +46,9 @@ function ShipperDashboard() {
       }
     };
   }, [socket, userData]);
+  
+  const ratePerDelivery = 50; // Example rate per delivery
+  const totalEarnings = todayDeliveries.reduce((acc, curr) => acc + curr.count * ratePerDelivery, 0);
 
   const getCurrentOrder = async () => {
     try {
@@ -111,9 +116,28 @@ function ShipperDashboard() {
       );
       setLoading(false);
       setShowOtpBox(false);
+      location.reload();
     } catch (error) {
       setLoading(false);
       console.error("Error accepting order:", error);
+    }
+  };
+
+    const handleTodayDeliveries = async () => {
+
+    try {
+      const res = await axios.get(
+        `${serverUrl}/api/order/get-today-deliveries`,
+        {
+          params: { userId: userData._id },
+          withCredentials: true,
+        }
+      );
+      console.log(res.data);
+      setTodayDeliveries(res.data);
+      return res.data;
+    } catch (error) {
+      console.error("Error get today deliveries:", error);
     }
   };
 
@@ -152,6 +176,8 @@ function ShipperDashboard() {
   }, [socket]);
 
   useEffect(() => {
+    if (!userData) return;
+    handleTodayDeliveries();
     getCurrentOrder();
   }, [userData]);
 
@@ -166,6 +192,23 @@ function ShipperDashboard() {
           Latitude: {shipperLocation?.latitude}, Longitude:{" "}
           {shipperLocation?.longitude}
         </p>
+      </div>
+      <div className="bg-white rounded-xl shadow-md p-5 mt-2 w-full max-w-2xl mb-6 border border-orange-100">
+        <h1 className="text-lg font-bold text-[#F59E0B]">Today Deliveries</h1>
+        <ResponsiveContainer width="100%" height={200}>
+          <BarChart data={todayDeliveries}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="hour" tickFormatter={(hour) => `${hour}:00`} />
+            <YAxis dataKey="count" allowDecimals={false} />
+            <Tooltip formatter={(value) => [value, "orders"]} labelFormatter={label => `${label}:00`}/>
+            <Bar dataKey="count" fill="#F59E0B" />
+          </BarChart>
+        </ResponsiveContainer>
+
+        <div className="max-w-sm mx-auto mt-6 p-6 bg-white rounded-xl shadow-lg text-center">
+          <h1 className="text-xl font-semibold text-gray-800 mb-2">Today Earning</h1>
+          <span className="text-3xl font-bold text-green-600">${totalEarnings}</span>
+        </div>
       </div>
       {!currentOrder && (
         <div className="w-full max-w-2xl bg-white rounded-xl shadow-md mt-6 p-6">
@@ -263,6 +306,7 @@ function ShipperDashboard() {
             <button
               className="mt-4 w-full px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition"
               onClick={sendOtp}
+              disabled={loading}
             >
               Mark As Delivered
             </button>

@@ -18,6 +18,7 @@ export const placeOrder = async (req, res) => {
   try {
     const { id, cartItems, paymentMethod, deliveryAddress, totalAmount } =
       req.body;
+      console.log("cart:", cartItems);
     if (cartItems.length === 0 || !cartItems) {
       return res.status(400).json({ message: "Cart is empty" });
     }
@@ -653,5 +654,49 @@ export const verifyShipperOtp = async (req, res) => {
     return res
       .status(500)
       .json({ message: `Error verifying OTP: ${error.message}` });
+  }
+};
+
+export const getTodayDeliveries = async (req, res) => {
+  try {
+    const shipperId = req.userId;
+    const startsOfDay = new Date().setHours(0, 0, 0, 0);
+
+    const orders = await Order.find({
+      "shopOrders.assignedShipper": shipperId,
+      "shopOrders.status": "delivered",
+      "shopOrders.deliveredAt": { $gte: startsOfDay },
+    }).lean();
+    
+    let todayDeliveries = [];
+
+    orders.forEach((order) => {
+      order.shopOrders.forEach((shopOrder) => {
+        if (shopOrder.assignedShipper == shipperId && shopOrder.status === "delivered" && shopOrder.deliveredAt >= startsOfDay) {
+          todayDeliveries.push(shopOrder);
+        }
+      });
+    });
+    
+    let stats = {};
+
+    todayDeliveries.forEach((shopOrder) => {
+      const hour = new Date(shopOrder.deliveredAt).getHours();
+      stats[hour] = (stats[hour] || 0) + 1;
+    });
+
+    let formmattedStats = Object.keys(stats).map((hour) => ({
+      hour: parseInt(hour),
+      count: stats[hour],
+    }));
+
+    formmattedStats.sort((a, b) => a.hour - b.hour);
+
+    return res.status(200).json(formmattedStats);
+    
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: `Error getting today's deliveries: ${error.message}` });
   }
 };

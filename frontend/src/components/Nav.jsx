@@ -22,9 +22,10 @@ import { TiPlus } from "react-icons/ti";
 import { IoReceiptOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { setNewLocation } from "../redux/slice/mapSlice";
 
 function Nav() {
-  const { userData, location, cartItems } = useSelector((state) => state.user);
+  const { userData, location, cartItems, myOrders } = useSelector((state) => state.user);
   const { shopData } = useSelector((state) => state.owner);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
@@ -45,6 +46,7 @@ function Nav() {
       dispatch(setCurrentAddress(null));
       dispatch(setShopInCity(null));
       dispatch(setItemInCity(null));
+      dispatch(setNewLocation({ latitude: null, longitude: null }));
     } catch (error) {
       console.log(error);
     }

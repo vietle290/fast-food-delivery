@@ -98,7 +98,7 @@ export const getItemById = async (req, res) => {
 
 export const getAllItems = async (req, res) => {
   try {
-    const items = await Item.find().sort({ updatedAt: -1 }); // Sort items by updatedAt in descending order
+    const items = await Item.find().sort({ updatedAt: -1 }).populate("shop"); // Sort items by updatedAt in descending order
     return res.status(200).json(items);
   } catch (error) {
     return res

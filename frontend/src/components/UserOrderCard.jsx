@@ -330,7 +330,7 @@ function UserOrderCard({ data }) {
                 {shop.status === "delivered" && (
                   <div className="flex space-x-1 mt-2">
                     {[1, 2, 3, 4, 5].map((star) => (
-                      <button className={`${selectedRate[items.item._id] >= star ? "text-yellow-500" : "text-gray-300"}`} key={star} onClick={() => handleRating(items.item._id, star)}>
+                      <button className={`${selectedRate[items.item?._id] >= star ? "text-yellow-500" : "text-gray-300"}`} key={star} onClick={() => handleRating(items.item._id, star)}>
                         ★
                       </button>
                     ))}
