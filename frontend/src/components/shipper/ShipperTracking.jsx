@@ -1,6 +1,6 @@
 import React from "react";
-import scooter from "../assets/scooter.png";
-import home from "../assets/home.png";
+import scooter from "../../assets/scooter.png";
+import home from "../../assets/home.png";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { MapContainer, Marker, Polyline, Popup, TileLayer } from "react-leaflet";

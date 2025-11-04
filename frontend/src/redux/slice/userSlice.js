@@ -15,6 +15,7 @@ const total = sessionStorage.getItem("total")
 const userSlice = createSlice({
   name: "user",
   initialState: {
+    categories: [],
     userData: savedUserData,
     location: null,
     currentState: null,
@@ -43,6 +44,9 @@ const userSlice = createSlice({
       state.loading = false;
       state.error = null;
       sessionStorage.removeItem("userData");
+    },
+    setCategoryies: (state, action) => {
+      state.categories = action.payload;
     },
     setLocation: (state, action) => {
       state.location = action.payload;
@@ -152,6 +156,7 @@ export const {
   setUserData,
   setLoading,
   setError,
+  setCategoryies,
   setLocation,
   setCurrentState,
   setCurrentAddress,

@@ -180,7 +180,7 @@ export const searchItems = async (req, res) => {
       shop: { $in: shopId },
       $or: [
         { name: { $regex: query, $options: "i" } },
-        { category: { $regex: query, $options: "i" } },
+        // { category: { $regex: query, $options: "i" } },
       ]
     }).populate("shop");
     return res.status(200).json(items);

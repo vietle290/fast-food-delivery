@@ -2,10 +2,9 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FaPhone } from "react-icons/fa";
 import axios from "axios";
-import { serverUrl } from "../App";
-import { updateOrderStatuss } from "../redux/slice/userSlice";
-import { useState } from "react";
-import { setAvailableShippers } from "../redux/slice/ownerSlice";
+import { serverUrl } from "../../App";
+import { updateOrderStatuss } from "../../redux/slice/userSlice";
+import { setAvailableShippers } from "../../redux/slice/ownerSlice";
 
 function OwnerOrderCard({ data }) {
   // console.log("data shop owner", data);

@@ -183,7 +183,7 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { serverUrl } from "../App";
+import { serverUrl } from "../../App";
 import { useSelector } from "react-redux";
 
 function UserOrderCard({ data }) {

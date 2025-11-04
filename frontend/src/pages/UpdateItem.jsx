@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { IoMdArrowBack } from "react-icons/io";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { FaUtensils } from "react-icons/fa6";
 import axios from "axios";
@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import { ClipLoader } from "react-spinners";
 
 function UpdateItem() {
+  const {categories} = useSelector((state) => state.user);
   const { itemId } = useParams();
   const [currentItem, setCurrentItem] = useState(null);
   const navigate = useNavigate();
@@ -20,24 +21,24 @@ function UpdateItem() {
   const [type, setType] = useState("Veg");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const categories = [
-    "Burgers and Fries",
-    "Pizza",
-    "Fried Chicken",
-    "Tacos and Mexican Food",
-    "Sandwiches and Subs",
-    "Hot Dogs",
-    "Seafood (e.g., Fish and Chips)",
-    "Asian Fusion (e.g., Chinese, Japanese takeout)",
-    "Breakfast Items (e.g., Muffins, Burritos)",
-    "Salads and Healthy Options",
-    "Ice Cream and Desserts",
-    "Coffee and Beverages",
-    "Donuts and Pastries",
-    "Wraps and Pitas",
-    "Barbecue and Grilled Meats",
-    "All",
-  ];
+  // const categories = [
+  //   "Burgers and Fries",
+  //   "Pizza",
+  //   "Fried Chicken",
+  //   "Tacos and Mexican Food",
+  //   "Sandwiches and Subs",
+  //   "Hot Dogs",
+  //   "Seafood (e.g., Fish and Chips)",
+  //   "Asian Fusion (e.g., Chinese, Japanese takeout)",
+  //   "Breakfast Items (e.g., Muffins, Burritos)",
+  //   "Salads and Healthy Options",
+  //   "Ice Cream and Desserts",
+  //   "Coffee and Beverages",
+  //   "Donuts and Pastries",
+  //   "Wraps and Pitas",
+  //   "Barbecue and Grilled Meats",
+  //   "All",
+  // ];
   const [name, setName] = useState("");
   const [price, setPrice] = useState(0);
   const dispatch = useDispatch();
@@ -176,9 +177,9 @@ function UpdateItem() {
                 onChange={(e) => setCategory(e.target.value)}
               >
                 <option value="">Select Category</option>
-                {categories.map((category, index) => (
-                  <option key={index} value={category}>
-                    {category}
+                {categories.map((category) => (
+                  <option key={category._id} value={category._id}>
+                    {category.name}
                   </option>
                 ))}
               </select>

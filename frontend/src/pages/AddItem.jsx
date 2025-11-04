@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { IoMdArrowBack } from "react-icons/io";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { FaUtensils } from "react-icons/fa6";
 import axios from "axios";
@@ -9,6 +9,7 @@ import { setShopData } from "../redux/slice/ownerSlice";
 import { ClipLoader } from "react-spinners";
 
 function AddItem() {
+  const {categories} = useSelector((state) => state.user);
   const navigate = useNavigate();
   const handleNavigateBack = () => navigate(-1);
   const [imagePreview, setImagePreview] = useState(null);
@@ -17,24 +18,24 @@ function AddItem() {
   const [type, setType] = useState("Veg");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const categories = [
-    "Burgers and Fries",
-    "Pizza",
-    "Fried Chicken",
-    "Tacos and Mexican Food",
-    "Sandwiches and Subs",
-    "Hot Dogs",
-    "Seafood (e.g., Fish and Chips)",
-    "Asian Fusion (e.g., Chinese, Japanese takeout)",
-    "Breakfast Items (e.g., Muffins, Burritos)",
-    "Salads and Healthy Options",
-    "Ice Cream and Desserts",
-    "Coffee and Beverages",
-    "Donuts and Pastries",
-    "Wraps and Pitas",
-    "Barbecue and Grilled Meats",
-    "All",
-  ];
+  // const categories = [
+  //   "Burgers and Fries",
+  //   "Pizza",
+  //   "Fried Chicken",
+  //   "Tacos and Mexican Food",
+  //   "Sandwiches and Subs",
+  //   "Hot Dogs",
+  //   "Seafood (e.g., Fish and Chips)",
+  //   "Asian Fusion (e.g., Chinese, Japanese takeout)",
+  //   "Breakfast Items (e.g., Muffins, Burritos)",
+  //   "Salads and Healthy Options",
+  //   "Ice Cream and Desserts",
+  //   "Coffee and Beverages",
+  //   "Donuts and Pastries",
+  //   "Wraps and Pitas",
+  //   "Barbecue and Grilled Meats",
+  //   "All",
+  // ];
   const [name, setName] = useState("");
   const [price, setPrice] = useState(0);
   const dispatch = useDispatch();
@@ -49,6 +50,7 @@ function AddItem() {
     setError(null);
     e.preventDefault();
     setLoading(true);
+    console.log("Submitting:", { name, category, type, price, backendImage });
     try {
       const formData = new FormData();
       formData.append("name", name);
@@ -143,9 +145,9 @@ function AddItem() {
                 onChange={(e) => setCategory(e.target.value)}
               >
                 <option value="">Select Category</option>
-                {categories.map((category, index) => (
-                  <option key={index} value={category}>
-                    {category}
+                {categories.map((category) => (
+                  <option key={category._id} value={category._id}>
+                    {category.name}
                   </option>
                 ))}
               </select>

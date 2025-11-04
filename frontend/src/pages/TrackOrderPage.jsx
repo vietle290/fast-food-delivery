@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { serverUrl } from "../App";
 import axios from "axios";
 import { IoMdArrowBack } from "react-icons/io";
-import ShipperTracking from "../components/ShipperTracking";
+import ShipperTracking from "../components/shipper/ShipperTracking";
 import { useSelector } from "react-redux";
 
 function TrackOrderPage() {

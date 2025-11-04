@@ -19,14 +19,18 @@ export const createAndUpdateShop = async (req, res) => {
         owner: req.userId,
       });
     } else {
-      shop = await Shop.findByIdAndUpdate(shop._id, {
-        name,
-        city,
-        state,
-        address,
-        image,
-        owner: req.userId,
-      }, { new: true });
+      shop = await Shop.findByIdAndUpdate(
+        shop._id,
+        {
+          name,
+          city,
+          state,
+          address,
+          image,
+          owner: req.userId,
+        },
+        { new: true }
+      );
     }
     await shop.populate("owner items"); // populate the owner field
     return res.status(201).json(shop);
@@ -39,7 +43,19 @@ export const createAndUpdateShop = async (req, res) => {
 
 export const getShop = async (req, res) => {
   try {
-    const shop = await Shop.findOne({ owner: req.userId }).populate("owner items");
+    // const shop = await Shop.findOne({ owner: req.userId }).populate("owner items categories");
+    const shop = await Shop.findOne({ owner: req.userId })
+      .populate("owner")
+      .populate({
+        path: "items",
+        select: "name price image type category rating shop",
+        populate: {
+          path: "category", // populate category field inside each item
+          select: "name shop", // optional: specify fields you want
+        },
+      })
+      .populate("categories");
+
     if (!shop) {
       return res.status(404).json({ message: "Shop not found" });
     }
@@ -54,7 +70,9 @@ export const getShop = async (req, res) => {
 export const getShopByCity = async (req, res) => {
   try {
     const { city } = req.params;
-    const shop = await Shop.find({ city:{ $regex: new RegExp(`^${city}$`, "i")} }).populate("items");
+    const shop = await Shop.find({
+      city: { $regex: new RegExp(`^${city}$`, "i") },
+    }).populate("items");
     if (!shop) {
       return res.status(404).json({ message: "Shop not found" });
     }

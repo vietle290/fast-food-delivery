@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import Nav from "./Nav";
+import Nav from "../Nav";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import { serverUrl } from "../App";
+import { serverUrl } from "../../App";
 import ShipperTracking from "./ShipperTracking";
 import { ClipLoader } from "react-spinners";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";

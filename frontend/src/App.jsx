@@ -26,6 +26,8 @@ import PaymentCancel from './pages/PaymentCancel'
 import { io } from 'socket.io-client'
 import { setSocket } from './redux/slice/userSlice'
 import NotFound from './pages/NotFound'
+import useGetCategory from './hooks/useGetcategory'
+import useGetCategoryByShop from './hooks/usegetCategoryByShop'
 export const serverUrl = "http://localhost:8000"
 
 function App() {
@@ -38,6 +40,8 @@ function App() {
   useGetShopByCity();
   useGetItemByLocation();
   useGetMyOrders();
+  useGetCategory();
+  useGetCategoryByShop();
 
   useEffect(() => {
     const socketInstance = io(serverUrl, {withCredentials: true});

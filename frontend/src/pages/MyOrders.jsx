@@ -2,8 +2,8 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { IoMdArrowBack } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
-import UserOrderCard from "../components/UserOrderCard";
-import OwnerOrderCard from "../components/OwnerOrderCard";
+import UserOrderCard from "../components/user/UserOrderCard";
+import OwnerOrderCard from "../components/owner/OwnerOrderCard";
 import { useEffect } from "react";
 import { setMyOrders, updateRealtimeOrderStatus } from "../redux/slice/userSlice";
 

@@ -63,13 +63,14 @@ function Nav() {
       }
     }
 
-    useEffect(() => {
-      if (query) {
-        handleSearchItems();
-      } else {
-        dispatch(setSearchItems(null));
-      }
-    }, [query])
+useEffect(() => {
+  if (query.trim().length > 0) {
+    handleSearchItems();
+  } else {
+    dispatch(setSearchItems(null));
+  }
+}, [query]);
+
   return (
     <div className="w-full h-[80px] flex items-center justify-between md:justify-center gap-[30px] px-[20px] fixed top-0 z-[9999] bg-[#FFF9F6] overflow-visible">
       {showSearch && userData.role === "user" && (
@@ -91,7 +92,9 @@ function Nav() {
         </div>
       )}
 
-      <h1 className="text-3xl font-bold mb-2 text-[#F59E0B]">Fast Food</h1>
+      {userData.role !== "owner" && <h1 className="text-3xl font-bold mb-2 text-[#F59E0B]">Fast Food</h1>}
+            {userData.role === "owner" && <h1 className="text-3xl font-bold mb-2 ml-10 text-[#F59E0B]">Fast Food</h1>}
+
       {userData && userData.role === "user" && (
         <div className="md:w-[60%] lg:w-[40%] h-[70px] bg-white shadow-xl rounded-lg items-center gap-[20px] hidden md:flex">
           <div className="flex items-center w-[30%] overflow-hidden gap-[10px] px-[10px] border-r-[2px] border-gray-400">

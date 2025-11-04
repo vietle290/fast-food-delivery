@@ -1,18 +1,18 @@
 import React, { useRef } from "react";
-import Nav from "./Nav";
-import { categories } from "../category";
-import CategoryCard from "./CategoryCard";
+import Nav from "../Nav";
+// import { categories } from "../category";
+import CategoryCard from "../category/CategoryCard";
 import { IoIosArrowDropleftCircle } from "react-icons/io";
 import { IoIosArrowDroprightCircle } from "react-icons/io";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { ClipLoader } from "react-spinners";
-import FoodCard from "./FoodCard";
+import FoodCard from "../FoodCard";
 import { useNavigate } from "react-router-dom";
 
 function UserDashboard() {
-  const { location, shopInCity, loading, itemInCity, searchItems } = useSelector((state) => state.user);
+  const { location, shopInCity, loading, itemInCity, searchItems, categories } = useSelector((state) => state.user);
   const scrollRef = useRef(null);
   const shopScrollRef = useRef(null);
   const [showScrollLeft, setShowScrollLeft] = useState(false);
@@ -121,9 +121,9 @@ function UserDashboard() {
               {categories.map((category, index) => (
                 <CategoryCard
                   key={index}
-                  name={category.category}
+                  name={category.name}
                   image={category.image}
-                  onClick={() => handleFilterByCategory(category.category)}
+                  onClick={() => handleFilterByCategory(category.name)}
                 />
               ))}
             </div>

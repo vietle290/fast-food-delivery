@@ -13,6 +13,7 @@ import {
   setShopInCity,
   setUserData,
 } from "../redux/slice/userSlice";
+import { setNewLocation } from "../redux/slice/mapSlice";
 
 function useGetCurrentUser() {
   const dispatch = useDispatch();
@@ -41,6 +42,7 @@ function useGetCurrentUser() {
           dispatch(setCurrentAddress(null));
           dispatch(setShopInCity(null));
           dispatch(setItemInCity(null));
+          // dispatch(setNewLocation(null));
         } else {
           console.error("Error fetching current user:", error);
         }

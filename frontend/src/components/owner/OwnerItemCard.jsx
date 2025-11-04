@@ -2,13 +2,14 @@ import React from "react";
 import { MdEdit } from "react-icons/md";
 import { MdDeleteForever } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import { serverUrl } from "../App";
+import { serverUrl } from "../../App";
 import { useDispatch } from "react-redux";
-import { setShopData } from "../redux/slice/ownerSlice";
+import { setShopData } from "../../redux/slice/ownerSlice";
 import axios from "axios";
 
 function OwnerItemCard({ item }) {
-  const { name, type, price, image, category } = item || {};
+  const { name, type, price, image, categories } = item || {};
+  console.log("OwnerItemCard item:", item);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const handleNavigateUpdate = () => navigate(`/update-item/${item._id}`);
@@ -41,7 +42,7 @@ function OwnerItemCard({ item }) {
             </h2>
             <p className="text-sm text-gray-600">{type || "Food Type"}</p>
             <p className="text-sm text-gray-600">
-              {category || "Food Category"}
+              {item.category?.name || "Food Category"}
             </p>
           </div>
           <div>
