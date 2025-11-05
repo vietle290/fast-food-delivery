@@ -8,8 +8,7 @@ import { setShopData } from "../../redux/slice/ownerSlice";
 import axios from "axios";
 
 function OwnerItemCard({ item }) {
-  const { name, type, price, image, categories } = item || {};
-  console.log("OwnerItemCard item:", item);
+  const { name, type, price, image } = item || {};
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const handleNavigateUpdate = () => navigate(`/update-item/${item._id}`);

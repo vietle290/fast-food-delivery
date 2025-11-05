@@ -35,6 +35,15 @@ export const addItem = async (req, res) => {
       path: "items",
       options: { sort: { updatedAt: -1 } }, // Sort items by updatedAt in descending order
     });
+    await shop.populate({
+      path: "items",
+      select: "name price image type category rating shop",
+      populate: {
+        path: "category",
+        select: "name shop",
+      },
+    });
+    await shop.populate("categories");
     return res.status(201).json(shop);
   } catch (error) {
     return res
@@ -74,6 +83,15 @@ export const updateItem = async (req, res) => {
       path: "items",
       options: { sort: { updatedAt: -1 } }, // Sort items by updatedAt in descending order
     });
+    await shop.populate({
+      path: "items",
+      select: "name price image type category rating shop",
+      populate: {
+        path: "category",
+        select: "name shop",
+      },
+    });
+    await shop.populate("categories");
     return res.status(200).json(shop);
   } catch (error) {
     return res
@@ -122,6 +140,15 @@ export const deleteItem = async (req, res) => {
       path: "items owner",
       options: { sort: { updatedAt: -1 } }, // Sort items by updatedAt in descending order
     });
+    await shop.populate({
+      path: "items",
+      select: "name price image type category rating shop",
+      populate: {
+        path: "category",
+        select: "name shop",
+      },
+    });
+    await shop.populate("categories");
     return res.status(200).json(shop);
   } catch (error) {
     return res
@@ -181,7 +208,7 @@ export const searchItems = async (req, res) => {
       $or: [
         { name: { $regex: query, $options: "i" } },
         // { category: { $regex: query, $options: "i" } },
-      ]
+      ],
     }).populate("shop");
     return res.status(200).json(items);
   } catch (error) {
@@ -199,7 +226,8 @@ export const rating = async (req, res) => {
       return res.status(404).json({ message: "Item not found" });
     }
     const newCount = item.rating.count + 1;
-    const newAverage = (item.rating.average * item.rating.count + rating) / newCount;
+    const newAverage =
+      (item.rating.average * item.rating.count + rating) / newCount;
     item.rating.count = newCount;
     item.rating.average = newAverage;
     await item.save();
@@ -209,4 +237,4 @@ export const rating = async (req, res) => {
       .status(500)
       .json({ message: `Error rating item: ${error.message}` });
   }
-}
+};

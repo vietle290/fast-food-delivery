@@ -1,18 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FaUtensils } from "react-icons/fa6";
 import { ClipLoader } from "react-spinners";
-import { useDispatch } from "react-redux";
-import { setCategoryies } from "../../redux/slice/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setCategoryies,
+  setSearchCategories,
+} from "../../redux/slice/userSlice";
 import { serverUrl } from "../../App";
 
-function AddCategory({ onClose }) {
+function UpdateCategory({ onClose, category }) {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [backendImage, setBackendImage] = useState(null);
   const [name, setName] = useState("");
+  const { searchCategories, categories } = useSelector((state) => state.user);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -31,22 +35,32 @@ function AddCategory({ onClose }) {
       if (backendImage) formData.append("image", backendImage);
 
       const res = await axios.post(
-        `${serverUrl}/api/category/create-category`,
+        `${serverUrl}/api/category/update-category/${category._id}`,
         formData,
         { withCredentials: true }
       );
-      console.log("Created Category:", res.data);
+    if (searchCategories.length > 0) {
+      dispatch(setSearchCategories(res.data));
+    } else {
       dispatch(setCategoryies(res.data));
+    }
       setLoading(false);
       onClose(); // close modal after success
     } catch (error) {
       console.error(error);
       setError(
-        error?.response?.data?.message || "Error creating category. Try again."
+        error?.response?.data?.message || "Error updating category. Try again."
       );
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (category) {
+      setName(category.name);
+      setImagePreview(category.image);
+    }
+  }, [category]);
 
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50">
@@ -62,7 +76,7 @@ function AddCategory({ onClose }) {
           <div className="flex justify-center items-center bg-orange-100 rounded-full w-20 h-20">
             <FaUtensils size={40} className="text-[#F59E0B]" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-800">Add New Category</h1>
+          <h1 className="text-2xl font-bold text-gray-800">Update Category</h1>
         </div>
 
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
@@ -122,7 +136,7 @@ function AddCategory({ onClose }) {
               disabled={loading}
               className="px-4 py-2 bg-[#F59E0B] hover:bg-[#FBBF24] text-white rounded-md font-semibold transition"
             >
-              {loading ? <ClipLoader color="#fff" size={20} /> : "Create"}
+              {loading ? <ClipLoader color="#fff" size={20} /> : "Update"}
             </button>
           </div>
         </form>
@@ -131,4 +145,4 @@ function AddCategory({ onClose }) {
   );
 }
 
-export default AddCategory;
+export default UpdateCategory;

@@ -16,6 +16,7 @@ const userSlice = createSlice({
   name: "user",
   initialState: {
     categories: [],
+    searchCategories: [],
     userData: savedUserData,
     location: null,
     currentState: null,
@@ -46,7 +47,10 @@ const userSlice = createSlice({
       sessionStorage.removeItem("userData");
     },
     setCategoryies: (state, action) => {
-      state.categories = action.payload;
+      state.categories =
+        typeof action.payload === "function"
+          ? action.payload(state.categories)
+          : action.payload;
     },
     setLocation: (state, action) => {
       state.location = action.payload;
@@ -143,6 +147,12 @@ const userSlice = createSlice({
     setSearchItems: (state, action) => {
       state.searchItems = action.payload;
     },
+    setSearchCategories: (state, action) => {
+      state.searchCategories =
+        typeof action.payload === "function"
+          ? action.payload(state.searchCategories)
+          : action.payload;
+    },
     setLoading: (state, action) => {
       state.loading = action.payload;
     },
@@ -169,6 +179,7 @@ export const {
   addOrder,
   updateOrderStatuss,
   setSearchItems,
+  setSearchCategories,
   clearUserData,
   clearCart,
   setSocket,

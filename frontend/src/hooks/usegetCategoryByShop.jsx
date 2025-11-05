@@ -6,6 +6,7 @@ import { setCategoryies } from '../redux/slice/userSlice';
 
 function useGetCategoryByShop() {
     const dispatch = useDispatch();
+    const {searchCategories} = useSelector(state => state.user)
     const { userData } = useSelector(state => state.user)
     const { shopData } = useSelector(state => state.owner)
     const shopId = shopData?._id;
@@ -20,14 +21,16 @@ function useGetCategoryByShop() {
                     },
                     withCredentials: true,
                 });
-                dispatch(setCategoryies(response.data.categories));
+                if (searchCategories.length == 0) {
+                    dispatch(setCategoryies(response.data.categories));
+                }
             } catch (error) {
                 console.error(error);
             }
         };
         fetchCategory();
 
-    }, [dispatch, userData, shopId]);
+    }, [dispatch, userData, shopId, searchCategories.length]);
 }
 
 export default useGetCategoryByShop

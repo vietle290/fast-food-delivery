@@ -9,4 +9,8 @@ export const store = configureStore({
     owner: ownerSlice,
     map: mapSlice,
   },
+    middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });
