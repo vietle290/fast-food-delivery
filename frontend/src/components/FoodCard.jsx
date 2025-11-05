@@ -93,7 +93,10 @@ function FoodCard({ item }) {
                     quantity: quantity,
                     image: item.image,
                     type: item.type,
-                    shop: item.shop,
+                    shop: {
+                      _id: item.shop._id,
+                      name: item.shop.name,
+                    },
                   })
                 );
               }

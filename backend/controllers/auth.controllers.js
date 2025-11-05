@@ -101,7 +101,7 @@ export const login = async (req, res) => {
     });
     return res.status(200).json({ user });
   } catch (error) {
-    res.status(500).json({ message: "Please set your password before login or Sign in with Google without password" });
+    res.status(500).json({ message: "Please set your password by click on Forgot password before login or Sign in with Google without password" });
   }
 };
 

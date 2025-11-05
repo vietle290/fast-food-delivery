@@ -10,6 +10,7 @@ const shopSchema = new mongoose.Schema(
         city: { type: String, required: true },
         items: [{ type: mongoose.Schema.Types.ObjectId, ref: "Item" }],
         categories: [{ type: mongoose.Schema.Types.ObjectId, ref: "Category" }],
+        location: { type: { type: String, enum: ['Point'], default: 'Point' }, coordinates: { type: [Number], default: [106.660172, 10.762622] } },
     },
     { timestamps: true }
 );

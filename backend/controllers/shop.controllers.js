@@ -3,7 +3,7 @@ import uploadCloudinary from "../utils/cloudinary.js";
 
 export const createAndUpdateShop = async (req, res) => {
   try {
-    const { name, city, state, address } = req.body;
+    const { name, city, state, address, latitude, longitude } = req.body;
     let image;
     if (req.file) {
       image = await uploadCloudinary(req.file.path);
@@ -16,6 +16,7 @@ export const createAndUpdateShop = async (req, res) => {
         state,
         address,
         image,
+        location: { type: 'Point', coordinates: [longitude, latitude] },
         owner: req.userId,
       });
     } else {
@@ -27,6 +28,7 @@ export const createAndUpdateShop = async (req, res) => {
           state,
           address,
           image,
+          location: { type: 'Point', coordinates: [longitude, latitude] },
           owner: req.userId,
         },
         { new: true }
