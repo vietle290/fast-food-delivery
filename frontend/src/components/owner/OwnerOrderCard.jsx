@@ -111,7 +111,7 @@ function OwnerOrderCard({ data }) {
                 />
                 <p className="text-sm font-medium overflow-auto">{items.name}</p>
                 <p className="text-xs text-gray-600">
-                  Qty: {items.quantity} x ${items.price}
+                  Qty: {items.quantity} x {items.price} vnd
                 </p>
               </div>
             ))}
@@ -157,7 +157,7 @@ function OwnerOrderCard({ data }) {
       )}
 
       <div className="flex justify-between items-center mt-4 pt-4">
-        <span className="text-lg font-bold">Total: ${data.totalAmount}</span>
+        <span className="text-lg font-bold">Total: {data.totalAmount} vnd</span>
         {data.shopOrders[0].status != "delivered" ? (
           <div>
             <select

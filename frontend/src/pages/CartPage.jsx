@@ -57,7 +57,7 @@ function CartPage() {
                         Subtotal:
                       </span>
                       <span className="text-lg font-bold text-gray-800">
-                        ${total}
+                        {total} vnd
                       </span>
                     </div>
                   </div>

@@ -306,30 +306,30 @@ function CheckOut() {
                       <p className="font-semibold">
                         {item.name} x {item.quantity}
                       </p>
-                      <p className="text-sm text-gray-500">${item.price}</p>
+                      <p className="text-sm text-gray-500">{item.price} vnd</p>
                     </div>
                   </div>
-                  <p className="font-semibold">${item.price * item.quantity}</p>
+                  <p className="font-semibold">{item.price * item.quantity} vnd</p>
                 </div>
               ))}
             </div>
             <hr className="my-4 border-gray-300" />
             <div className="flex justify-between">
               <p className="font-semibold">Subtotal</p>
-              <p className="font-semibold">${total}</p>
+              <p className="font-semibold">{total} vnd</p>
             </div>
             <hr className="my-4 border-gray-300" />
             <div className="flex justify-between">
               <p className="font-semibold">Delivery Fee</p>
               <p className="font-semibold text-gray-500">
-                ${fee === 0 ? "Free" : fee}
+                {fee === 0 ? "Free" : fee} vnd
               </p>
             </div>
           </div>
           <hr className="my-4 border-gray-300" />
           <div className="flex justify-between">
             <p className="font-semibold text-[#F59E0B]">Total</p>
-            <p className="font-semibold">${totalAmount}</p>
+            <p className="font-semibold">{totalAmount} vnd</p>
           </div>
         </section>
         <button
