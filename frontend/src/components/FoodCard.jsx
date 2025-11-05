@@ -11,7 +11,6 @@ import { addToCart } from "../redux/slice/userSlice";
 
 function FoodCard({ item }) {
   const dispatch = useDispatch();
-  console.log("item", item);
   const [quantity, setQuantity] = useState(0);
   const handleDecrement = () => {
     if (quantity > 0) setQuantity(quantity - 1);

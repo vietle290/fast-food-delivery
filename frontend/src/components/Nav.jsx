@@ -25,7 +25,9 @@ import { useEffect } from "react";
 import { setNewLocation } from "../redux/slice/mapSlice";
 
 function Nav() {
-  const { userData, location, cartItems, myOrders } = useSelector((state) => state.user);
+  const { userData, location, cartItems, myOrders } = useSelector(
+    (state) => state.user
+  );
   const { shopData } = useSelector((state) => state.owner);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
@@ -52,24 +54,35 @@ function Nav() {
     }
   };
 
-    const handleSearchItems = async () => {
-      try {
-        const res = await axios.get(`${serverUrl}/api/item/search-item?query=${query}&city=${location}`, {
+  const handleSearchItems = async () => {
+    if (!location) return;
+
+    try {
+      const res = await axios.get(
+        `${serverUrl}/api/item/search-item?query=${query}&city=${location}`,
+        {
           withCredentials: true,
-        });
-        dispatch(setSearchItems(res.data));
-      } catch (error) {
-        console.error(error);
-      }
+        }
+      );
+
+      dispatch(setSearchItems(res.data));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    if (!query.trim()) {
+      dispatch(setSearchItems(null));
+      return;
     }
 
-useEffect(() => {
-  if (query.trim().length > 0) {
-    handleSearchItems();
-  } else {
-    dispatch(setSearchItems(null));
-  }
-}, [query]);
+    const delayDebounce = setTimeout(() => {
+      handleSearchItems();
+    }, 300);
+
+    return () => clearTimeout(delayDebounce);
+  }, [query]);
 
   return (
     <div className="w-full h-[80px] flex items-center justify-between md:justify-center gap-[30px] px-[20px] fixed top-0 z-[9999] bg-[#FFF9F6] overflow-visible">
@@ -92,8 +105,14 @@ useEffect(() => {
         </div>
       )}
 
-      {userData.role !== "owner" && <h1 className="text-3xl font-bold mb-2 text-[#F59E0B]">Fast Food</h1>}
-            {userData.role === "owner" && <h1 className="text-3xl font-bold mb-2 ml-10 text-[#F59E0B]">Fast Food</h1>}
+      {userData.role !== "owner" && (
+        <h1 className="text-3xl font-bold mb-2 text-[#F59E0B]">Fast Food</h1>
+      )}
+      {userData.role === "owner" && (
+        <h1 className="text-3xl font-bold mb-2 ml-10 text-[#F59E0B]">
+          Fast Food
+        </h1>
+      )}
 
       {userData && userData.role === "user" && (
         <div className="md:w-[60%] lg:w-[40%] h-[70px] bg-white shadow-xl rounded-lg items-center gap-[20px] hidden md:flex">
@@ -207,7 +226,13 @@ useEffect(() => {
           {userData?.fullName.slice(0, 1).toUpperCase()}
         </div>
         {isDropdownOpen && (
-          <div className={`fixed top-[80px] right-[10px] ${userData.role == "shipper" ? "md:right-[20%] lg:right-[30%]" : "md:right-[10%] lg:right-[20%]"} w-[181px] bg-white shadow-lg rounded-lg p-[20px] flex flex-col gap-[20px] z-[9999]`}>
+          <div
+            className={`fixed top-[80px] right-[10px] ${
+              userData.role == "shipper"
+                ? "md:right-[20%] lg:right-[30%]"
+                : "md:right-[10%] lg:right-[20%]"
+            } w-[181px] bg-white shadow-lg rounded-lg p-[20px] flex flex-col gap-[20px] z-[9999]`}
+          >
             <div className="w-full flex flex-col gap-[5px]">
               <div className="text-lg font-semibold">{userData?.fullName}</div>
               {userData.role == "user" && (
