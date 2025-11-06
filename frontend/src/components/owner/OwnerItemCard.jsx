@@ -46,7 +46,7 @@ function OwnerItemCard({ item }) {
           </div>
           <div>
             <p className="text-md font-semibold text-[#F59E0B]">
-              ${price || "0.00"}
+              {price || "0.00"} vnd
             </p>
           </div>
         </div>

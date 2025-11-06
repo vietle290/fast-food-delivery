@@ -10,9 +10,11 @@ import { useSelector } from "react-redux";
 import { ClipLoader } from "react-spinners";
 import FoodCard from "../FoodCard";
 import { useNavigate } from "react-router-dom";
+import image16 from "../../assets/image16.jpg"
 
 function UserDashboard() {
-  const { location, shopInCity, loading, itemInCity, searchItems, categories } = useSelector((state) => state.user);
+  const { location, shopInCity, loading, itemInCity, searchItems, categories } =
+    useSelector((state) => state.user);
   const scrollRef = useRef(null);
   const shopScrollRef = useRef(null);
   const [showScrollLeft, setShowScrollLeft] = useState(false);
@@ -21,6 +23,16 @@ function UserDashboard() {
   const [showShopScrollRight, setShowShopScrollRight] = useState(false);
   const [filterItems, setFilterItems] = useState([]);
   const navigate = useNavigate();
+
+  const newCategories = [
+    {
+      _id: "All",
+      name: "All",
+      image: image16,
+    },
+    ...categories,
+  ];
+  console.log("categories:", newCategories);
 
   const handleFilterByCategory = (category) => {
     if (category === "All") {
@@ -91,10 +103,7 @@ function UserDashboard() {
           <div className="w-full flex gap-4 overflow-x-auto pb-2">
             <div className="flex gap-4 w-full px-1">
               {searchItems.map((item, index) => (
-                <FoodCard
-                  item={item}
-                  key={index}
-                />
+                <FoodCard item={item} key={index} />
               ))}
             </div>
           </div>
@@ -118,7 +127,7 @@ function UserDashboard() {
             ref={scrollRef}
           >
             <div className="flex gap-4 w-full px-1">
-              {categories.map((category, index) => (
+              {newCategories.map((category, index) => (
                 <CategoryCard
                   key={index}
                   name={category.name}
@@ -177,10 +186,7 @@ function UserDashboard() {
         </h1>
         <div className="flex flex-wrap gap-4 w-full h-auto justify-center">
           {filterItems?.map((food, index) => (
-            <FoodCard
-              key={index}
-              item={food}
-            />
+            <FoodCard key={index} item={food} />
           ))}
         </div>
       </div>

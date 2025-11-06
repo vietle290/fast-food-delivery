@@ -68,7 +68,7 @@ const handleSelectAll = () => {
     }
   }
 
-  // Cấu hình cột cho bảng
+
   const columns = [
     {
       header: "Image",
