@@ -22,7 +22,7 @@ function ShipperDashboard() {
     console.log("socket connected");
     let watchId;
     if (navigator.geolocation) {
-      (watchId = navigator.geolocation.watchPosition((position) => {
+      (watchId = navigator.geolocation.watchPosition((position) => { //Live tracking
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
         setShipperLocation({ latitude, longitude });

@@ -32,7 +32,6 @@ function UserDashboard() {
     },
     ...categories,
   ];
-  console.log("categories:", newCategories);
 
   const handleFilterByCategory = (category) => {
     if (category === "All") {

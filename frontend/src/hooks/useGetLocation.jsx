@@ -61,6 +61,11 @@ function useGetLocation() {
 
     if (!userData) return;
 
+    if (userData?.location?.coordinates?.length === 2) {
+      const [lng, lat] = userData.location.coordinates;
+      fetchLocation(lat, lng);
+    }
+
     // Try to get client geolocation
     navigator.geolocation.getCurrentPosition(
       //  Success callback
@@ -70,7 +75,7 @@ function useGetLocation() {
       },
       //  Error callback → fallback to userData location
       (error) => {
-        console.warn("Geolocation permission denied, using userData:", error);
+        console.log("Geolocation error:", error.message);
         if (userData?.location?.coordinates?.length === 2) {
           const [lng, lat] = userData.location.coordinates;
           fetchLocation(lat, lng);

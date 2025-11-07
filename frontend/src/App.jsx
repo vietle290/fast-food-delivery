@@ -33,9 +33,9 @@ export const serverUrl = "http://localhost:8000"
 function App() {
   const {userData} = useSelector(state => state.user)
   const dispatch = useDispatch();
+  useGetLocation();
   useGetCurrentUser();
   useUpdateLocation();
-  useGetLocation();
   useGetShop();
   useGetShopByCity();
   useGetItemByLocation();
