@@ -3,43 +3,51 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// Create a test account or replace with real credentials.
+
 const transporter = nodemailer.createTransport({
-  service: "Gmail",
-  port: 465,
-  secure: true, // true for 465, false for other ports
+  service: "Gmail",       
   auth: {
-    user: process.env.EMAIL,
-    pass: process.env.PASS,
-    logger: true,
-    debug: true,
+    user: process.env.EMAIL, 
+    pass: process.env.PASS,  
   },
+  logger: true, // bật log
+  debug: true,  // bật debug
 });
 
-// verify connection configuration
-transporter
-  .verify()
-  .then(() => {
-    console.log("SMTP ready");
-  })
-  .catch((err) => {
-    console.error("Verify error:", err);
-  });
+// Verify kết nối SMTP
+transporter.verify((error, success) => {
+  if (error) {
+    console.error("SMTP Verify Error:", error);
+  } else {
+    console.log("SMTP ready:", success);
+  }
+});
 
-export const sendOtpEmail = async (to, otp) => {
-  await transporter.sendMail({
-    from: process.env.EMAIL,
-    to,
-    subject: "Your Password Reset OTP",
-    html: `<b>Your OTP is: <b>${otp}</b>. Please do not share with anyone. It will expire in 5 minutes</b>`,
-  });
+// Hàm gửi OTP chung
+const sendEmail = async ({ to, subject, html }) => {
+  try {
+    const info = await transporter.sendMail({
+      from: process.env.EMAIL,
+      to,
+      subject,
+      html,
+    });
+    console.log("Email sent:", info.messageId);
+    return info;
+  } catch (err) {
+    console.error("Send email error:", err);
+    throw err;
+  }
 };
 
+// Gửi OTP cho reset password
+export const sendOtpEmail = async (to, otp) => {
+  const html = `<b>Your OTP is: ${otp}. Please do not share with anyone. It will expire in 5 minutes.</b>`;
+  return sendEmail({ to, subject: "Your Password Reset OTP", html });
+};
+
+// Gửi OTP cho delivery
 export const sendDeliveryOtpEmail = async (user, otp) => {
-  await transporter.sendMail({
-    from: process.env.EMAIL,
-    to: user.email,
-    subject: "Delivery verification OTP",
-    html: `<b>Your OTP is: <b>${otp}</b>. Please do not share with anyone. It will expire in 5 minutes</b>`,
-  });
+  const html = `<b>Your OTP is: ${otp}. Please do not share with anyone. It will expire in 5 minutes.</b>`;
+  return sendEmail({ to: user.email, subject: "Delivery Verification OTP", html });
 };
