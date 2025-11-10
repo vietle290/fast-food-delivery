@@ -17,10 +17,11 @@ import {
 import { setNewLocation } from "../redux/slice/mapSlice";
 
 function useGetCurrentUser() {
-  const {loading} = useSelector((state) => state.user);
+  const {loading, userData} = useSelector((state) => state.user);
   const dispatch = useDispatch();
   
   useEffect(() => {
+    if (userData) return;
     dispatch(setLoading(true));
     const fetchCurrentUser = async () => {
       try {
@@ -38,19 +39,9 @@ function useGetCurrentUser() {
           console.warn("Token expired or unauthorized. Logging out...");
           sessionStorage.clear(); // clear all sessionStorage
           // Clear all Redux state
-          dispatch(setUserData(null));
           dispatch(clearUserData());
-          dispatch(clearCart());
-          dispatch(setMyOrders([]));
-          dispatch(setLocation(null));
-          dispatch(setCurrentState(null));
-          dispatch(setCurrentAddress(null));
-          dispatch(setShopInCity(null));
-          dispatch(setItemInCity(null));
           // dispatch(setNewLocation(null));
-          dispatch(setLoading(false));
         } else {
-          dispatch(setLoading(false));
           console.error("Error fetching current user:", error);
         }
       } finally {
@@ -58,7 +49,7 @@ function useGetCurrentUser() {
       }
     };
     fetchCurrentUser();
-  }, [dispatch]);
+  }, [dispatch, userData]);
   return loading;
 }
 

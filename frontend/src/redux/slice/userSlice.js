@@ -41,11 +41,25 @@ const userSlice = createSlice({
       }
     },
     clearUserData: (state) => {
+      // reset redux state
       state.userData = null;
       state.loading = false;
       state.error = null;
+
+      state.location = null;
+      state.currentState = null;
+      state.currentAddress = null;
+      state.shopInCity = null;
+      state.itemInCity = null;
+      state.myOrders = [];
+      state.cartItems = [];
+      state.total = 0;
+
       sessionStorage.removeItem("userData");
+      sessionStorage.removeItem("cartItems");
+      sessionStorage.removeItem("total");
     },
+
     setCategoryies: (state, action) => {
       state.categories =
         typeof action.payload === "function"
