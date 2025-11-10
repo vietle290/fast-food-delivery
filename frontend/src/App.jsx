@@ -28,7 +28,7 @@ import { setSocket } from './redux/slice/userSlice'
 import NotFound from './pages/NotFound'
 import useGetCategory from './hooks/useGetcategory'
 import useGetCategoryByShop from './hooks/usegetCategoryByShop'
-export const serverUrl = "https://fast-food-delivery-server-gilt.vercel.app"
+export const serverUrl = "https://fast-food-backend-4p7f.onrender.com"
 
 function App() {
   const {userData, loading} = useSelector(state => state.user)
