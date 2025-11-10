@@ -53,6 +53,8 @@ function App() {
       socketInstance.disconnect();
     }
   }, [userData?._id])
+
+  console.log("App userData:", userData);
   
   return (
     <Routes>
