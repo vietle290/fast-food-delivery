@@ -56,13 +56,13 @@ function App() {
 
   console.log("App userData:", userData);
 
-    if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen text-gray-600">
-        Loading...
-      </div>
-    );
-  }
+  //   if (loading) {
+  //   return (
+  //     <div className="flex justify-center items-center h-screen text-gray-600">
+  //       Loading...
+  //     </div>
+  //   );
+  // }
   
   return (
     <Routes>
