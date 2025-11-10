@@ -31,7 +31,7 @@ import useGetCategoryByShop from './hooks/usegetCategoryByShop'
 export const serverUrl = "https://fast-food-backend-4p7f.onrender.com"
 
 function App() {
-  const {userData, loading} = useSelector(state => state.user)
+  const {userData,} = useSelector(state => state.user)
   const dispatch = useDispatch();
   useGetCurrentUser();
   useGetLocation();
@@ -52,9 +52,7 @@ function App() {
     return () => {
       socketInstance.disconnect();
     }
-  }, [userData, dispatch])
-
-  if(loading) return <div>Loading...</div>
+  }, [userData?._id])
   
   return (
     <Routes>

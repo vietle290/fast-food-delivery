@@ -1,14 +1,13 @@
 import axios from "axios";
 import { useEffect } from "react";
 import { serverUrl } from "../App";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   clearCart,
   clearUserData,
   setCurrentAddress,
   setCurrentState,
   setItemInCity,
-  setLoading,
   setLocation,
   setMyOrders,
   setShopInCity,
@@ -17,15 +16,9 @@ import {
 import { setNewLocation } from "../redux/slice/mapSlice";
 
 function useGetCurrentUser() {
-  const { userData } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   useEffect(() => {
-    if (userData) {
-      dispatch(setLoading(false));
-      return;
-    };
     const fetchCurrentUser = async () => {
-      dispatch(setLoading(true));
       try {
         const response = await axios.get(`${serverUrl}/api/user/current-user`, {
           method: "GET",
@@ -41,6 +34,7 @@ function useGetCurrentUser() {
           console.warn("Token expired or unauthorized. Logging out...");
           sessionStorage.clear(); // clear all sessionStorage
           // Clear all Redux state
+          dispatch(setUserData(null));
           dispatch(clearUserData());
           dispatch(clearCart());
           dispatch(setMyOrders([]));
@@ -53,12 +47,10 @@ function useGetCurrentUser() {
         } else {
           console.error("Error fetching current user:", error);
         }
-      } finally {
-        dispatch(setLoading(false));
       }
     };
     fetchCurrentUser();
-  }, []);
+  }, [dispatch]);
 }
 
 export default useGetCurrentUser;

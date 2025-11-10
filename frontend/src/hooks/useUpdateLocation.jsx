@@ -8,7 +8,6 @@ function useUpdateLocation() {
     const {userData} = useSelector(state => state.user)
 
     useEffect(() => {
-        if (!userData) return;
         const updateLocation = async ({ latitude, longitude }) => {
             const res = await axios.post(`${serverUrl}/api/user/update-location`, {
                 latitude: latitude,
