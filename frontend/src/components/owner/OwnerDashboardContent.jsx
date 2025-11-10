@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 
 function OwnerDashboardContent() {
   const { shopData } = useSelector((state) => state.owner);
-  console.log("OwnerDashboardContent shopData:", shopData);
   const navigate = useNavigate();
 
   const handleNavigateCreateUpdateShop = () => navigate("/create-update-shop");
