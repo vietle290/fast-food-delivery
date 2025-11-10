@@ -21,7 +21,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
     cors: {
-        origin: "https://fast-food-delivery-y483.onrender.com",
+        origin: "https://fast-food-delivery-fawn.vercel.app",
         methods: ["GET", "POST"],
         credentials: true
     },
@@ -39,7 +39,7 @@ mongoose.connection.on("disconnected", () => {
 
 //middlewares
 app.use(cors({
-    origin: "https://fast-food-delivery-y483.onrender.com",
+    origin: "https://fast-food-delivery-fawn.vercel.app",
     credentials: true,
 }));
 
