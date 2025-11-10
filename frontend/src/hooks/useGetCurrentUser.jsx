@@ -8,6 +8,7 @@ import {
   setCurrentAddress,
   setCurrentState,
   setItemInCity,
+  setLoading,
   setLocation,
   setMyOrders,
   setShopInCity,
@@ -19,8 +20,12 @@ function useGetCurrentUser() {
   const { userData } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   useEffect(() => {
-    if (userData) return;
+    if (userData) {
+      dispatch(setLoading(false));
+      return;
+    };
     const fetchCurrentUser = async () => {
+      dispatch(setLoading(true));
       try {
         const response = await axios.get(`${serverUrl}/api/user/current-user`, {
           method: "GET",
@@ -48,10 +53,12 @@ function useGetCurrentUser() {
         } else {
           console.error("Error fetching current user:", error);
         }
+      } finally {
+        dispatch(setLoading(false));
       }
     };
     fetchCurrentUser();
-  }, [dispatch]);
+  }, []);
 }
 
 export default useGetCurrentUser;
