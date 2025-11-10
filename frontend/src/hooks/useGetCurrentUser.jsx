@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect } from "react";
 import { serverUrl } from "../App";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   clearCart,
   clearUserData,
@@ -16,8 +16,10 @@ import {
 import { setNewLocation } from "../redux/slice/mapSlice";
 
 function useGetCurrentUser() {
+  const { userData } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   useEffect(() => {
+    if (userData) return;
     const fetchCurrentUser = async () => {
       try {
         const response = await axios.get(`${serverUrl}/api/user/current-user`, {

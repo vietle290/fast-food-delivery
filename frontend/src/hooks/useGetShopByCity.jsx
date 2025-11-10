@@ -8,6 +8,7 @@ function useGetShopByCity() {
     const dispatch = useDispatch();
     const { location, userData } = useSelector(state => state.user)
     useEffect(() => {
+        if (!userData) return;
         const fetchShopByCity = async () => {
             setLoading(true);
             try {

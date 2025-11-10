@@ -8,7 +8,8 @@ function useGetCategory() {
   const dispatch = useDispatch();
   const { userData } = useSelector((state) => state.user);
   useEffect(() => {
-    if (!userData || userData.role !== "owner") {
+    if (!userData) return;
+    if (userData.role !== "owner") {
       const fetchCategory = async () => {
         try {
           const response = await axios.get(
