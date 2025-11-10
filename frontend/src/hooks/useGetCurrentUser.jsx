@@ -19,8 +19,9 @@ import { setNewLocation } from "../redux/slice/mapSlice";
 function useGetCurrentUser() {
   const {loading} = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  dispatch(setLoading(true));
+  
   useEffect(() => {
+    dispatch(setLoading(true));
     const fetchCurrentUser = async () => {
       try {
         const response = await axios.get(`${serverUrl}/api/user/current-user`, {
