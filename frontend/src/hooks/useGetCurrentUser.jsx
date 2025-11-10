@@ -1,13 +1,14 @@
 import axios from "axios";
 import { useEffect } from "react";
 import { serverUrl } from "../App";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   clearCart,
   clearUserData,
   setCurrentAddress,
   setCurrentState,
   setItemInCity,
+  setLoading,
   setLocation,
   setMyOrders,
   setShopInCity,
@@ -16,7 +17,9 @@ import {
 import { setNewLocation } from "../redux/slice/mapSlice";
 
 function useGetCurrentUser() {
+  const {loading} = useSelector((state) => state.user);
   const dispatch = useDispatch();
+  dispatch(setLoading(true));
   useEffect(() => {
     const fetchCurrentUser = async () => {
       try {
@@ -47,10 +50,13 @@ function useGetCurrentUser() {
         } else {
           console.error("Error fetching current user:", error);
         }
+      } finally {
+        dispatch(setLoading(false));
       }
     };
     fetchCurrentUser();
   }, [dispatch]);
+  return loading;
 }
 
 export default useGetCurrentUser;

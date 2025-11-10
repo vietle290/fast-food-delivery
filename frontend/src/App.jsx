@@ -31,7 +31,7 @@ import useGetCategoryByShop from './hooks/usegetCategoryByShop'
 export const serverUrl = "https://fast-food-backend-4p7f.onrender.com"
 
 function App() {
-  const {userData,} = useSelector(state => state.user)
+  const {userData, loading} = useSelector(state => state.user)
   const dispatch = useDispatch();
   useGetCurrentUser();
   useGetLocation();
@@ -55,6 +55,14 @@ function App() {
   }, [userData?._id])
 
   console.log("App userData:", userData);
+
+    if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen text-gray-600">
+        Loading...
+      </div>
+    );
+  }
   
   return (
     <Routes>
