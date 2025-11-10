@@ -47,7 +47,9 @@ function useGetCurrentUser() {
           dispatch(setShopInCity(null));
           dispatch(setItemInCity(null));
           // dispatch(setNewLocation(null));
+          dispatch(setLoading(false));
         } else {
+          dispatch(setLoading(false));
           console.error("Error fetching current user:", error);
         }
       } finally {
