@@ -35,8 +35,8 @@ export const register = async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,
-      sameSite: "strict",
+      secure: true,
+      sameSite: "none",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     }); // 7 days
 
@@ -70,8 +70,8 @@ export const register2 = async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,
-      sameSite: "strict",
+      secure: true,
+      sameSite: "none",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     }); // 7 days
 
@@ -95,8 +95,8 @@ export const login = async (req, res) => {
     const token = await getToken(user._id);
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,
-      sameSite: "strict",
+      secure: true,
+      sameSite: "none",
       maxAge: 3600000,
     });
     return res.status(200).json({ user });
@@ -197,8 +197,8 @@ export const googleAuthen = async (req, res) => {
     const token = await getToken(user._id);
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,
-      sameSite: "strict",
+      secure: true,
+      sameSite: "none",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     }); // 7 days
     return res.status(201).json({ user });
