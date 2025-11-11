@@ -86,12 +86,10 @@ function App() {
     <Suspense fallback={<div className="flex justify-center items-center h-screen">Loading...</div>}>
     <Routes>
       <Route path="/" element={userData ? <Home /> : <Navigate to={"/login"} />} />
-      <Route path="/" element={userData ? <Home /> : <Navigate to={"/register"} />} />
-      <Route path="/" element={userData ? <Home /> : <Navigate to={"/forgot-password"} />} />
       <Route path="/home" element={userData ? <Home /> : <Navigate to={"/login"} />} />
       <Route path="/login" element={!userData ? <Login /> : <Navigate to={"/"} />} />
-      <Route path="/register" element={!userData ? <Register /> : <Navigate to={"/"} />} />
-      <Route path="/forgot-password" element={!userData ? <ForgotPassword /> : <Navigate to={"/"} />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/create-update-shop" element={userData ? <CreateUpdateShop /> : <Navigate to={"/login"} />} />
       <Route path="/add-item" element={userData ? <AddItem /> : <Navigate to={"/login"} />} />
       <Route path="/update-item/:itemId" element={userData ? <UpdateItem /> : <Navigate to={"/login"} />} />
