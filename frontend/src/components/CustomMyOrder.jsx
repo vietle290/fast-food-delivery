@@ -1,6 +1,13 @@
 import React from "react";
 
-function CustomMyOrder({ data, selectedRate, handleRating, formatDate, handlePayNow, navigate }) {
+function CustomMyOrder({
+  data,
+  selectedRate,
+  handleRating,
+  formatDate,
+  handlePayNow,
+  navigate,
+}) {
   return (
     <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden p-4 font-sans">
       <div className="flex justify-between items-center mb-4">
@@ -47,8 +54,9 @@ function CustomMyOrder({ data, selectedRate, handleRating, formatDate, handlePay
                 <img
                   src={items.item?.image}
                   alt={items.name}
-                  className="w-full h-45 object-cover rounded-md mb-2"
+                  className="w-full aspect-[4/3] object-cover rounded-md mb-2"
                 />
+
                 <p className="text-sm font-medium">{items.name}</p>
                 <p className="text-xs text-gray-600">
                   Qty: {items.quantity} x {items.price} vnd
@@ -96,7 +104,6 @@ function CustomMyOrder({ data, selectedRate, handleRating, formatDate, handlePay
           </div>
         </div>
       ))}
-
 
       {data.paymentMethod === "online" && data.payment === false ? (
         <div className="flex justify-between items-center mt-4 pt-4">

@@ -45,13 +45,13 @@ function MyOrders() {
 
   const filteredOrders = myOrders
     ?.map((order) => {
-        const filteredShopOrders = order.shopOrders.filter(
-          (shopOrder) => shopOrder.status === selectedStatus
-        );
+      const filteredShopOrders = order.shopOrders.filter(
+        (shopOrder) => shopOrder.status === selectedStatus
+      );
 
-        return filteredShopOrders.length > 0
-          ? { ...order, shopOrders: filteredShopOrders }
-          : null;
+      return filteredShopOrders.length > 0
+        ? { ...order, shopOrders: filteredShopOrders }
+        : null;
     })
     .filter(Boolean); // remove null
 
@@ -60,26 +60,26 @@ function MyOrders() {
   console.log("myOrders in MyOrders page:", filteredOrders);
 
   return (
-    <div className="w-full min-h-[80vh] flex justify-center bg-[#FFF9F6]">
-      <div className="w-full max-w-4xl p-4">
-        <div className="flex items-center mb-6">
+    <div className="w-full min-h-[80vh] flex justify-center bg-[#FFF9F6] px-2 sm:px-4 md:px-6 lg:px-8">
+      <div className="w-full max-w-4xl p-2 sm:p-4 md:p-6">
+        <div className="flex items-center mb-4 sm:mb-6">
           <div className="cursor-pointer" onClick={handleNavigateBack}>
             <IoMdArrowBack
-              size={30}
-              className="text-[#F59E0B] hover:text-[#FBBF24]"
+              size={24}
+              className="text-[#F59E0B] hover:text-[#FBBF24] sm:text-2xl"
             />
           </div>
-          <h2 className="ml-3 text-xl font-semibold text-gray-800">
+          <h2 className="ml-2 sm:ml-3 text-lg sm:text-xl font-semibold text-gray-800">
             My Orders
           </h2>
         </div>
 
-        <div className="flex justify-between bg-white shadow-md rounded-xl p-3 mb-6">
+        <div className="flex flex-wrap justify-between bg-white shadow-md rounded-xl p-2 sm:p-3 mb-4 sm:mb-6">
           {tabs.map((tab) => (
             <button
               key={tab}
               onClick={() => setSelectedStatus(tab)}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold capitalize
+              className={`px-1 py-2 rounded-lg text-sm font-semibold capitalize
                 ${
                   selectedStatus === tab
                     ? "bg-[#F59E0B] text-white"
@@ -92,7 +92,7 @@ function MyOrders() {
           ))}
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {filteredOrders.length > 0 ? (
             filteredOrders.map((order, index) =>
               userData.role === "user" ? (
