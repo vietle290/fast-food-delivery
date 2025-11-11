@@ -86,6 +86,8 @@ function App() {
     <Suspense fallback={<div className="flex justify-center items-center h-screen">Loading...</div>}>
     <Routes>
       <Route path="/" element={userData ? <Home /> : <Navigate to={"/login"} />} />
+      <Route path="/" element={userData ? <Home /> : <Navigate to={"/register"} />} />
+      <Route path="/" element={userData ? <Home /> : <Navigate to={"/forgot-password"} />} />
       <Route path="/home" element={userData ? <Home /> : <Navigate to={"/login"} />} />
       <Route path="/login" element={!userData ? <Login /> : <Navigate to={"/"} />} />
       <Route path="/register" element={!userData ? <Register /> : <Navigate to={"/"} />} />
