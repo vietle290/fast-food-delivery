@@ -9,6 +9,7 @@ import { auth } from "../../firebase";
 import { ClipLoader } from "react-spinners";
 import { useDispatch } from "react-redux";
 import { setUserData } from "../redux/slice/userSlice";
+import { Link } from "react-router-dom";
 
 function Register() {
   const primaryColor = "#F59E0B"; // Orange-900
@@ -38,7 +39,7 @@ function Register() {
 
   const handleRegister = async (e) => {
     e.preventDefault(); // Prevent form submission
-    
+
     setLoading(true);
     try {
       const response = await axios.post(
@@ -67,17 +68,23 @@ function Register() {
   const handleGoogleRegister = async (e) => {
     e.preventDefault();
     if (!mobile) {
-      return setErr("Please enter your mobile number before signing up with Google.");
+      return setErr(
+        "Please enter your mobile number before signing up with Google."
+      );
     }
     const provider = new GoogleAuthProvider();
     const response = await signInWithPopup(auth, provider);
     try {
-      const { data } = await axios.post(`${serverUrl}/api/auth/google-authen`, {
-        fullName: response.user.displayName,
-        email: response.user.email,
-        mobile,
-        role,
-      },{ withCredentials: true });
+      const { data } = await axios.post(
+        `${serverUrl}/api/auth/google-authen`,
+        {
+          fullName: response.user.displayName,
+          email: response.user.email,
+          mobile,
+          role,
+        },
+        { withCredentials: true }
+      );
       dispatch(setUserData(data.user));
     } catch (error) {
       console.error(error);
@@ -182,7 +189,6 @@ function Register() {
             disabled={loading}
           >
             {loading ? <ClipLoader color="#ffffff" size={20} /> : "Register"}
-
           </button>
 
           {err && <p className="text-red-500 text-sm text-center">{err}</p>}
@@ -199,13 +205,13 @@ function Register() {
 
         <p className="mt-4 text-sm text-center">
           Already have an account?{" "}
-          <a
-            href="/login"
+          <Link
+            to="/login"
             className="font-medium"
             style={{ color: primaryColor }}
           >
             Login
-          </a>
+          </Link>
         </p>
       </div>
     </div>
@@ -213,5 +219,3 @@ function Register() {
 }
 
 export default Register;
-
-

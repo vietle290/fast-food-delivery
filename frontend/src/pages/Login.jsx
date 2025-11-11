@@ -5,7 +5,7 @@ import { AiOutlineClose } from "react-icons/ai";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import axios from "axios";
 import { serverUrl } from "../App";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
 import { GoogleAuthProvider, signInWithPopup, deleteUser } from "firebase/auth";
 import { auth } from "../../firebase";
@@ -187,13 +187,13 @@ function Login() {
               className="flex justify-end mt-1"
               onClick={navigateForgotPassword}
             >
-              <a
-                href="/forgot-password"
+              <Link
+                to="/forgot-password"
                 className="text-sm text-gray-600 hover:text-gray-800"
                 style={{ color: primaryColor }}
               >
                 Forgot password?
-              </a>
+              </Link>
             </div>
           </label>
 
@@ -226,13 +226,13 @@ function Login() {
 
         <p className="mt-4 text-sm text-center">
           Does not have an account?{" "}
-          <a
-            href="/register"
+          <Link
+            to="/register"
             className="font-medium"
             style={{ color: primaryColor }}
           >
             Sign up
-          </a>
+          </Link>
         </p>
       </div>
       {showExtraInfo && (
