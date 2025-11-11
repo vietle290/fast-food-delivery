@@ -46,7 +46,7 @@ const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
 const PaymentCancel = lazy(() => import("./pages/PaymentCancel"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
-export const serverUrl = "https://fast-food-backend-4p7f.onrender.com"
+export const serverUrl = "https://fast-food-delivery-server.onrender.com"
 
 function App() {
   const {userData, loading} = useSelector(state => state.user)
