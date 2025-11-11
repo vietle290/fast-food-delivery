@@ -17,7 +17,7 @@ function ForgotPassword() {
 
   const handleStep = () => {
     setStep(step - 1);
-    if (step == 1) window.location.href = "/login";
+    if (step == 1) navigate("/login");
     setErr("");
   };
 
