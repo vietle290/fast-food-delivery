@@ -15,10 +15,12 @@ import {
   setUserData,
 } from "../redux/slice/userSlice";
 import { setNewLocation } from "../redux/slice/mapSlice";
+import { useNavigate } from "react-router-dom";
 
 function useGetCurrentUser() {
   const {loading, userData} = useSelector((state) => state.user);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   
   useEffect(() => {
     if (userData) return;
@@ -41,6 +43,7 @@ function useGetCurrentUser() {
           // Clear all Redux state
           dispatch(clearUserData());
           // dispatch(setNewLocation(null));
+          navigate("/login");
         } else {
           console.error("Error fetching current user:", error);
         }

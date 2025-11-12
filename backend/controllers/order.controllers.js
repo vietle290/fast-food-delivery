@@ -113,8 +113,8 @@ export const placeOrder = async (req, res) => {
         orderCode: Date.now(),
         amount: Math.round(totalAmount),
         description: "Thanh toán đơn hàng",
-        returnUrl: `https://fast-food-delivery-y483.onrender.com/payment-success?orderId=${orders._id}`,
-        cancelUrl: "https://fast-food-delivery-y483.onrender.com/payment-cancel",
+        returnUrl: `https://fast-food-delivery-y483.onrender.com/#/payment-success?orderId=${orders._id}`,
+        cancelUrl: "https://fast-food-delivery-y483.onrender.com/#/payment-cancel",
       });
 
       return res.status(201).json({
