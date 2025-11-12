@@ -162,6 +162,75 @@ export const placeOrder = async (req, res) => {
   }
 };
 
+// export const cancelOrder = async (req, res) => {
+//   try {
+//     const { orderId } = req.params;
+//     const order = await Order.findById(orderId);
+//     if (!order) {
+//       return res.status(404).json({ message: "Order not found" });
+//     }
+//     if (order.paymentMethod === "online" && order.payment === true) {
+//       return res.status(400).json({ message: "Payment already captured" });
+//     }
+//     if (order.shopOrders.some(so => so.status === "preparing" || so.status === "out-for-delivery")) { // Check if any shop order is preparing or out for delivery
+//       return res.status(400).json({ message: "Order is preparing or out for delivery" });
+//     }
+//     order.status = "cancelled";
+//     await order.save();
+//     await order.populate("shopOrders.shopItems.item", "name image price");
+//     await order.populate("shopOrders.shop", "name");
+//     await order.populate("shopOrders.owner", "fullName socketId");
+//     await order.populate("user", "fullName email mobile");
+
+//     const io = req.app.get("io");
+//     if (io) {
+//       order.shopOrders.forEach((shopOrderss) => {
+//         const ownerSocketId = shopOrderss.owner.socketId;
+//         if (ownerSocketId) {
+//           io.to(ownerSocketId).emit("order-cancelled", {
+//             _id: order._id,
+//             user: order.user,
+//             paymentMethod: order.paymentMethod,
+//             payment: order.payment,
+//             shopOrders: [shopOrderss],
+//             createdAt: order.createdAt,
+//             deliveryAddress: order.deliveryAddress,
+//             totalAmount: order.shopOrders[0]?.subtotal,
+//           }); // Emit the new order to the owner
+//         }
+//       });
+//     }
+
+//     return res.status(200).json({ message: "Order cancelled successfully", order });
+//   } catch (error) {
+//     return res
+//       .status(500)
+//       .json({ message: `Error cancelling order: ${error.message}` });
+//   }
+// };
+
+export const cancelChooseShopOrder = async (req, res) => {
+  try {
+    const { orderId, shopOrderId } = req.params;
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+    const shopOrder = order.shopOrders.id(shopOrderId);
+    if (!shopOrder) {
+      return res.status(404).json({ message: "Shop order not found" });
+    }
+    shopOrder.status = "cancelled";
+    await order.save();
+
+    return res.status(200).json({ message: "Order cancelled successfully" });;
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: `Error cancelling order: ${error.message}` });
+  }
+};
+
 export const verifyPayment = async (req, res) => {
   try {
     const { payos_payment_id, orderId } = req.body;

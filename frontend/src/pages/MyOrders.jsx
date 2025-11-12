@@ -60,7 +60,7 @@ function MyOrders() {
   console.log("myOrders in MyOrders page:", filteredOrders);
 
   return (
-    <div className="w-full min-h-[80vh] flex justify-center bg-[#FFF9F6] px-2 sm:px-4 md:px-6 lg:px-8">
+    <div className="w-full min-h-screen flex justify-center bg-[#FFF9F6] px-2 sm:px-4 md:px-6 lg:px-8">
       <div className="w-full max-w-4xl p-2 sm:p-4 md:p-6">
         <div className="flex items-center mb-4 sm:mb-6">
           <div className="cursor-pointer" onClick={handleNavigateBack}>
@@ -74,7 +74,7 @@ function MyOrders() {
           </h2>
         </div>
 
-        <div className="flex flex-wrap justify-between bg-white shadow-md rounded-xl p-2 sm:p-3 mb-4 sm:mb-6">
+        {/* <div className="flex justify-between bg-white shadow-md rounded-xl p-2 sm:p-3 mb-4 sm:mb-6 overflow-auto">
           {tabs.map((tab) => (
             <button
               key={tab}
@@ -86,6 +86,23 @@ function MyOrders() {
                     : "text-gray-600 hover:bg-gray-100"
                 }
               `}
+            >
+              {tab.replace("-", " ")}
+            </button>
+          ))}
+        </div> */}
+        <div className="flex bg-white shadow-md rounded-xl p-2 sm:p-3 mb-4 sm:mb-6 overflow-x-auto no-scrollbar">
+          {tabs.map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setSelectedStatus(tab)}
+              className={`flex-1 min-w-[120px] text-center py-2 sm:py-3 rounded-lg text-sm sm:text-base font-semibold capitalize transition-all duration-200 mx-1
+        ${
+          selectedStatus === tab
+            ? "bg-[#F59E0B] text-white shadow-md"
+            : "text-gray-600 hover:bg-gray-100"
+        }
+      `}
             >
               {tab.replace("-", " ")}
             </button>

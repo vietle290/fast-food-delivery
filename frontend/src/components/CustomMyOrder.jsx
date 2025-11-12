@@ -1,4 +1,6 @@
 import React from "react";
+import { serverUrl } from "../App";
+import axios from "axios";
 
 function CustomMyOrder({
   data,
@@ -8,6 +10,19 @@ function CustomMyOrder({
   handlePayNow,
   navigate,
 }) {
+  const handleCancelOrder = async (orderId, shopOrderId) => {
+    try {
+      const res = await axios.post(
+        `${serverUrl}/api/order/cancel-order/${orderId}/${shopOrderId}`,
+        {},
+        { withCredentials: true }
+      );
+      console.log("Cancel Order Response:", res.data);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error canceling order:", error);
+    }
+  };
   return (
     <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden p-4 font-sans">
       <div className="flex justify-between items-center mb-4">
@@ -102,6 +117,17 @@ function CustomMyOrder({
               </span>
             )}
           </div>
+          {/* end position cancel button */}
+          {shop.status === "pending" && (
+            <div className="flex justify-end mt-2">
+              <button
+                className="bg-[#f53b3b] text-white px-4 py-2 rounded-md hover:bg-[#e11f1f] transition"
+                onClick={() => handleCancelOrder(data._id, shop._id)}
+              >
+                Cancel
+              </button>
+            </div>
+          )}
         </div>
       ))}
 

@@ -176,9 +176,9 @@ function Nav() {
             >
               <IoReceiptOutline size={25} />
               <span>My Orders</span>
-              <span className="absolute top-[-13px] right-[-15px] text-white rounded-full bg-[#f50b0b] px-[5px]">
+              {/* <span className="absolute top-[-13px] right-[-15px] text-white rounded-full bg-[#f50b0b] px-[5px]">
                 0
-              </span>
+              </span> */}
             </div>
             <div
               className="md:hidden relative cursor-pointer flex items-center gap-2 text-[#F59E0B]"
