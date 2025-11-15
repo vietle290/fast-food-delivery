@@ -168,7 +168,9 @@ export const getItemByLocation = async (req, res) => {
       return res.status(404).json({ message: "Shop not found" });
     }
     const shopId = shop.map((shop) => shop._id);
-    const items = await Item.find({ shop: { $in: shopId } }).populate("shop");
+    const items = await Item.find({ shop: { $in: shopId } })
+    .populate("shop")
+    .populate("category");
     return res.status(200).json(items);
   } catch (error) {
     return res

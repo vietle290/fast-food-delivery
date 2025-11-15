@@ -52,7 +52,7 @@ function useGetCurrentUser() {
       }
     };
     fetchCurrentUser();
-  }, [dispatch, userData]);
+  }, [dispatch, userData, navigate]);
   return loading;
 }
 

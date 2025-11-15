@@ -116,8 +116,8 @@ function OwnerDashboard() {
         return <OwnerDashboardContent />;
       case "Categories":
         return <CategoryList />;
-      case "My Orders":
-        return <OwnerMyOrders />;
+      // case "My Orders":
+      //   return <OwnerMyOrders />;
       default:
         return <OwnerDashboardContent />;
     }

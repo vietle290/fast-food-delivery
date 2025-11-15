@@ -11,7 +11,7 @@ function Sidebar({ onToggle, onSelect }) {
     { name: "Home", icon: <FaHome /> },
     { name: "Categories", icon: <BiCategory /> },
     // { name: "Add Item", icon: <FaPlus /> },
-    { name: "My Orders", icon: <IoReceiptOutline /> },
+    // { name: "My Orders", icon: <IoReceiptOutline /> },
   ];
 
   useEffect(() => {

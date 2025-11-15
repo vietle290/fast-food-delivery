@@ -37,7 +37,7 @@ function UserDashboard() {
     if (category === "All") {
       setFilterItems(itemInCity);
     } else {
-      setFilterItems(itemInCity.filter((item) => item.category === category));
+      setFilterItems(itemInCity.filter((item) => item.category?.name === category));
     }
   };
 
