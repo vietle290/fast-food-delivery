@@ -43,7 +43,7 @@ function useGetCurrentUser() {
           // Clear all Redux state
           dispatch(clearUserData());
           // dispatch(setNewLocation(null));
-          navigate("/login");
+          // navigate("/login");
         } else {
           console.error("Error fetching current user:", error);
         }
