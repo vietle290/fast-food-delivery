@@ -103,8 +103,8 @@ function ForgotPassword() {
           <h2 className="text-2xl font-semibold text-center text-[#F59E0B]">
             Forgot Password
           </h2>
-          <h3 className="text-red-600">Hiện tại chức năng quên mật khẩu bằng cách gửi Email chỉ sử dụng được trên local, còn chạy trên global không sử dụng được do bắt buộc phải đăng ký domain mất phí. Mong anh chị thông cảm ạ.</h3>
         </div>
+        <h3 className="text-red-600">Hiện tại chức năng quên mật khẩu bằng cách gửi Email chỉ sử dụng được trên local, còn chạy trên global không sử dụng được do bắt buộc phải đăng ký domain mất phí. Mong anh chị thông cảm ạ.</h3>
         {step === 1 && (
           <div>
             <label
