@@ -28,6 +28,8 @@ import { setSocket } from './redux/slice/userSlice'
 // import NotFound from './pages/NotFound'
 import useGetCategory from './hooks/useGetcategory'
 import useGetCategoryByShop from './hooks/usegetCategoryByShop'
+import ShipperOrderCard from './components/shipper/ShipperOrderCard'
+import useGetShipperOrderById from './hooks/useGetShipperOrderById'
 
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
@@ -48,6 +50,8 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 
 export const serverUrl = "https://fast-food-delivery-server.onrender.com"
 
+// export const serverUrl = "http://localhost:8000"
+
 function App() {
   const {userData, loading} = useSelector(state => state.user)
   const dispatch = useDispatch();
@@ -58,6 +62,7 @@ function App() {
   useGetShopByCity();
   useGetItemByLocation();
   useGetMyOrders();
+  useGetShipperOrderById();
   useGetCategory();
   useGetCategoryByShop();
 
@@ -102,6 +107,7 @@ function App() {
       <Route path="/payment-success" element={userData ? <PaymentSuccess /> : <Navigate to={"/login"} />} />
       <Route path="/payment-cancel" element={userData ? <PaymentCancel /> : <Navigate to={"/login"} />} />
       <Route path="/not-found" element={userData ? <NotFound /> : <Navigate to={"/login"} />} />
+      <Route path='/shipper-orders' element={userData ? <ShipperOrderCard /> : <Navigate to={"/login"} />} />
     </Routes>
     </Suspense>
   )

@@ -305,7 +305,7 @@ function ShipperDashboard() {
           {!showOtpBox && !loading ? (
             <button
               className="mt-4 w-full px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition"
-              onClick={sendOtp}
+              onClick={verifyOtp}
               disabled={loading}
             >
               Mark As Delivered
@@ -331,7 +331,7 @@ function ShipperDashboard() {
               </button>
             </div>
           )}
-          <h2 className="text-red-600">Hiện tại chức năng xác nhận giao hàng bằng cách gửi Email xác thực chỉ sử dụng được trên local, còn chạy trên global không sử dụng được do bắt buộc phải đăng ký domain mất phí. Mong anh chị thông cảm ạ.</h2>
+          {/* <h2 className="text-red-600">Hiện tại chức năng xác nhận giao hàng bằng cách gửi Email xác thực chỉ sử dụng được trên local, còn chạy trên global không sử dụng được do bắt buộc phải đăng ký domain mất phí. Mong anh chị thông cảm ạ.</h2> */}
         </div>
       )}
     </div>

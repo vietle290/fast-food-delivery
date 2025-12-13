@@ -209,13 +209,30 @@ function Nav() {
                 )}
               </div>
             )}
-
-            <button
-              className="rounded-lg md:block hidden bg-gradient-to-r from-[#F59E0B] to-[#F59E0B]/50 hover:bg-gradient-to-r hover:from-[#F59E0B]/50 hover:to-[#F59E0B] text-white px-[10px] py-[5px] cursor-pointer"
-              onClick={() => navigate("/my-orders")}
-            >
-              My Orders
-            </button>
+            {(userData.role === "user" || userData.role === "owner") && (
+              <button
+                className="rounded-lg md:block hidden bg-gradient-to-r from-[#F59E0B] to-[#F59E0B]/50 hover:bg-gradient-to-r hover:from-[#F59E0B]/50 hover:to-[#F59E0B] text-white px-[10px] py-[5px] cursor-pointer"
+                onClick={() => navigate("/my-orders")}
+              >
+                My Orders
+              </button>
+            )}
+            {userData && userData.role === "shipper" && (
+              <button
+                className="rounded-lg md:block hidden bg-gradient-to-r from-[#F59E0B] to-[#F59E0B]/50 hover:bg-gradient-to-r hover:from-[#F59E0B]/50 hover:to-[#F59E0B] text-white px-[10px] py-[5px] cursor-pointer"
+                onClick={() => navigate("/shipper-orders")}
+              >
+                My Orders
+              </button>
+            )}
+            {userData && userData.role === "shipper" && (
+              <div
+                className="relative cursor-pointer md:hidden flex items-center text-[#F59E0B]"
+                onClick={() => navigate("/shipper-orders")}
+              >
+                <IoReceiptOutline size={25} className="text-[#F59E0B]" />
+              </div>
+            )}
           </>
         )}
 

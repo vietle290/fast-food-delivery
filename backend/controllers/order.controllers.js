@@ -702,12 +702,12 @@ export const verifyShipperOtp = async (req, res) => {
     if (!shopOrder) {
       return res.status(404).json({ message: "Shop order not found" });
     }
-    if (shopOrder.deliveryOtp !== otp) {
-      return res.status(400).json({ message: "Invalid OTP" });
-    }
-    if (shopOrder.otpExpiry < Date.now()) {
-      return res.status(400).json({ message: "OTP expired" });
-    }
+    // if (shopOrder.deliveryOtp !== otp) {
+    //   return res.status(400).json({ message: "Invalid OTP" });
+    // }
+    // if (shopOrder.otpExpiry < Date.now()) {
+    //   return res.status(400).json({ message: "OTP expired" });
+    // }
     shopOrder.status = "delivered";
     shopOrder.deliveredAt = Date.now();
     await order.save();
@@ -768,3 +768,28 @@ export const getTodayDeliveries = async (req, res) => {
       .json({ message: `Error getting today's deliveries: ${error.message}` });
   }
 };
+
+export const getAssignedShipperOrderByShipperId = async (req, res) => {
+  try {
+    const shipperId = req.params.shipperId;
+    //find delivered order status only
+        const orders = await Order.find({
+      "shopOrders.assignedShipper": shipperId,
+      "shopOrders.status": { $in: ["delivered"] },
+    })
+      .populate("shopOrders.shop", "name")
+      .populate("shopOrders.assignedShipper", "fullName email mobile")
+      .populate("shopOrders.shopItems.item", "name image price");
+    const shopOrders = orders.flatMap((o) => 
+      o.shopOrders.filter((so) => so.assignedShipper?._id.toString() === shipperId)
+    )
+    // await shopOrders.populate("shop", "name")
+    // await shopOrders.populate("assignedShipper", "fullName email mobile")
+    // await shopOrders.populate("shopItems.item", "name image price");
+    return res.status(200).json(shopOrders);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: `Error getting assigned orders: ${error.message}` });
+  }
+}
