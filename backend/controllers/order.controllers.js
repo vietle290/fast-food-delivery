@@ -324,8 +324,11 @@ export const getUserOrders = async (req, res) => {
 export const updateOrderStatus = async (req, res) => {
   try {
     const { orderId, shopId } = req.params; // shopId is the id of the shop in the shopOrders array
-    const { status } = req.body;
+    const { paymentMethod, payment, status } = req.body;
     const order = await Order.findById(orderId);
+    if (paymentMethod === "online" && payment === false) {
+      return res.status(400).json({ message: "Payment not captured" });
+    }
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }

@@ -11,11 +11,15 @@ function OwnerOrderCard({ data }) {
   const dispatch = useDispatch();
   // const [avaibleShippers, setAvaibleShippers] = useState([]);
   const { avaibleShippers } = useSelector((state) => state.owner);
-  const handleUpdateStatus = async (orderId, shopId, status) => {
+  const handleUpdateStatus = async (orderId, shopId, paymentMethod, payment, status) => {
     try {
       const res = await axios.post(
         `${serverUrl}/api/order/update-status/${orderId}/${shopId}`,
-        { status: status },
+        { 
+          paymentMethod: paymentMethod,
+          payment: payment,
+          status: status 
+        },
         { withCredentials: true }
       );
       const assignment = res.data.assignment;
@@ -49,7 +53,7 @@ function OwnerOrderCard({ data }) {
               {data.payment ? (
                 <span className="font-medium text-green-500">Paid</span>
               ) : (
-                <span className="font-medium text-red-500">Unpaid</span>
+                <span className="font-medium text-red-500">Unpaid (Can not change order status)</span>
               )}
             </p>
           ) : (
@@ -167,6 +171,8 @@ function OwnerOrderCard({ data }) {
                 handleUpdateStatus(
                   data._id,
                   data.shopOrders[0].shop._id,
+                  data.paymentMethod,
+                  data.payment,
                   e.target.value
                 )
               }
