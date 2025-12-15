@@ -11,6 +11,7 @@ import { ClipLoader } from "react-spinners";
 import FoodCard from "../FoodCard";
 import { useNavigate } from "react-router-dom";
 import image16 from "../../assets/image16.jpg";
+import { FaFilter } from "react-icons/fa6";
 
 function UserDashboard() {
   const { location, shopInCity, loading, itemInCity, searchItems, categories } =
@@ -190,9 +191,12 @@ function UserDashboard() {
       </div>
 
       <div className="w-full max-w-7xl gap-5 flex flex-col items-start p-[10px]">
+      <div className="flex w-full justify-between items-center">
         <h1 className="text-xl text-gray-800 sm:text-2xl font-medium">
           Suggestions Food For You
         </h1>
+        <FaFilter size={20} className="text-[#F59E0B] cursor-pointer" />
+      </div>  
         <div className="flex flex-wrap gap-4 w-full h-auto justify-center">
           {filterItems?.map((food, index) => (
             <FoodCard key={index} item={food} />

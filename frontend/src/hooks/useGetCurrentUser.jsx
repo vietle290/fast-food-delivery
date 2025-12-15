@@ -20,10 +20,9 @@ import { useNavigate } from "react-router-dom";
 function useGetCurrentUser() {
   const {loading, userData} = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   
   useEffect(() => {
-    if (userData) return;
+    // if (userData) return;
     dispatch(setLoading(true));
     const fetchCurrentUser = async () => {
       try {
@@ -52,7 +51,7 @@ function useGetCurrentUser() {
       }
     };
     fetchCurrentUser();
-  }, [dispatch, userData, navigate]);
+  }, [dispatch]);
   return loading;
 }
 
