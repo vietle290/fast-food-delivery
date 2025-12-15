@@ -46,7 +46,7 @@ function FoodCard({ item }) {
     return stars;
   };
   return (
-    <div className="w-[170px] md:w-[250px] rounded-xl bg-white shadow-md overflow-hidden hover:shadow-2xl transition-all duration-300 flex flex-col">
+    <div className="w-[180px] md:w-[270px] rounded-xl bg-white shadow-md overflow-hidden hover:shadow-2xl transition-all duration-300 flex flex-col">
       <div className="relative w-full md:h-[180px] h-[120px] flex justify-center items-center bg-white">
         <div className="absolute top-2 right-2 bg-white p-2 rounded-full">
           {item.type === "Veg" ? (
@@ -70,8 +70,8 @@ function FoodCard({ item }) {
         </div>
       </div>
 
-      <div className="p-4 flex justify-between items-center mt-auto border-t">
-        <span className="text-gray-900 text-lg font-bold">{item.price}</span>
+      <div className="p-4 flex flex-col justify-between items-center mt-auto border-t md:flex-row sm:gap-3">
+        <div className="text-gray-900 text-lg font-bold">{item.price} đ</div>
         <div className="flex items-center border rounded-full overflow-hidden shadow-sm">
           <button className="px-2 py-1 bg-white text-gray-800 hover:bg-gray-100 transition">
             <FaMinus onClick={handleDecrement} />

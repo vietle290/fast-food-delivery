@@ -12,6 +12,9 @@ import FoodCard from "../FoodCard";
 import { useNavigate } from "react-router-dom";
 import image16 from "../../assets/image16.jpg";
 import { FaFilter } from "react-icons/fa6";
+import FoodFilterPopup from "../FoodFilterPopup";
+import axios from "axios";
+import { serverUrl } from "../../App";
 
 function UserDashboard() {
   const { location, shopInCity, loading, itemInCity, searchItems, categories } =
@@ -24,6 +27,8 @@ function UserDashboard() {
   const [showShopScrollRight, setShowShopScrollRight] = useState(false);
   const [filterItems, setFilterItems] = useState([]);
   const navigate = useNavigate();
+
+  const [openFilterModal, setOpenFilterModal] = useState(false);
 
   const newCategories = [
     {
@@ -73,6 +78,22 @@ function UserDashboard() {
     }
   };
 
+  const filterItemsByNameShopType = async ({ name, shopId, type }) => {
+    try {
+      const res = await axios.get(
+        `${serverUrl}/api/item/filter-items?name=${name}&shopId=${shopId}&type=${type}&city=${location}`,
+        {
+          withCredentials: true,
+        }
+      );
+      setFilterItems(res.data);
+      setOpenFilterModal(false);
+      console.log("Filtered items data:", res.data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   useEffect(() => {
     const scrollElement = scrollRef.current;
     const shopScrollElement = shopScrollRef.current;
@@ -101,17 +122,18 @@ function UserDashboard() {
       };
     }
   }, []);
+  
 
   return (
     <div className="w-screen min-h-screen flex flex-col items-center gap-5 bg-[#FFF9F6] overflow-y-auto">
       <Nav />
       {searchItems && searchItems.length > 0 && (
-        <div className="w-full max-w-7xl gap-5 flex flex-col items-start p-[10px] bg-white">
+        <div className="w-full max-w-7xl gap-5 flex flex-col fixed z-50 items-start p-[10px] bg-white">
           <h1 className="text-xl text-gray-800 sm:text-2xl font-medium">
             Search Results
           </h1>
           <div className="w-full flex gap-4 overflow-x-auto pb-2">
-            <div className="flex gap-4 w-full px-1">
+            <div className="flex flex-wrap gap-4 w-full px-1">
               {searchItems.map((item, index) => (
                 <FoodCard item={item} key={index} />
               ))}
@@ -191,18 +213,21 @@ function UserDashboard() {
       </div>
 
       <div className="w-full max-w-7xl gap-5 flex flex-col items-start p-[10px]">
-      <div className="flex w-full justify-between items-center">
-        <h1 className="text-xl text-gray-800 sm:text-2xl font-medium">
-          Suggestions Food For You
-        </h1>
-        <FaFilter size={20} className="text-[#F59E0B] cursor-pointer" />
-      </div>  
+        <div className="flex w-full justify-between items-center">
+          <h1 className="text-xl text-gray-800 sm:text-2xl font-medium">
+            Suggestions Food For You
+          </h1>
+          <button onClick={() => setOpenFilterModal(true)}>
+            <FaFilter size={20} className="text-[#F59E0B] cursor-pointer" />
+          </button>
+        </div>
         <div className="flex flex-wrap gap-4 w-full h-auto justify-center">
           {filterItems?.map((food, index) => (
             <FoodCard key={index} item={food} />
           ))}
         </div>
       </div>
+      {openFilterModal && <FoodFilterPopup setOpenFilterModal={setOpenFilterModal} onClose={() => setOpenFilterModal(false)} filterItemsByNameShopType={filterItemsByNameShopType} />}
     </div>
   );
 }

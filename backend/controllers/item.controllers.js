@@ -170,8 +170,8 @@ export const getItemByLocation = async (req, res) => {
     }
     const shopId = shop.map((shop) => shop._id);
     const items = await Item.find({ shop: { $in: shopId } })
-    .populate("shop")
-    .populate("category");
+      .populate("shop")
+      .populate("category");
     return res.status(200).json(items);
   } catch (error) {
     return res
@@ -258,3 +258,42 @@ export const toggleSellItem = async (req, res) => {
       .json({ message: `Error toggling sell item: ${error.message}` });
   }
 };
+
+export const filterItemsByNameShopType = async (req, res) => {
+  try {
+    const { name, type, city } = req.query;
+
+    const shops = await Shop.find({
+      city: { $regex: new RegExp(`^${city}$`, "i") },
+    });
+
+    if (!shops.length) {
+      return res.status(404).json({ message: "Shop not found" });
+    }
+
+    const shopIds = shops.map((shop) => shop._id);
+
+    const filter = {
+      shop: { $in: shopIds },
+    };
+
+    filter.sell = true;
+
+    // search by name (partial allowed)
+    if (name) {
+      filter.name = { $regex: name, $options: "i" };
+    }
+
+    // search by type (FULL & EXACT)
+    if (type) {
+      filter.type = type; // must be exactly Veg | Non-veg | Others
+    }
+
+    const items = await Item.find(filter).populate("shop");
+
+    res.status(200).json(items);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
