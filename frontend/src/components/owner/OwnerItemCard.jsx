@@ -30,7 +30,6 @@ function OwnerItemCard({ item }) {
   };
 
   const handleToggle = async (value) => {
-    setEnabled(value);
     try {
       const res = await axios.post(
         `${serverUrl}/api/item/toggle-sell/${item._id}`,
@@ -38,7 +37,7 @@ function OwnerItemCard({ item }) {
         { withCredentials: true }
       );
       console.log("Toggle sell item response:", res.data);
-      // dispatch(setShopData(res.data));
+      setEnabled(res.data.sell);
     } catch (error) {
       console.error("Failed to toggle sell item:", error);
     }

@@ -50,7 +50,7 @@ export const getShop = async (req, res) => {
       .populate("owner")
       .populate({
         path: "items",
-        select: "name price image type category rating shop",
+        select: "name price image type category rating shop sell",
         populate: {
           path: "category", // populate category field inside each item
           select: "name shop", // optional: specify fields you want

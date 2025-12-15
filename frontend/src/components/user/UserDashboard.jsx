@@ -10,7 +10,7 @@ import { useSelector } from "react-redux";
 import { ClipLoader } from "react-spinners";
 import FoodCard from "../FoodCard";
 import { useNavigate } from "react-router-dom";
-import image16 from "../../assets/image16.jpg"
+import image16 from "../../assets/image16.jpg";
 
 function UserDashboard() {
   const { location, shopInCity, loading, itemInCity, searchItems, categories } =
@@ -33,23 +33,26 @@ function UserDashboard() {
     ...categories,
   ];
 
-const handleFilterByCategory = (category) => {
-  if (category === "All") {
-    setFilterItems(itemInCity.filter((item) => item.sell === true));
-  } else {
-    setFilterItems(
-      itemInCity.filter(
-        (item) =>
-          item.category?.name === category &&
-          item.sell === true
-      )
-    );
-  }
-};
-
+  const handleFilterByCategory = (category) => {
+    if (!Array.isArray(itemInCity)) {
+      setFilterItems([]);
+      return;
+    }
+    if (category === "All") {
+      setFilterItems(itemInCity.filter((item) => item.sell === true));
+    } else {
+      setFilterItems(
+        itemInCity.filter(
+          (item) => item.category?.name === category && item.sell === true
+        )
+      );
+    }
+  };
 
   useEffect(() => {
-    handleFilterByCategory("All");
+    if (Array.isArray(itemInCity)) {
+      handleFilterByCategory("All");
+    }
   }, [itemInCity]);
   const handleScroll = (ref, direction) => {
     if (ref.current) {
