@@ -33,13 +33,20 @@ function UserDashboard() {
     ...categories,
   ];
 
-  const handleFilterByCategory = (category) => {
-    if (category === "All") {
-      setFilterItems(itemInCity);
-    } else {
-      setFilterItems(itemInCity.filter((item) => item.category?.name === category));
-    }
-  };
+const handleFilterByCategory = (category) => {
+  if (category === "All") {
+    setFilterItems(itemInCity.filter((item) => item.sell === true));
+  } else {
+    setFilterItems(
+      itemInCity.filter(
+        (item) =>
+          item.category?.name === category &&
+          item.sell === true
+      )
+    );
+  }
+};
+
 
   useEffect(() => {
     handleFilterByCategory("All");

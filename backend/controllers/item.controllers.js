@@ -26,6 +26,7 @@ export const addItem = async (req, res) => {
       price,
       image,
       shop: shop._id,
+      sell: true,
     });
 
     shop.items.push(item._id);
@@ -238,5 +239,22 @@ export const rating = async (req, res) => {
     return res
       .status(500)
       .json({ message: `Error rating item: ${error.message}` });
+  }
+};
+
+export const toggleSellItem = async (req, res) => {
+  try {
+    const { itemId } = req.params;
+    const item = await Item.findById(itemId);
+    if (!item) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+    item.sell = !item.sell;
+    await item.save();
+    return res.status(200).json(item);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: `Error toggling sell item: ${error.message}` });
   }
 };

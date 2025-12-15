@@ -73,7 +73,7 @@ function ShipperOrderCard() {
             My Orders
           </h1>
         </div>
-        <div>
+        <div className="flex justify-center">
           {/* {!myOrders && ( */}
           <div className="w-full max-w-2xl bg-white rounded-xl shadow-md mt-6 p-6">
             <div className="flex justify-between">
