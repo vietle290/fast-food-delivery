@@ -4,6 +4,7 @@ import { IoIosSearch } from "react-icons/io";
 import { FiShoppingCart } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import { RxCross2 } from "react-icons/rx";
+import { BsChatDots } from "react-icons/bs";
 import axios from "axios";
 import { serverUrl } from "../App";
 import {
@@ -273,6 +274,13 @@ function Nav() {
             </div>
           </div>
         )}
+        <div>
+          <BsChatDots
+            size={30}
+            className="text-[#F59E0B] cursor-pointer"
+            onClick={() => navigate("/chat")}
+          />
+        </div>
       </div>
     </div>
   );

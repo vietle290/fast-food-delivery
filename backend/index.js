@@ -14,6 +14,7 @@ import categoryRouter from "./routes/category.routes.js";
 import http from "http";
 import { Server } from "socket.io";
 import { socketHandler } from "./socket.js";
+import chatRouter from "./routes/chat.routes.js";
 
 const app = express();
 const server = http.createServer(app); 
@@ -54,8 +55,10 @@ app.use("/api/shop", shopRouter);
 app.use("/api/item", itemRouter);
 app.use("/api/order", orderRouter);
 app.use("/api/category", categoryRouter);
+app.use("/api/chat", chatRouter);
 
 socketHandler(io);
+// chatSocket(io);
 
 app.use((err, req, res, next) => {
     const errorStatus = err.status || 500;

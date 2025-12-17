@@ -30,6 +30,8 @@ import useGetCategory from './hooks/useGetcategory'
 import useGetCategoryByShop from './hooks/usegetCategoryByShop'
 import ShipperOrderCard from './components/shipper/ShipperOrderCard'
 import useGetShipperOrderById from './hooks/useGetShipperOrderById'
+import Chat from './pages/Chat'
+
 
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
@@ -77,8 +79,6 @@ function App() {
     }
   }, [userData?._id])
 
-  console.log("App userData:", userData);
-
   //   if (loading) {
   //   return (
   //     <div className="flex justify-center items-center h-screen text-gray-600">
@@ -108,6 +108,7 @@ function App() {
       <Route path="/payment-cancel" element={userData ? <PaymentCancel /> : <Navigate to={"/login"} />} />
       <Route path="/not-found" element={userData ? <NotFound /> : <Navigate to={"/login"} />} />
       <Route path='/shipper-orders' element={userData ? <ShipperOrderCard /> : <Navigate to={"/login"} />} />
+      <Route path="/chat" element={userData ? <Chat /> : <Navigate to={"/login"} />} />
     </Routes>
     </Suspense>
   )

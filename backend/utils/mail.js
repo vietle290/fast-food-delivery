@@ -15,13 +15,13 @@ const transporter = nodemailer.createTransport({
 });
 
 // Verify kết nối SMTP
-transporter.verify((error, success) => {
-  if (error) {
-    console.error("SMTP Verify Error:", error);
-  } else {
-    console.log("SMTP ready:", success);
-  }
-});
+// transporter.verify((error, success) => {
+//   if (error) {
+//     console.error("SMTP Verify Error:", error);
+//   } else {
+//     console.log("SMTP ready:", success);
+//   }
+// });
 
 // Hàm gửi OTP chung
 const sendEmail = async ({ to, subject, html }) => {

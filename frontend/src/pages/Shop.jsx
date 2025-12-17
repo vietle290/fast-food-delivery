@@ -7,9 +7,11 @@ import { MdLocationOn } from "react-icons/md";
 import { FaUtensils } from "react-icons/fa6";
 import FoodCard from "../components/FoodCard";
 import { IoMdArrowBack } from "react-icons/io";
+import { useSelector } from "react-redux";
 
 
 function Shop() {
+  const { userData } = useSelector((state) => state.user);
   const { shopId } = useParams();
   const [items, setItems] = useState([]);
   const [shop, setShop] = useState([]);
@@ -27,9 +29,32 @@ function Shop() {
       console.log(error);
     }
   };
+
+    const startChat = async () => {
+    try {
+      const res = await axios.post(
+        `${serverUrl}/api/chat/conversation`,
+        {
+          buyerId: userData._id,
+          ownerId: shop.owner,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+
+      navigate("/chat", {
+        state: { conversation: res.data },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     handleShop();
   }, []);
+
   return (
     <div className="bg-gray-50 min-h-screen">
     <button className="fixed top-4 left-4 bg-[#F59E0B] text-white py-1 px-2 rounded-full hover:bg-[#FBBF24] transition-colors duration-300 z-20" onClick={() => navigate(-1)}>
@@ -52,6 +77,14 @@ function Shop() {
                 {shop.address}
               </p>
             </div>
+
+              <button
+                onClick={startChat}
+                className="mt-6 bg-[#F59E0B] hover:bg-[#FBBF24] text-white px-6 py-2 rounded-lg"
+              >
+                Chat với shop
+              </button>
+
           </div>
         </div>
       )}

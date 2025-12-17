@@ -57,7 +57,6 @@ function MyOrders() {
 
   const tabs = ["pending", "preparing", "out-for-delivery", "delivered"];
 
-  console.log("myOrders in MyOrders page:", filteredOrders);
 
   return (
     <div className="w-full min-h-screen flex justify-center bg-[#FFF9F6] px-2 sm:px-4 md:px-6 lg:px-8">

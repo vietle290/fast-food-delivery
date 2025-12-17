@@ -39,6 +39,9 @@ function TrackOrderPage() {
           }));
         }
     );
+    return () => {
+      socket.off("update-shipper-location");
+    };
   }, [socket]);
 
   useEffect(() => {
