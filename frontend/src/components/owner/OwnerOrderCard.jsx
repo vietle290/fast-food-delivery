@@ -36,15 +36,15 @@ function OwnerOrderCard({ data }) {
       <div className="flex justify-between items-center mb-4">
         <div className="flex flex-col">
           <span className="text-lg font-semibold">
-            {data.user.fullName} - Order #{data._id.slice(-6)}
+            {data.user?.fullName} - Order #{data._id.slice(-6)}
           </span>
           {/* <span className="text-sm text-gray-600">
             {formatDate(data.createdAt)}
           </span> */}
-          <span className="text-sm text-gray-600">{data.user.email}</span>
+          <span className="text-sm text-gray-600">{data.user?.email}</span>
           <p className="text-sm flex items-center mt-1 gap-2">
             <FaPhone />
-            <span>{data.user.mobile}</span>
+            <span>{data.user?.mobile}</span>
           </p>
           <span>{data?.deliveryAddress?.text}</span>
           {data.paymentMethod == "online" ? (
@@ -146,13 +146,13 @@ function OwnerOrderCard({ data }) {
           {avaibleShippers.length > 0 ? (
             avaibleShippers.map((shipper, index) => (
               <p key={index} className="mt-1">
-                {shipper.fullName} - {shipper.mobile}
+                {shipper?.fullName} - {shipper?.mobile}
               </p>
             ))
           ) : data.shopOrders?.[0]?.assignedShipper ? (
             <p className="mt-1">
-              {data.shopOrders?.[0]?.assignedShipper.fullName} -{" "}
-              {data.shopOrders?.[0]?.assignedShipper.mobile}
+              {data.shopOrders?.[0]?.assignedShipper?.fullName} -{" "}
+              {data.shopOrders?.[0]?.assignedShipper?.mobile}
             </p>
           ) : (
             <p className="mt-1">No available shippers at the moment.</p>

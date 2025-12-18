@@ -12,7 +12,7 @@ const UserSchema = new mongoose.Schema(
         otpExpiry: { type: Date },
         socketId: { type: String },
         isOnline: { type: Boolean, default: false },
-        location: { type: { type: String, enum: ['Point'], default: 'Point' }, coordinates: { type: [Number], default: [0, 0] } },
+        location: { type: { type: String, enum: ['Point'], default: 'Point' }, coordinates: { type: [Number], default: [106.660172, 10.762622] } },
     },
     { timestamps: true }
 );
