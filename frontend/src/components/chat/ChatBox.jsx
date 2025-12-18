@@ -52,6 +52,11 @@ const sendMessage = (text) => {
     receiverId: partner._id,
     text,
   });
+  socket.emit("send-update-latest-message", {
+    conversationId: conversation._id,
+    text,
+    senderId: userData._id,
+  });
 };
 
 

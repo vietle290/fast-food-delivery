@@ -82,7 +82,7 @@ function Shop() {
                 onClick={startChat}
                 className="mt-6 bg-[#F59E0B] hover:bg-[#FBBF24] text-white px-6 py-2 rounded-lg"
               >
-                Chat với shop
+                Chat with Shop Owner
               </button>
 
           </div>

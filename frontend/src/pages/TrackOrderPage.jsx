@@ -25,19 +25,38 @@ function TrackOrderPage() {
     }
   };
 
+  const startChat = async (shipperId) => {
+    try {
+      const res = await axios.post(
+        `${serverUrl}/api/chat/conversation`,
+        {
+          buyerId: orderData.user._id,
+          ownerId: shipperId,
+        },
+        { withCredentials: true }
+      );
+
+      navigate("/chat", {
+        state: { conversation: res.data },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     if (!socket) return;
     socket.on(
       "update-shipper-location",
       ({ shipperId, latitude, longitude }) => {
-          setLiveLocation((prev) => ({
-            ...prev,
-            [shipperId]: {
-              latitude,
-              longitude,
-            },
-          }));
-        }
+        setLiveLocation((prev) => ({
+          ...prev,
+          [shipperId]: {
+            latitude,
+            longitude,
+          },
+        }));
+      }
     );
     return () => {
       socket.off("update-shipper-location");
@@ -100,6 +119,7 @@ function TrackOrderPage() {
                       <span className="font-semibold">Mobile: </span>
                       {shopOrder.assignedShipper.mobile}
                     </p>
+                    <button onClick={() => startChat(shopOrder.assignedShipper._id)} className="mt-6 bg-[#F59E0B] hover:bg-[#FBBF24] text-white px-6 py-2 rounded-lg">Chat with Shipper</button>
                   </div>
                 ) : (
                   <p className="text-red-600 font-semibold">
@@ -118,7 +138,9 @@ function TrackOrderPage() {
             {shopOrder.assignedShipper && shopOrder.status !== "delivered" && (
               <ShipperTracking
                 data={{
-                  shipperLocation: liveLocation[shopOrder.assignedShipper._id] || {
+                  shipperLocation: liveLocation[
+                    shopOrder.assignedShipper._id
+                  ] || {
                     latitude: shopOrder.assignedShipper.location.coordinates[1],
                     longitude:
                       shopOrder.assignedShipper.location.coordinates[0],

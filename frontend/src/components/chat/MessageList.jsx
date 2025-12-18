@@ -32,7 +32,7 @@ const MessageList = React.memo(function MessageList({
             )}
 
             <div
-              className={`px-3 py-2 rounded-lg max-w-[70%] ${
+              className={`px-3 py-2 rounded-lg max-w-[70%] whitespace-pre-wrap break-words ${
                 isMe
                   ? "bg-blue-500 text-white rounded-br-none"
                   : "bg-gray-200 text-gray-800 rounded-bl-none"

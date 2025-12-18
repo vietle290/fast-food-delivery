@@ -63,6 +63,26 @@ export const socketHandler = async (io) => {
       socket.emit("receive-message", message);
     });
 
+    socket.on("send-update-latest-message", async ({ conversationId, text, senderId }) => {
+      await Conversation.findByIdAndUpdate(conversationId, {
+        lastMessage: text,
+        lastSender: senderId,
+      });
+      const conversation = await Conversation.findById(conversationId);
+      conversation.participants.forEach(async (participantId) => {
+        if (participantId.toString() !== senderId) {
+          const participant = await User.findById(participantId);
+          if (participant?.socketId) {
+            io.to(participant.socketId).emit("receive-update-latest-message", {
+              conversationId,
+              text,
+              senderId,
+            });
+          }
+        }
+      });
+    });
+
     socket.on("disconnect", async () => {
       try {
         const user = await User.findOneAndUpdate(

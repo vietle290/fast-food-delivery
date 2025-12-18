@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { serverUrl } from "../../App";
 import { useSelector } from "react-redux";
+import { IoMdArrowRoundBack } from "react-icons/io";
 
-export default function ChatList({ onSelect, selectedConversation }) {
+export default function ChatList({ onSelect, selectedConversation, handleNavigateBack }) {
   const { userData } = useSelector((state) => state.user);
+  const { socket } = useSelector((state) => state.user);
   const [conversations, setConversations] = useState([]);
 
   useEffect(() => {
@@ -23,58 +25,74 @@ export default function ChatList({ onSelect, selectedConversation }) {
     };
 
     fetchConversations();
-  }, [userData._id]);
 
-  
+      if (!socket) return;
+
+      socket.on("receive-update-latest-message", (msg) => {
+        setConversations((prevConversations) =>
+          prevConversations.map((conv) =>
+            conv._id === msg.conversationId
+              ? { ...conv, lastMessage: msg.text, lastSender: msg.senderId }
+              : conv
+          )
+        );
+      });
+
+      return () => socket.off("receive-update-latest-message");
+    
+  }, [userData._id, socket]);
+
   return (
-    <div className="w-1/3 border-r bg-white">
-      {conversations.map((c) => {
-        const partner = c.participants.find(
-          (p) => p._id !== userData._id
-        );
+    <div className="w-1/3 border-r bg-white flex flex-col justify-between">
+      <div>
+        {conversations.map((c) => {
+          const partner = c.participants.find((p) => p._id !== userData._id);
 
-        const avatarLetter = partner?.fullName
-          ?.charAt(0)
-          .toUpperCase();
+          const avatarLetter = partner?.fullName?.charAt(0).toUpperCase();
 
-        const isActive = selectedConversation?._id === c._id;
+          const isActive = selectedConversation?._id === c._id;
 
-        return (
-          <div
-            key={c._id}
-            onClick={() => onSelect(c)}
-            className={`flex items-center p-3 cursor-pointer transition
-              ${
-                isActive
-                  ? "bg-blue-50"
-                  : "hover:bg-gray-100"
-              }
+          return (
+            <div
+              key={c._id}
+              onClick={() => onSelect(c)}
+              className={`flex items-center p-3 cursor-pointer transition
+              ${isActive ? "bg-blue-50" : "hover:bg-gray-100"}
             `}
-          >
-            {/* Avatar + online */}
-            <div className="relative mr-3 flex-shrink-0">
-              <div className="w-10 h-10 rounded-full bg-gray-400 text-white flex items-center justify-center text-sm font-semibold">
-                {avatarLetter}
+            >
+              {/* Avatar + online */}
+              <div className="relative mr-3 flex-shrink-0">
+                <div className="w-10 h-10 rounded-full bg-gray-400 text-white flex items-center justify-center text-sm font-semibold">
+                  {avatarLetter}
+                </div>
+
+                {partner?.isOnline && (
+                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white" />
+                )}
               </div>
 
-              {partner?.isOnline && (
-                <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white" />
-              )}
-            </div>
-
-            {/* Content */}
-            <div className="flex-1 overflow-hidden">
-              <div className="font-semibold truncate">
-                {partner?.fullName}
-              </div>
-              <div className="text-sm text-gray-500 truncate">
-                {c.lastMessage || "No messages yet"}
+              {/* Content */}
+              <div className="flex-1 overflow-hidden">
+                <div className="font-semibold truncate">
+                  {partner?.fullName}
+                </div>
+                <div className="text-sm text-gray-500 truncate">
+                  {c.lastMessage || "No messages yet"}
+                </div>
               </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
+      <div className="p-3 border-t">
+        <button
+          onClick={() => handleNavigateBack()}
+          className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition cursor-pointer"
+        >
+          <IoMdArrowRoundBack size={20} />
+          <span>Back to Home</span>
+        </button>
+      </div>
     </div>
   );
-
 }
