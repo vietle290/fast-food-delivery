@@ -63,22 +63,57 @@ function Login() {
     }
   };
 
-  const handleGoogleLogin = async (e) => {
+  // const handleGoogleLogin = async (e) => {
+  //   e.preventDefault();
+  //   setShowExtraInfo(false);
+  //   const provider = new GoogleAuthProvider();
+  //   try {
+  //     const response = await signInWithPopup(auth, provider);
+  //     const googleEmail = response.user.email;
+  //     const emailResponse = await axios.get(
+  //       `${serverUrl}/api/auth/get-user-email`
+  //     );
+  //     const existingEmails = emailResponse.data.map((item) => item.email);
+  //     if (existingEmails.includes(googleEmail)) {
+  //       const { data } = await axios.post(
+  //         `${serverUrl}/api/auth/google-authen`,
+  //         {
+  //           email: response.user.email,
+  //         },
+  //         { withCredentials: true }
+  //       );
+  //       dispatch(setUserData(data.user));
+  //     } else {
+  //       setFullName(response.user.displayName);
+  //       setEmail(response.user.email);
+  //       setShowExtraInfo(true);
+  //       return setErr(
+  //         "Please enter your mobile number, password and role to complete registration."
+  //       );
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //     setErr("Google sign-in failed. Please try again.");
+  //   }
+  // };
+  
+    const handleGoogleLogin = async (e) => {
     e.preventDefault();
+    setErr("");
     setShowExtraInfo(false);
     const provider = new GoogleAuthProvider();
     try {
       const response = await signInWithPopup(auth, provider);
       const googleEmail = response.user.email;
-      const emailResponse = await axios.get(
-        `${serverUrl}/api/auth/get-user-email`
-      );
-      const existingEmails = emailResponse.data.map((item) => item.email);
-      if (existingEmails.includes(googleEmail)) {
+    const { data: checkData } = await axios.get(
+      `${serverUrl}/api/auth/check-email?googleEmail=${googleEmail}`,
+      { withCredentials: true }
+    );
+      if (checkData.exists) {
         const { data } = await axios.post(
           `${serverUrl}/api/auth/google-authen`,
           {
-            email: response.user.email,
+            email: googleEmail,
           },
           { withCredentials: true }
         );

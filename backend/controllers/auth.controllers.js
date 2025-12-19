@@ -219,3 +219,28 @@ export const getALlUserEmail = async (req, res) => {
       .json({ message: error.message || "Something went wrong" });
   }
 };
+
+export const checkUserEmail = async (req, res) => {
+  try {
+    const { googleEmail } = req.query;
+
+    if (!googleEmail) {
+      return res.status(400).json({
+        exists: false,
+        message: "Email is required",
+      });
+    }
+
+    const user = await User.findOne({ email: googleEmail });
+
+    return res.status(200).json({
+      exists: !!user,
+      user: user || null,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      exists: false,
+      message: error.message || "Something went wrong",
+    });
+  }
+};

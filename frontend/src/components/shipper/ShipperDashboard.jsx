@@ -5,7 +5,16 @@ import axios from "axios";
 import { serverUrl } from "../../App";
 import ShipperTracking from "./ShipperTracking";
 import { ClipLoader } from "react-spinners";
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import { useNavigate } from "react-router-dom";
 
 function ShipperDashboard() {
   const { userData, socket } = useSelector((state) => state.user);
@@ -16,13 +25,15 @@ function ShipperDashboard() {
   const [shipperLocation, setShipperLocation] = useState(null);
   const [todayDeliveries, setTodayDeliveries] = useState([]);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!socket || userData.role !== "shipper") return;
     console.log("socket connected");
     let watchId;
     if (navigator.geolocation) {
-      (watchId = navigator.geolocation.watchPosition((position) => { //Live tracking
+      (watchId = navigator.geolocation.watchPosition((position) => {
+        //Live tracking
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
         setShipperLocation({ latitude, longitude });
@@ -46,9 +57,12 @@ function ShipperDashboard() {
       }
     };
   }, [socket, userData]);
-  
+
   const ratePerDelivery = 50; // Example rate per delivery
-  const totalEarnings = todayDeliveries.reduce((acc, curr) => acc + curr.count * ratePerDelivery, 0);
+  const totalEarnings = todayDeliveries.reduce(
+    (acc, curr) => acc + curr.count * ratePerDelivery,
+    0
+  );
 
   const getCurrentOrder = async () => {
     try {
@@ -123,8 +137,7 @@ function ShipperDashboard() {
     }
   };
 
-    const handleTodayDeliveries = async () => {
-
+  const handleTodayDeliveries = async () => {
     try {
       const res = await axios.get(
         `${serverUrl}/api/order/get-today-deliveries`,
@@ -138,6 +151,25 @@ function ShipperDashboard() {
       return res.data;
     } catch (error) {
       console.error("Error get today deliveries:", error);
+    }
+  };
+
+  const startChat = async (customerId) => {
+    try {
+      const res = await axios.post(
+        `${serverUrl}/api/chat/conversation`,
+        {
+          buyerId: userData._id,
+          ownerId: customerId,
+        },
+        { withCredentials: true }
+      );
+
+      navigate("/chat", {
+        state: { conversation: res.data },
+      });
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -200,14 +232,21 @@ function ShipperDashboard() {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="hour" tickFormatter={(hour) => `${hour}:00`} />
             <YAxis dataKey="count" allowDecimals={false} />
-            <Tooltip formatter={(value) => [value, "orders"]} labelFormatter={label => `${label}:00`}/>
+            <Tooltip
+              formatter={(value) => [value, "orders"]}
+              labelFormatter={(label) => `${label}:00`}
+            />
             <Bar dataKey="count" fill="#F59E0B" />
           </BarChart>
         </ResponsiveContainer>
 
         <div className="max-w-sm mx-auto mt-6 p-6 bg-white rounded-xl shadow-lg text-center">
-          <h1 className="text-xl font-semibold text-gray-800 mb-2">Today Earning</h1>
-          <span className="text-3xl font-bold text-green-600">${totalEarnings}</span>
+          <h1 className="text-xl font-semibold text-gray-800 mb-2">
+            Today Earning
+          </h1>
+          <span className="text-3xl font-bold text-green-600">
+            ${totalEarnings}
+          </span>
         </div>
       </div>
       {!currentOrder && (
@@ -277,6 +316,9 @@ function ShipperDashboard() {
             <p className="text-sm text-gray-600 mt-1">
               Delivery Address: {currentOrder.deliveryAddress.text}
             </p>
+            <p className="text-sm text-gray-600 mt-1">
+              Recipient: {currentOrder.user.fullName} - {currentOrder.user.mobile}
+            </p>
             {/* Items */}
             <ul className="text-sm text-gray-500 mt-2 list-disc list-inside">
               {currentOrder.shopOrder.shopItems.map((item, idx) => (
@@ -286,9 +328,17 @@ function ShipperDashboard() {
               ))}
             </ul>
             {/* Subtotal */}
-            <p className="text-sm font-semibold text-gray-800 mt-2">
-              total: ${currentOrder.shopOrder.subtotal}
-            </p>
+            <div className="flex justify-between items-center">
+              <p className="text-sm font-semibold text-gray-800 mt-2">
+                total: ${currentOrder.shopOrder.subtotal}
+              </p>
+              <button
+                onClick={() => startChat(currentOrder.user._id)}
+                className="mt-6 bg-[#F59E0B] hover:bg-[#FBBF24] text-white px-6 py-2 rounded-lg"
+              >
+                Chat with Customer
+              </button>
+            </div>
           </div>
           <ShipperTracking
             data={{
@@ -311,7 +361,10 @@ function ShipperDashboard() {
               Mark As Delivered
             </button>
           ) : !showOtpBox && loading ? (
-            <button className="mt-4 w-full px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition" disabled>
+            <button
+              className="mt-4 w-full px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition"
+              disabled
+            >
               <ClipLoader size={20} color={"#F59E0B"} />
             </button>
           ) : (
