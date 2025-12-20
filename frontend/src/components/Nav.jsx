@@ -109,11 +109,11 @@ function Nav() {
       {userData.role !== "owner" && (
         <h1 className="text-3xl font-bold mb-2 text-[#F59E0B]">Fast Food</h1>
       )}
-      {userData.role === "owner" && (
+      {/* {userData.role === "owner" && (
         <h1 className="text-3xl font-bold mb-2 ml-10 text-[#F59E0B]">
           Fast Food
         </h1>
-      )}
+      )} */}
 
       {userData && userData.role === "user" && (
         <div className="md:w-[60%] lg:w-[40%] h-[70px] bg-white shadow-xl rounded-lg items-center gap-[20px] hidden md:flex">
@@ -154,7 +154,7 @@ function Nav() {
         {userData && userData.role === "owner" ? (
           <>
             {shopData && (
-              <>
+              <div className="ml-10">
                 <button
                   className="hidden md:flex items-center gap-[10px] bg-[#F59E0B]/10 text-[#F59E0B] px-[20px] py-[10px] rounded-lg cursor-pointer"
                   onClick={() => navigate("/add-item")}
@@ -168,7 +168,7 @@ function Nav() {
                 >
                   <TiPlus size={25} />
                 </button>
-              </>
+              </div>
             )}
 
             <div

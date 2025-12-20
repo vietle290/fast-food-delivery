@@ -55,7 +55,7 @@ export const serverUrl = "https://fast-food-delivery-server.onrender.com"
 // export const serverUrl = "http://localhost:8000"
 
 function App() {
-  const {userData, loading} = useSelector(state => state.user)
+  const {userData} = useSelector(state => state.user)
   const dispatch = useDispatch();
   useGetCurrentUser();
   useGetLocation();
@@ -78,14 +78,6 @@ function App() {
       socketInstance.disconnect();
     }
   }, [userData?._id])
-
-  //   if (loading) {
-  //   return (
-  //     <div className="flex justify-center items-center h-screen text-gray-600">
-  //       Loading...
-  //     </div>
-  //   );
-  // }
   
   return (
     <Suspense fallback={<div className="flex justify-center items-center h-screen">Loading...</div>}>

@@ -40,13 +40,14 @@ export const socketHandler = async (io) => {
     });
 
     socket.on("send-message", async (data) => {
-      const { conversationId, senderId, receiverId, text } = data;
+      const { conversationId, senderId, receiverId, text, image } = data;
 
       const message = await Message.create({
         conversationId,
         sender: senderId,
         receiver: receiverId,
         text,
+        image,
       });
 
       await Conversation.findByIdAndUpdate(conversationId, {

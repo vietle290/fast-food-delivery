@@ -42,23 +42,24 @@ export default function ChatBox({ conversation }) {
     return () => socket.off("receive-message");
   }, [conversation]);
 
+  const sendMessage = ({ text, image }) => {
+    const hasText = text && text.trim() !== "";
+    const hasImage = !!image;
+    if (!hasText && !hasImage) return;
 
-const sendMessage = (text) => {
-  if (!text.trim()) return;
-
-  socket.emit("send-message", {
-    conversationId: conversation._id,
-    senderId: userData._id,
-    receiverId: partner._id,
-    text,
-  });
-  socket.emit("send-update-latest-message", {
-    conversationId: conversation._id,
-    text,
-    senderId: userData._id,
-  });
-};
-
+    socket.emit("send-message", {
+      conversationId: conversation._id,
+      senderId: userData._id,
+      receiverId: partner._id,
+      text: hasText ? text.trim() : null,
+      image: hasImage ? image : null,
+    });
+    socket.emit("send-update-latest-message", {
+      conversationId: conversation._id,
+      text: hasText ? text.trim() : "Image",
+      senderId: userData._id,
+    });
+  };
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -68,17 +69,14 @@ const sendMessage = (text) => {
     <div className="w-2/3 flex flex-col">
       <div className="p-3 border-b">{partner.fullName}</div>
 
-    <MessageList
-      messages={messages}
-      userData={userData}
-      partner={partner}
-      bottomRef={bottomRef}
-    />
+      <MessageList
+        messages={messages}
+        userData={userData}
+        partner={partner}
+        bottomRef={bottomRef}
+      />
 
-      
-
-<ChatBoxInput sendMessage={sendMessage} />
-      
+      <ChatBoxInput sendMessage={sendMessage} />
     </div>
   );
 }
