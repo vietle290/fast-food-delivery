@@ -34,6 +34,7 @@ const userSlice = createSlice({
   reducers: {
     setUserData: (state, action) => {
       state.userData = action.payload;
+      state.loading = false;
       if (action.payload) {
         sessionStorage.setItem("userData", JSON.stringify(action.payload));
       } else {
