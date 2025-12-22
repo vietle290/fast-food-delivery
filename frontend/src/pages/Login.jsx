@@ -11,6 +11,7 @@ import { GoogleAuthProvider, signInWithPopup, deleteUser } from "firebase/auth";
 import { auth } from "../../firebase";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserData } from "../redux/slice/userSlice";
+import useGetCurrentUser from "../hooks/useGetCurrentUser";
 
 function Login() {
   const primaryColor = "#F59E0B"; // Orange-900
@@ -31,7 +32,7 @@ function Login() {
   const [showExtraInfo, setShowExtraInfo] = useState(false);
   const dispatch = useDispatch();
 
-  const {loading: userLoading} = useSelector((state) => state.user);
+  const { loading: userLoading } = useSelector((state) => state.user);
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
@@ -40,6 +41,9 @@ function Login() {
   const navigateForgotPassword = () => {
     navigate("/forgot-password");
   };
+
+  useGetCurrentUser();
+  console.log(userLoading);
 
   const handleLogin = async (e) => {
     e.preventDefault(); // Prevent form submission
@@ -98,8 +102,8 @@ function Login() {
   //     setErr("Google sign-in failed. Please try again.");
   //   }
   // };
-  
-    const handleGoogleLogin = async (e) => {
+
+  const handleGoogleLogin = async (e) => {
     e.preventDefault();
     setErr("");
     setShowExtraInfo(false);
@@ -107,10 +111,10 @@ function Login() {
     try {
       const response = await signInWithPopup(auth, provider);
       const googleEmail = response.user.email;
-    const { data: checkData } = await axios.get(
-      `${serverUrl}/api/auth/check-email?googleEmail=${googleEmail}`,
-      { withCredentials: true }
-    );
+      const { data: checkData } = await axios.get(
+        `${serverUrl}/api/auth/check-email?googleEmail=${googleEmail}`,
+        { withCredentials: true }
+      );
       if (checkData.exists) {
         const { data } = await axios.post(
           `${serverUrl}/api/auth/google-authen`,
@@ -251,7 +255,7 @@ function Login() {
 
           {err && <p className="text-red-500 text-sm text-center">{err}</p>}
 
-          <button
+          {/* <button
             type="button"
             className="w-full py-2 rounded-lg border font-semibold flex items-center justify-center cursor-pointer hover:bg-gray-100"
             style={{ borderColor: borderColor }}
@@ -259,6 +263,25 @@ function Login() {
             onClick={handleGoogleLogin}
           >
             <FcGoogle size={24} className="inline mr-2" /> Sign in with Google
+          </button> */}
+          <button
+            type="button"
+            disabled={userLoading}
+            onClick={handleGoogleLogin}
+            className={`
+    w-full py-2 rounded-lg border font-semibold
+    flex items-center justify-center
+    transition
+    ${
+      userLoading
+        ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+        : "cursor-pointer hover:bg-gray-100"
+    }
+  `}
+            style={{ borderColor: borderColor }}
+          >
+            <FcGoogle size={24} className="inline mr-2" />
+            Sign in with Google
           </button>
         </form>
 
