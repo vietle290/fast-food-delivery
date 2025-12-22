@@ -32,7 +32,7 @@ function Login() {
   const [showExtraInfo, setShowExtraInfo] = useState(false);
   const dispatch = useDispatch();
 
-  const { loading: userLoading } = useSelector((state) => state.user);
+  const { authLoading } = useSelector((state) => state.user);
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
@@ -43,7 +43,7 @@ function Login() {
   };
 
   useGetCurrentUser();
-  console.log(userLoading);
+  console.log("authLoading: ", authLoading);
 
   const handleLogin = async (e) => {
     e.preventDefault(); // Prevent form submission
@@ -266,14 +266,14 @@ function Login() {
           </button> */}
           <button
             type="button"
-            disabled={userLoading}
+            disabled={authLoading}
             onClick={handleGoogleLogin}
             className={`
     w-full py-2 rounded-lg border font-semibold
     flex items-center justify-center
     transition
     ${
-      userLoading
+      authLoading
         ? "bg-gray-200 text-gray-400 cursor-not-allowed"
         : "cursor-pointer hover:bg-gray-100"
     }

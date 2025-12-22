@@ -3,34 +3,21 @@ import { useEffect } from "react";
 import { serverUrl } from "../App";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  clearCart,
   clearUserData,
-  setCurrentAddress,
-  setCurrentState,
-  setItemInCity,
-  setLoading,
-  setLocation,
-  setMyOrders,
-  setShopInCity,
+  setAuthLoading,
   setUserData,
 } from "../redux/slice/userSlice";
-import { setNewLocation } from "../redux/slice/mapSlice";
-import { useNavigate } from "react-router-dom";
 
 function useGetCurrentUser() {
-  const {loading, userData} = useSelector((state) => state.user);
+  const {authLoading} = useSelector((state) => state.user);
   const dispatch = useDispatch();
   
   useEffect(() => {
     // if (userData) return;
-    dispatch(setLoading(true));
+    dispatch(setAuthLoading(true));
     const fetchCurrentUser = async () => {
       try {
         const response = await axios.get(`${serverUrl}/api/user/current-user`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
           withCredentials: true,
         });
         dispatch(setUserData(response.data));
@@ -47,12 +34,12 @@ function useGetCurrentUser() {
           console.error("Error fetching current user:", error);
         }
       } finally {
-        dispatch(setLoading(false));
+        dispatch(setAuthLoading(false));
       }
     };
     fetchCurrentUser();
   }, [dispatch]);
-  return loading;
+  return authLoading;
 }
 
 export default useGetCurrentUser;

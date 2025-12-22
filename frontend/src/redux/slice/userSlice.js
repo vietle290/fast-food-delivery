@@ -29,12 +29,13 @@ const userSlice = createSlice({
     searchItems: null,
     socket: null,
     loading: false,
+    authLoading: false,
     error: null,
   },
   reducers: {
     setUserData: (state, action) => {
       state.userData = action.payload;
-      state.loading = false;
+      state.authLoading = false;
       if (action.payload) {
         sessionStorage.setItem("userData", JSON.stringify(action.payload));
       } else {
@@ -46,7 +47,7 @@ const userSlice = createSlice({
       state.userData = null;
       state.loading = false;
       state.error = null;
-
+      state.authLoading = false;
       state.location = null;
       state.currentState = null;
       state.currentAddress = null;
@@ -171,6 +172,9 @@ const userSlice = createSlice({
     setLoading: (state, action) => {
       state.loading = action.payload;
     },
+    setAuthLoading: (state, action) => {
+      state.authLoading = action.payload;
+    },
     setError: (state, action) => {
       state.error = action.payload;
     },
@@ -180,6 +184,7 @@ const userSlice = createSlice({
 export const {
   setUserData,
   setLoading,
+  setAuthLoading,
   setError,
   setCategoryies,
   setLocation,

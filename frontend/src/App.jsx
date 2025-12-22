@@ -54,7 +54,7 @@ export const serverUrl = "https://fast-food-delivery-server.onrender.com"
 // export const serverUrl = "http://localhost:8000";
 
 function App() {
-  const { userData, loading } = useSelector((state) => state.user);
+  const { userData, authLoading } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   useGetCurrentUser();
   useGetLocation();
@@ -79,7 +79,7 @@ function App() {
     };
   }, [userData?._id]);
 
-  // if (loading)
+  // if (authLoading)
   //   return (
   //     <div className="flex justify-center items-center h-screen">
   //       Loading...
