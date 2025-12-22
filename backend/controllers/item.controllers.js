@@ -183,11 +183,12 @@ export const getItemByLocation = async (req, res) => {
 export const getItemByShop = async (req, res) => {
   try {
     const { shopId } = req.params;
-    const shop = await Shop.findById(shopId).populate("items");
+    const shop = await Shop.findById(shopId);
     if (!shop) {
       return res.status(404).json({ message: "Shop not found" });
     }
-    return res.status(200).json({ shop, items: shop.items });
+    const items = await Item.find({ shop: shopId }).populate("shop");
+    return res.status(200).json({ shop, items });
   } catch (error) {
     return res
       .status(500)

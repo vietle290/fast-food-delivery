@@ -154,7 +154,7 @@ function Nav() {
         {userData && userData.role === "owner" ? (
           <>
             {shopData && (
-              <div className="ml-10">
+              <div className="ml-20 sm:ml-10">
                 <button
                   className="hidden md:flex items-center gap-[10px] bg-[#F59E0B]/10 text-[#F59E0B] px-[20px] py-[10px] rounded-lg cursor-pointer"
                   onClick={() => navigate("/add-item")}
