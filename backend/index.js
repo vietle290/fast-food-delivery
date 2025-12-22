@@ -15,6 +15,7 @@ import http from "http";
 import { Server } from "socket.io";
 import { socketHandler } from "./socket.js";
 import chatRouter from "./routes/chat.routes.js";
+import healthRouter from "./routes/health.routes.js";
 
 const app = express();
 const server = http.createServer(app); 
@@ -56,6 +57,7 @@ app.use("/api/item", itemRouter);
 app.use("/api/order", orderRouter);
 app.use("/api/category", categoryRouter);
 app.use("/api/chat", chatRouter);
+app.use("/api/health", healthRouter);
 
 socketHandler(io);
 // chatSocket(io);
