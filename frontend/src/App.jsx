@@ -79,12 +79,12 @@ function App() {
     };
   }, [userData?._id]);
 
-  if (loading)
-    return (
-      <div className="flex justify-center items-center h-screen">
-        Loading...
-      </div>
-    );
+  // if (loading)
+  //   return (
+  //     <div className="flex justify-center items-center h-screen">
+  //       Loading...
+  //     </div>
+  //   );
 
   return (
     <Suspense

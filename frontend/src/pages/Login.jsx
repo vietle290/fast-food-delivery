@@ -9,7 +9,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
 import { GoogleAuthProvider, signInWithPopup, deleteUser } from "firebase/auth";
 import { auth } from "../../firebase";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setUserData } from "../redux/slice/userSlice";
 
 function Login() {
@@ -30,6 +30,8 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const [showExtraInfo, setShowExtraInfo] = useState(false);
   const dispatch = useDispatch();
+
+  const {loading: userLoading} = useSelector((state) => state.user);
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
@@ -253,6 +255,7 @@ function Login() {
             type="button"
             className="w-full py-2 rounded-lg border font-semibold flex items-center justify-center cursor-pointer hover:bg-gray-100"
             style={{ borderColor: borderColor }}
+            disabled={userLoading}
             onClick={handleGoogleLogin}
           >
             <FcGoogle size={24} className="inline mr-2" /> Sign in with Google
