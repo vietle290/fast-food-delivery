@@ -81,7 +81,7 @@ const handleSelectAll = () => {
       ),
     },
     { header: "Name", accessor: "name" },
-    { header: "Shop ID", accessor: "shop" },
+    { header: "Shop", render: (cat) => cat.shop?.name || "—", },
     {
       header: "Created At",
       render: (cat) => new Date(cat.createdAt).toLocaleDateString("en-GB"),

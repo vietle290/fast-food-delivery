@@ -17,8 +17,13 @@ export const getCategoryByShopId = async (req, res) => {
   try {
     const shop = await Shop.findById(req.params.shopId).populate({
       path: "categories",
-      options: { sort: { updatedAt: -1 } },
-    }); // Sort items by updatedAt in descending order
+      options: { sort: { updatedAt: -1 },
+      populate: {
+        path: "shop",
+        select: "name",
+      }
+    },
+    }); 
     if (!shop) {
       return res.status(404).json({ message: "Shop not found" });
     }

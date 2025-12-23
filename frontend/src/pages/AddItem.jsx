@@ -9,7 +9,7 @@ import { setShopData } from "../redux/slice/ownerSlice";
 import { ClipLoader } from "react-spinners";
 
 function AddItem() {
-  const {categories} = useSelector((state) => state.user);
+  const { categories } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const handleNavigateBack = () => navigate(-1);
   const [imagePreview, setImagePreview] = useState(null);
@@ -18,27 +18,25 @@ function AddItem() {
   const [type, setType] = useState("Veg");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  // const categories = [
-  //   "Burgers and Fries",
-  //   "Pizza",
-  //   "Fried Chicken",
-  //   "Tacos and Mexican Food",
-  //   "Sandwiches and Subs",
-  //   "Hot Dogs",
-  //   "Seafood (e.g., Fish and Chips)",
-  //   "Asian Fusion (e.g., Chinese, Japanese takeout)",
-  //   "Breakfast Items (e.g., Muffins, Burritos)",
-  //   "Salads and Healthy Options",
-  //   "Ice Cream and Desserts",
-  //   "Coffee and Beverages",
-  //   "Donuts and Pastries",
-  //   "Wraps and Pitas",
-  //   "Barbecue and Grilled Meats",
-  //   "All",
-  // ];
   const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [nutrition, setNutrition] = useState({
+    calories: "",
+    protein: "",
+    carbs: "",
+    fat: "",
+  });
+
   const [price, setPrice] = useState(0);
   const dispatch = useDispatch();
+
+  const handleNutritionChange = (e) => {
+    const { name, value } = e.target;
+    setNutrition((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -54,6 +52,8 @@ function AddItem() {
     try {
       const formData = new FormData();
       formData.append("name", name);
+      formData.append("description", description);
+      formData.append("nutrition", JSON.stringify(nutrition));
       formData.append("category", category);
       formData.append("type", type);
       formData.append("price", price);
@@ -115,6 +115,87 @@ function AddItem() {
                 onChange={(e) => setName(e.target.value)}
               />
             </div>
+            <div className="flex flex-col gap-1">
+              <label
+                htmlFor="description"
+                className="text-sm font-medium text-gray-700"
+              >
+                Description
+              </label>
+              <textarea
+                id="description"
+                placeholder="Description"
+                rows={4}
+                className="
+      w-full px-4 py-2 
+      border border-gray-300 rounded-md
+      focus:outline-none focus:ring-2 focus:ring-blue-500
+      transition
+      resize-y
+    "
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </div>
+            {/* Nutrition Section */}
+            <div className="flex flex-col gap-2">
+              <h3 className="text-sm font-semibold text-gray-700">
+                Nutrition Information
+              </h3>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1">
+                  <label className="text-sm text-gray-600">
+                    Calories (kcal)
+                  </label>
+                  <input
+                    type="number"
+                    name="calories"
+                    placeholder="0"
+                    value={nutrition.calories}
+                    onChange={handleNutritionChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <label className="text-sm text-gray-600">Protein (g)</label>
+                  <input
+                    type="number"
+                    name="protein"
+                    placeholder="0"
+                    value={nutrition.protein}
+                    onChange={handleNutritionChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <label className="text-sm text-gray-600">Carbs (g)</label>
+                  <input
+                    type="number"
+                    name="carbs"
+                    placeholder="0"
+                    value={nutrition.carbs}
+                    onChange={handleNutritionChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <label className="text-sm text-gray-600">Fat (g)</label>
+                  <input
+                    type="number"
+                    name="fat"
+                    placeholder="0"
+                    value={nutrition.fat}
+                    onChange={handleNutritionChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+            </div>
+
             <div className="flex flex-col gap-1">
               <label
                 htmlFor="price"

@@ -8,9 +8,11 @@ import { FaMinus } from "react-icons/fa";
 import { FaPlus } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../redux/slice/userSlice";
+import { useNavigate } from "react-router-dom";
 
 function FoodCard({ item }) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [quantity, setQuantity] = useState(0);
   const handleDecrement = () => {
     if (quantity > 0) setQuantity(quantity - 1);
@@ -47,7 +49,7 @@ function FoodCard({ item }) {
   };
   return (
     <div className="w-[160px] md:w-[240px] rounded-xl bg-white shadow-md overflow-hidden hover:shadow-2xl transition-all duration-300 flex flex-col">
-      <div className="relative w-full md:h-[180px] h-[120px] flex justify-center items-center bg-white">
+      <div onClick={() => navigate(`/item/${item._id}`)} className="relative w-full md:h-[180px] h-[120px] flex justify-center items-center bg-white">
         <div className="absolute top-2 right-2 bg-white p-2 rounded-full">
           {item.type === "Veg" ? (
             <FaLeaf className="text-green-500" />

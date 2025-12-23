@@ -30,7 +30,6 @@ import useGetCategory from "./hooks/useGetcategory";
 import useGetCategoryByShop from "./hooks/usegetCategoryByShop";
 import ShipperOrderCard from "./components/shipper/ShipperOrderCard";
 import useGetShipperOrderById from "./hooks/useGetShipperOrderById";
-import Chat from "./pages/Chat";
 
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
@@ -48,6 +47,8 @@ const Shop = lazy(() => import("./pages/Shop"));
 const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
 const PaymentCancel = lazy(() => import("./pages/PaymentCancel"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const Chat = lazy(() => import("./pages/Chat"));
+const FoodDetail = lazy(() => import("./pages/FoodDetail"));
 
 export const serverUrl = "https://fast-food-delivery-server.onrender.com"
 
@@ -102,6 +103,10 @@ function App() {
         <Route
           path="/home"
           element={userData ? <Home /> : <Navigate to={"/login"} />}
+        />
+        <Route
+          path="/item/:itemId"
+          element={userData ? <FoodDetail /> : <Navigate to={"/login"} />}
         />
         <Route
           path="/login"

@@ -4,9 +4,10 @@ import uploadCloudinary from "../utils/cloudinary.js";
 
 export const addItem = async (req, res) => {
   try {
-    const { name, category, type, price } = req.body;
+    const { name, category, type, price, description, nutrition } = req.body;
+    const nutritionObj = JSON.parse(nutrition);
     let image;
-    if (!name || !category || !type || !price) {
+    if (!name || !category || !type || !price || !description || !nutrition) {
       return res.status(400).json({ message: "All fields are required" });
     }
     if (!req.file) {
@@ -24,6 +25,8 @@ export const addItem = async (req, res) => {
       category,
       type,
       price,
+      description,
+      nutrition: nutritionObj,
       image,
       shop: shop._id,
       sell: true,
@@ -38,7 +41,7 @@ export const addItem = async (req, res) => {
     });
     await shop.populate({
       path: "items",
-      select: "name price image type category rating shop",
+      select: "name price image type category rating shop description nutrition",
       populate: {
         path: "category",
         select: "name shop",
@@ -55,9 +58,10 @@ export const addItem = async (req, res) => {
 
 export const updateItem = async (req, res) => {
   try {
-    const { name, category, type, price } = req.body;
+    const { name, category, type, price, description, nutrition } = req.body;
+    const nutritionObj = JSON.parse(nutrition);
     let image;
-    if (!name || !category || !type) {
+    if (!name || !category || !type || !price || !description || !nutrition) {
       return res.status(400).json({ message: "All fields are required" });
     }
     if (price <= 0) {
@@ -73,6 +77,8 @@ export const updateItem = async (req, res) => {
         category,
         type,
         price,
+        description,
+        nutrition: nutritionObj,
         image,
       },
       { new: true }
@@ -86,7 +92,7 @@ export const updateItem = async (req, res) => {
     });
     await shop.populate({
       path: "items",
-      select: "name price image type category rating shop",
+      select: "name price image type category rating shop description nutrition",
       populate: {
         path: "category",
         select: "name shop",
@@ -103,7 +109,7 @@ export const updateItem = async (req, res) => {
 
 export const getItemById = async (req, res) => {
   try {
-    const item = await Item.findById(req.params.itemId);
+    const item = await Item.findById(req.params.itemId).populate("shop");
     if (!item) {
       return res.status(404).json({ message: "Item not found" });
     }
@@ -143,7 +149,7 @@ export const deleteItem = async (req, res) => {
     });
     await shop.populate({
       path: "items",
-      select: "name price image type category rating shop",
+      select: "name price image type category rating shop description nutrition",
       populate: {
         path: "category",
         select: "name shop",
