@@ -30,6 +30,7 @@ const userSlice = createSlice({
     socket: null,
     loading: false,
     authLoading: false,
+    itemLoading: false,
     error: null,
   },
   reducers: {
@@ -46,6 +47,7 @@ const userSlice = createSlice({
       // reset redux state
       state.userData = null;
       state.loading = false;
+      state.itemLoading = false;
       state.error = null;
       state.authLoading = false;
       state.location = null;
@@ -175,6 +177,9 @@ const userSlice = createSlice({
     setAuthLoading: (state, action) => {
       state.authLoading = action.payload;
     },
+    setItemLoading: (state, action) => {
+      state.itemLoading = action.payload;
+    },
     setError: (state, action) => {
       state.error = action.payload;
     },
@@ -185,6 +190,7 @@ export const {
   setUserData,
   setLoading,
   setAuthLoading,
+  setItemLoading,
   setError,
   setCategoryies,
   setLocation,

@@ -95,7 +95,7 @@ function Shop() {
             <FaStore className="text-3xl mb-4 sm:text-4xl" />
             <h1 className="text-3xl font-bold">{shop.name}</h1>
             <div className="flex items-center mt-2 gap-1">
-              <MdLocationOn className="text-2xl" color="#F59E0B" />
+              <MdLocationOn className="text-7xl sm:text-5xl" color="#F59E0B" />
               <p className="text-sm sm:text-lg font-medium text-gray-300">
                 {shop.address}
               </p>

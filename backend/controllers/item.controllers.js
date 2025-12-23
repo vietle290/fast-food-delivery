@@ -158,27 +158,76 @@ export const deleteItem = async (req, res) => {
   }
 };
 
+// export const getItemByLocation = async (req, res) => {
+//   try {
+//     const { city } = req.params;
+//     if (!city) return res.status(404).json({ message: "City not found" });
+//     const shop = await Shop.find({
+//       city: { $regex: new RegExp(`^${city}$`, "i") },
+//     }).populate("items");
+//     if (!shop) {
+//       return res.status(404).json({ message: "Shop not found" });
+//     }
+//     const shopId = shop.map((shop) => shop._id);
+//     const items = await Item.find({ shop: { $in: shopId } })
+//       .populate("shop")
+//       .populate("category");
+//     return res.status(200).json(items);
+//   } catch (error) {
+//     return res
+//       .status(500)
+//       .json({ message: `Error getting items by location: ${error.message}` });
+//   }
+// };
+
 export const getItemByLocation = async (req, res) => {
   try {
     const { city } = req.params;
-    if (!city) return res.status(404).json({ message: "City not found" });
-    const shop = await Shop.find({
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    if (!city) {
+      return res.status(400).json({ message: "City is required" });
+    }
+
+    const shops = await Shop.find({
       city: { $regex: new RegExp(`^${city}$`, "i") },
-    }).populate("items");
-    if (!shop) {
+    });
+
+    if (!shops.length) {
       return res.status(404).json({ message: "Shop not found" });
     }
-    const shopId = shop.map((shop) => shop._id);
-    const items = await Item.find({ shop: { $in: shopId } })
+
+    const shopIds = shops.map((s) => s._id);
+
+    const items = await Item.find({ shop: { $in: shopIds } })
       .populate("shop")
-      .populate("category");
-    return res.status(200).json(items);
+      .populate("category")
+      .skip((page - 1) * limit) 
+      .limit(limit)             
+      .sort({ createdAt: -1 }); 
+
+    const totalItems = await Item.countDocuments({
+      shop: { $in: shopIds },
+    });
+
+    return res.status(200).json({
+      items,
+      pagination: {
+        page,
+        limit,
+        totalItems,
+        totalPages: Math.ceil(totalItems / limit),
+        hasMore: page * limit < totalItems,
+      },
+    });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: `Error getting items by location: ${error.message}` });
+    return res.status(500).json({
+      message: `Error getting items by location: ${error.message}`,
+    });
   }
 };
+
 
 export const getItemByShop = async (req, res) => {
   try {
@@ -280,14 +329,14 @@ export const filterItemsByNameShopType = async (req, res) => {
 
     filter.sell = true;
 
-    // search by name (partial allowed)
+
     if (name) {
       filter.name = { $regex: name, $options: "i" };
     }
 
-    // search by type (FULL & EXACT)
+
     if (type) {
-      filter.type = type; // must be exactly Veg | Non-veg | Others
+      filter.type = type; 
     }
 
     const items = await Item.find(filter).populate("shop");

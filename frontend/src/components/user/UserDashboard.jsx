@@ -6,7 +6,7 @@ import { IoIosArrowDropleftCircle } from "react-icons/io";
 import { IoIosArrowDroprightCircle } from "react-icons/io";
 import { useState } from "react";
 import { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { ClipLoader } from "react-spinners";
 import FoodCard from "../FoodCard";
 import { useNavigate } from "react-router-dom";
@@ -15,6 +15,7 @@ import { FaFilter } from "react-icons/fa6";
 import FoodFilterPopup from "../FoodFilterPopup";
 import axios from "axios";
 import { serverUrl } from "../../App";
+import { setItemInCity } from "../../redux/slice/userSlice";
 
 function UserDashboard() {
   const { location, shopInCity, loading, itemInCity, searchItems, categories } =
@@ -27,6 +28,11 @@ function UserDashboard() {
   const [showShopScrollRight, setShowShopScrollRight] = useState(false);
   const [filterItems, setFilterItems] = useState([]);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const loadMoreRef = useRef(null);
 
   const [openFilterModal, setOpenFilterModal] = useState(false);
 
@@ -92,7 +98,45 @@ function UserDashboard() {
     } catch (error) {
       console.error(error);
     }
-  }
+  };
+
+  const loadMoreItems = async () => {
+    if (!hasMore || loading) return;
+
+    try {
+      const res = await axios.get(
+        `${serverUrl}/api/item/get-item-by-location/${location}?page=${
+          page + 1
+        }&limit=8`,
+        { withCredentials: true }
+      );
+
+      dispatch(setItemInCity([...itemInCity, ...res.data.items]));
+      setPage((prev) => prev + 1);
+      setHasMore(res.data.pagination.hasMore);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    if (!hasMore) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadMoreItems();
+        }
+      },
+      { threshold: 1 }
+    );
+
+    if (loadMoreRef.current) {
+      observer.observe(loadMoreRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [hasMore, page, itemInCity]);
 
   useEffect(() => {
     const scrollElement = scrollRef.current;
@@ -122,7 +166,6 @@ function UserDashboard() {
       };
     }
   }, []);
-  
 
   return (
     <div className="w-screen min-h-screen flex flex-col items-center gap-5 bg-[#FFF9F6] overflow-y-auto">
@@ -226,8 +269,20 @@ function UserDashboard() {
             <FoodCard key={index} item={food} />
           ))}
         </div>
+        <div ref={loadMoreRef} className="h-10" />
+        {!filterItems.length && (
+          <h1 className="text-xl text-gray-800 sm:text-2xl font-medium">
+            No food found
+          </h1>
+        )}
       </div>
-      {openFilterModal && <FoodFilterPopup setOpenFilterModal={setOpenFilterModal} onClose={() => setOpenFilterModal(false)} filterItemsByNameShopType={filterItemsByNameShopType} />}
+      {openFilterModal && (
+        <FoodFilterPopup
+          setOpenFilterModal={setOpenFilterModal}
+          onClose={() => setOpenFilterModal(false)}
+          filterItemsByNameShopType={filterItemsByNameShopType}
+        />
+      )}
     </div>
   );
 }

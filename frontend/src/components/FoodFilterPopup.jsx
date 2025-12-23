@@ -68,7 +68,7 @@ function FoodFilterPopup({ setOpenFilterModal, onClose, filterItemsByNameShopTyp
             />
           </div>
 
-          <div className="flex flex-col relative">
+          {/* <div className="flex flex-col relative">
             <label className="text-stone-600 text-sm font-medium">Shop</label>
 
             <input
@@ -83,7 +83,6 @@ function FoodFilterPopup({ setOpenFilterModal, onClose, filterItemsByNameShopTyp
               className="mt-2 rounded-md border px-2 py-2 focus:border-blue-500 focus:ring focus:ring-blue-200"
             />
 
-            {/* Dropdown result */}
             {showShopDropdown && shopData.length > 0 && (
               <div className="absolute top-full mt-1 z-50 w-full max-h-48 overflow-y-auto rounded-md border bg-white shadow-lg">
                 {shopData.map((item) => (
@@ -100,7 +99,7 @@ function FoodFilterPopup({ setOpenFilterModal, onClose, filterItemsByNameShopTyp
                 ))}
               </div>
             )}
-          </div>
+          </div> */}
 
           <div className="flex flex-col">
             <label className="text-stone-600 text-sm font-medium">Type</label>
