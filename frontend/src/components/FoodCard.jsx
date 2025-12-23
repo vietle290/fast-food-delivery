@@ -46,7 +46,7 @@ function FoodCard({ item }) {
     return stars;
   };
   return (
-    <div className="w-[180px] md:w-[270px] rounded-xl bg-white shadow-md overflow-hidden hover:shadow-2xl transition-all duration-300 flex flex-col">
+    <div className="w-[160px] md:w-[240px] rounded-xl bg-white shadow-md overflow-hidden hover:shadow-2xl transition-all duration-300 flex flex-col">
       <div className="relative w-full md:h-[180px] h-[120px] flex justify-center items-center bg-white">
         <div className="absolute top-2 right-2 bg-white p-2 rounded-full">
           {item.type === "Veg" ? (
