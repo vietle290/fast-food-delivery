@@ -4,8 +4,9 @@ import { useSelector } from "react-redux";
 import { serverUrl } from "../../App";
 import ChatBoxInput from "./ChatBoxInput";
 import MessageList from "./MessageList";
+import { IoMdArrowRoundBack } from "react-icons/io";
 
-export default function ChatBox({ conversation }) {
+export default function ChatBox({ conversation, onBack }) {
   const { userData } = useSelector((state) => state.user);
   const { socket } = useSelector((state) => state.user);
   const [messages, setMessages] = useState([]);
@@ -66,8 +67,14 @@ export default function ChatBox({ conversation }) {
   }, [messages]);
 
   return (
-    <div className="w-2/3 flex flex-col">
-      <div className="p-3 border-b">{partner.fullName}</div>
+    <div className="h-full flex flex-col bg-white">
+      {/* Header */}
+      <div className="p-3 border-b flex items-center gap-3">
+        <button onClick={onBack} className="md:hidden text-gray-600">
+          <IoMdArrowRoundBack size={22} />
+        </button>
+        <span className="font-semibold">{partner.fullName}</span>
+      </div>
 
       <MessageList
         messages={messages}

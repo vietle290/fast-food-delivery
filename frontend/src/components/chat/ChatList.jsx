@@ -43,13 +43,18 @@ export default function ChatList({ onSelect, selectedConversation, handleNavigat
   }, [userData._id, socket]);
 
   return (
-    <div className="w-1/3 border-r bg-white flex flex-col justify-between">
-      <div>
+    <div className="h-full flex flex-col bg-white border-r">
+      {/* Header */}
+      <div className="p-4 border-b font-semibold text-lg">
+        Messages
+      </div>
+
+      {/* Conversation list */}
+      <div className="flex-1 overflow-y-auto">
         {conversations.map((c) => {
-          const partner = c.participants.find((p) => p._id !== userData._id);
-
-          const avatarLetter = partner?.fullName?.charAt(0).toUpperCase();
-
+          const partner = c.participants.find(
+            (p) => p._id !== userData._id
+          );
           const isActive = selectedConversation?._id === c._id;
 
           return (
@@ -57,21 +62,18 @@ export default function ChatList({ onSelect, selectedConversation, handleNavigat
               key={c._id}
               onClick={() => onSelect(c)}
               className={`flex items-center p-3 cursor-pointer transition
-              ${isActive ? "bg-blue-50" : "hover:bg-gray-100"}
-            `}
+                ${isActive ? "bg-blue-50" : "hover:bg-gray-100"}
+              `}
             >
-              {/* Avatar + online */}
-              <div className="relative mr-3 flex-shrink-0">
-                <div className="w-10 h-10 rounded-full bg-gray-400 text-white flex items-center justify-center text-sm font-semibold">
-                  {avatarLetter}
+              <div className="relative mr-3">
+                <div className="w-10 h-10 rounded-full bg-gray-400 text-white flex items-center justify-center">
+                  {partner?.fullName?.charAt(0).toUpperCase()}
                 </div>
-
                 {partner?.isOnline && (
                   <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white" />
                 )}
               </div>
 
-              {/* Content */}
               <div className="flex-1 overflow-hidden">
                 <div className="font-semibold truncate">
                   {partner?.fullName}
@@ -84,13 +86,15 @@ export default function ChatList({ onSelect, selectedConversation, handleNavigat
           );
         })}
       </div>
+
+      {/* Footer */}
       <div className="p-3 border-t">
         <button
-          onClick={() => handleNavigateBack()}
-          className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition cursor-pointer"
+          onClick={handleNavigateBack}
+          className="flex items-center gap-2 text-gray-600 hover:text-gray-800"
         >
           <IoMdArrowRoundBack size={20} />
-          <span>Back to Home</span>
+          Back
         </button>
       </div>
     </div>
