@@ -22,6 +22,7 @@ const itemSchema = new mongoose.Schema(
       count: { type: Number, default: 0 },
     },
     sell: { type: Boolean, default: true },
+    totalSell: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

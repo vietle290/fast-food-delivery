@@ -8,10 +8,10 @@ function Sidebar({ onToggle, onSelect }) {
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 1024);
 
   const navItems = [
-    { name: "Home", icon: <FaHome /> },
+    { name: "Dashboard", icon: <FaHome /> },
+    { name: "Food", icon: <IoReceiptOutline /> },
     { name: "Categories", icon: <BiCategory /> },
-    // { name: "Add Item", icon: <FaPlus /> },
-    // { name: "My Orders", icon: <IoReceiptOutline /> },
+   
   ];
 
   useEffect(() => {

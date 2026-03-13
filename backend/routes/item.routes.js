@@ -1,5 +1,5 @@
 import express from "express";
-import { addItem, deleteItem, filterItemsByNameShopType, getAllItems, getItemById, getItemByLocation, getItemByShop, rating, searchItems, toggleSellItem, updateItem } from "../controllers/item.controllers.js";
+import { addItem, deleteItem, filterItemsByNameShopType, getAllItems, getItemById, getItemByLocation, getItemByShop, rating, searchItems, toggleSellItem, updateItem, getFourLargestTotalSellByShop } from "../controllers/item.controllers.js";
 import { upload } from "../middlewares/multer.js";
 import isAuth from "../middlewares/isAuth.js";
 
@@ -16,5 +16,6 @@ itemRouter.post("/rating", isAuth, rating);
 itemRouter.get("/get-all-items", isAuth, getAllItems);
 itemRouter.post("/toggle-sell/:itemId", isAuth, toggleSellItem);
 itemRouter.get("/filter-items", isAuth, filterItemsByNameShopType);
+itemRouter.get("/get-four-largest-total-sell-by-shop/:shopId", isAuth, getFourLargestTotalSellByShop);
 
 export default itemRouter;

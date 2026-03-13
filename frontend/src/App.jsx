@@ -30,6 +30,7 @@ import useGetCategory from "./hooks/useGetcategory";
 import useGetCategoryByShop from "./hooks/usegetCategoryByShop";
 import ShipperOrderCard from "./components/shipper/ShipperOrderCard";
 import useGetShipperOrderById from "./hooks/useGetShipperOrderById";
+import useGetOrderForDashboard from "./hooks/useGetOrderForDashboard";
 
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
@@ -67,6 +68,7 @@ function App() {
   useGetShipperOrderById();
   useGetCategory();
   useGetCategoryByShop();
+  useGetOrderForDashboard();
 
   useEffect(() => {
     if (!userData) return;

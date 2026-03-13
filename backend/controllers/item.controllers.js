@@ -353,3 +353,72 @@ export const filterItemsByNameShopType = async (req, res) => {
   }
 };
 
+// export const getFourLargestTotalSellByShop = async (req, res) => {
+//   try {
+//     const { shopId } = req.params;
+//     const shopObjectId = shopId;
+
+//     // Lấy top 4
+//     const top4 = await Item.find({ shop: shopObjectId })
+//       .sort({ totalSell: -1 })
+//       .limit(4)
+//       .select("name totalSell");
+
+//     // Tính tổng tất cả totalSell của shop
+//     const totalAll = await Item.aggregate([
+//       { $match: { shop: shopObjectId } },
+//       { $group: { _id: null, total: { $sum: "$totalSell" } } },
+//     ]);
+
+//     const totalSum = totalAll[0]?.total || 0;
+
+//     // Tính tổng top4
+//     const top4Sum = top4.reduce((sum, item) => sum + item.totalSell, 0);
+
+//     const other = totalSum - top4Sum;
+
+//     res.status(200).json({
+//       top4,
+//       other: other > 0 ? other : 0,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
+export const getFourLargestTotalSellByShop = async (req, res) => {
+  try {
+    const { shopId } = req.params;
+    const shopObjectId = shopId;
+
+    // 1️⃣ Lấy top 4
+    const top4Raw = await Item.find({ shop: shopObjectId })
+      .sort({ totalSell: -1 })
+      .limit(4)
+      .select("name totalSell -_id");
+
+    // 2️⃣ Tính tổng tất cả
+    const totalAll = await Item.aggregate([
+      { $match: { shop: shopObjectId } },
+      { $group: { _id: null, total: { $sum: "$totalSell" } } },
+    ]);
+
+    const totalSum = totalAll[0]?.total || 0;
+
+    // 3️⃣ Convert totalSell ➜ value
+    const top4 = top4Raw.map((item) => ({
+      name: item.name,
+      value: item.totalSell,
+    }));
+
+    const top4Sum = top4.reduce((sum, item) => sum + item.value, 0);
+    const other = totalSum - top4Sum;
+
+    res.status(200).json([
+      ...top4,
+      { name: "Other", value: other > 0 ? other : 0 },
+    ]);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

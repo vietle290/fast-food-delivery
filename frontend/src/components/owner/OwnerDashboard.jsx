@@ -105,6 +105,7 @@ import OwnerDashboardContent from "./OwnerDashboardContent";
 // import OwnerAddItem from "./OwnerAddItem";
 import OwnerMyOrders from "./OwnerMyOrders";
 import CategoryList from "../category/CategoryList";
+import OwnerHome from "./OwnerHome";
 
 function OwnerDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -112,12 +113,12 @@ function OwnerDashboard() {
 
   const renderContent = () => {
     switch (activePage) {
-      case "Home":
+      case "Food":
         return <OwnerDashboardContent />;
       case "Categories":
         return <CategoryList />;
-      // case "My Orders":
-      //   return <OwnerMyOrders />;
+      case "Dashboard":
+        return <OwnerHome />;
       default:
         return <OwnerDashboardContent />;
     }

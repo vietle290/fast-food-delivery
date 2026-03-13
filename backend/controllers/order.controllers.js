@@ -1,10 +1,12 @@
 import DeliveryAssign from "../models/deliveryAssign.model.js";
+import Item from "../models/item.model.js";
 import Order from "../models/order.model.js";
 import Shop from "../models/shop.model.js";
 import User from "../models/user.model.js";
 import { sendDeliveryOtpEmail } from "../utils/mail.js";
 import { PayOS } from "@payos/node";
 import dotenv from "dotenv";
+import mongoose from "mongoose";
 
 dotenv.config();
 
@@ -694,37 +696,91 @@ export const sendShipperOtp = async (req, res) => {
   }
 };
 
+// export const verifyShipperOtp = async (req, res) => {
+//   try {
+//     const { orderId, shopOrderId, otp } = req.body;
+//     const order = await Order.findById(orderId).populate("user");
+//     if (!order) {
+//       return res.status(404).json({ message: "Order not found" });
+//     }
+//     const shopOrder = order.shopOrders.id(shopOrderId);
+//     if (!shopOrder) {
+//       return res.status(404).json({ message: "Shop order not found" });
+//     }
+//     // if (shopOrder.deliveryOtp !== otp) {
+//     //   return res.status(400).json({ message: "Invalid OTP" });
+//     // }
+//     // if (shopOrder.otpExpiry < Date.now()) {
+//     //   return res.status(400).json({ message: "OTP expired" });
+//     // }
+//     shopOrder.status = "delivered";
+//     shopOrder.deliveredAt = Date.now();
+//     await order.save();
+//     await DeliveryAssign.deleteOne({
+//       order: order._id,
+//       shopOrderId: shopOrder._id,
+//       assignedTo: shopOrder.assignedShipper,
+//     });
+//     return res.status(200).json({ message: "Order delivered successfully" });
+//   } catch (error) {
+//     console.log(error);
+//     return res
+//       .status(500)
+//       .json({ message: `Error verifying OTP: ${error.message}` });
+//   }
+// };
+
 export const verifyShipperOtp = async (req, res) => {
   try {
     const { orderId, shopOrderId, otp } = req.body;
-    const order = await Order.findById(orderId).populate("user");
+
+    const order = await Order.findById(orderId);
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
+
     const shopOrder = order.shopOrders.id(shopOrderId);
     if (!shopOrder) {
       return res.status(404).json({ message: "Shop order not found" });
     }
-    // if (shopOrder.deliveryOtp !== otp) {
-    //   return res.status(400).json({ message: "Invalid OTP" });
-    // }
-    // if (shopOrder.otpExpiry < Date.now()) {
-    //   return res.status(400).json({ message: "OTP expired" });
-    // }
+
+    // Nếu đã delivered rồi thì không tăng nữa
+    if (shopOrder.status === "delivered") {
+      return res.status(400).json({ message: "Order already delivered" });
+    }
+
+    // ✅ Update status
     shopOrder.status = "delivered";
     shopOrder.deliveredAt = Date.now();
+
+    // ✅ Tăng totalSell cho từng Item
+    const bulkOps = shopOrder.shopItems.map((si) => ({
+      updateOne: {
+        filter: { _id: si.item },
+        update: { $inc: { totalSell: si.quantity } },
+      },
+    }));
+
+    if (bulkOps.length > 0) {
+      await Item.bulkWrite(bulkOps);
+    }
+
     await order.save();
+
     await DeliveryAssign.deleteOne({
       order: order._id,
       shopOrderId: shopOrder._id,
       assignedTo: shopOrder.assignedShipper,
     });
-    return res.status(200).json({ message: "Order delivered successfully" });
+
+    return res.status(200).json({
+      message: "Order delivered successfully & totalSell updated",
+    });
   } catch (error) {
     console.log(error);
-    return res
-      .status(500)
-      .json({ message: `Error verifying OTP: ${error.message}` });
+    return res.status(500).json({
+      message: `Error verifying OTP: ${error.message}`,
+    });
   }
 };
 
@@ -795,4 +851,188 @@ export const getAssignedShipperOrderByShipperId = async (req, res) => {
       .status(500)
       .json({ message: `Error getting assigned orders: ${error.message}` });
   }
+};
+
+export const getAllTodayDeliveredOrders = async (req, res) => {
+  try {
+    const startsOfDay = new Date().setHours(0, 0, 0, 0);
+    const orders = await Order.find({
+      "shopOrders.status": "delivered",
+      "shopOrders.deliveredAt": { $gte: startsOfDay },
+    })
+      .populate("shopOrders.shop", "name")
+      .populate("shopOrders.assignedShipper", "fullName email mobile")
+      .populate("shopOrders.shopItems.item", "name image price");
+    return res.status(200).json(orders);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: `Error getting today's delivered orders: ${error.message}` });
+  }
+};
+
+export const getThreeLatestUpdatedAtOrderByShop = async (req, res) => {
+  try {
+    const { shopId } = req.params;
+    const orders = await Order.find({ "shopOrders.shop": shopId })
+      .sort({ "shopOrders.updatedAt": -1 })
+      .limit(3)
+      .populate("shopOrders.shop", "name")
+      .populate("shopOrders.shopItems.item", "name image price")
+      .populate("user", "fullName")
+    return res.status(200).json(orders);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: `Error getting today's delivered orders: ${error.message}` });
+  }
+};
+
+export const getTotalOfSubTotalDeliveredOrdersByShop = async (req, res) => {
+  try {
+    const { shopId } = req.params;
+
+    const total = await Order.aggregate([
+      {
+        $project: {
+          deliveredShopOrders: {
+            $filter: {
+              input: "$shopOrders",
+              as: "so",
+              cond: {
+                $and: [
+                  {
+                    $eq: [
+                      "$$so.shop",
+                      new mongoose.Types.ObjectId(shopId),
+                    ],
+                  },
+                  { $eq: ["$$so.status", "delivered"] },
+                ],
+              },
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          totalSubTotal: { $sum: "$deliveredShopOrders.subtotal" },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalSubTotal: { $sum: "$totalSubTotal" },
+        },
+      },
+    ]);
+
+    return res.status(200).json(total[0]?.totalSubTotal || 0);
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+export const getTotalNumberOfActiveSellingFoodsByShop = async (req, res) => {
+  try {
+    const { shopId } = req.params;
+
+    const total = await Item.countDocuments({
+      shop: shopId,
+      sell: true,
+    });
+    const totalSellAndUnSell = await Item.countDocuments({
+      shop: shopId,
+    });
+
+    return res.status(200).json({ total, totalSellAndUnSell });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+export const getPerDaysWeeklyTotalDeliveredOrdersByShop = async (req, res) => {
+try {
+  const { shopId } = req.params;
+
+  const now = new Date();
+
+  const startOfWeek = new Date(now);
+  startOfWeek.setDate(now.getDate() - now.getDay() + 1); // Monday
+  startOfWeek.setHours(0, 0, 0, 0);
+
+  const endOfWeek = new Date(now);
+  endOfWeek.setDate(startOfWeek.getDate() + 6); // Sunday
+  endOfWeek.setHours(23, 59, 59, 999);
+
+  const orders = await Order.aggregate([
+    { $unwind: "$shopOrders" },
+    {
+      $match: {
+        "shopOrders.shop": new mongoose.Types.ObjectId(shopId),
+        "shopOrders.status": "delivered",
+        "shopOrders.deliveredAt": {
+          $gte: startOfWeek,
+          $lte: endOfWeek,
+        },
+      },
+    },
+    {
+      $group: {
+        _id: {
+          dayOfWeek: { $dayOfWeek: "$shopOrders.deliveredAt" },
+        },
+        totalOrders: { $sum: 1 },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        dayOfWeek: "$_id.dayOfWeek",
+        totalOrders: 1,
+      },
+    },
+    { $sort: { dayOfWeek: 1 } },
+  ]);
+
+  return res.status(200).json(orders);
+} catch (error) {
+  return res
+    .status(500)
+    .json({ message: `Error getting weekly delivered orders: ${error.message}` });
 }
+};
+
+export const getTotalActiveOrdersByShop = async (req, res) => {
+  try {
+    const { shopId } = req.params;
+
+    const result = await Order.aggregate([
+      { $unwind: "$shopOrders" },
+      {
+        $match: {
+          "shopOrders.shop": new mongoose.Types.ObjectId(shopId),
+          "shopOrders.status": {
+            $in: ["pending", "preparing", "out-for-delivery"],
+          },
+        },
+      },
+      {
+        $count: "totalOrders",
+      },
+    ]);
+
+    const totalOrders = result.length > 0 ? result[0].totalOrders : 0;
+
+    return res.status(200).json({ totalOrders });
+  } catch (error) {
+    return res.status(500).json({
+      message: `Error getting active orders: ${error.message}`,
+    });
+  }
+};
+  

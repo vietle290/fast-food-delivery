@@ -32,6 +32,14 @@ const userSlice = createSlice({
     authLoading: false,
     itemLoading: false,
     error: null,
+
+    totalTodayDeliveredOrder: null,
+    threeLatestOrderUpdate: null,
+    revenueOrder: null,
+    activeSellingFood: null,
+    totalFoodInShop: null,
+    popularDishes : null,
+    perDaysWeeklyTotalDeliveredOrders: [],
   },
   reducers: {
     setUserData: (state, action) => {
@@ -58,6 +66,13 @@ const userSlice = createSlice({
       state.myOrders = [];
       state.cartItems = [];
       state.total = 0;
+      state.totalTodayDeliveredOrder = null;
+      state.threeLatestOrderUpdate = null;
+      state.revenueOrder = null;
+      state.activeSellingFood = null;
+      state.totalFoodInShop = null;
+      state.popularDishes = null;
+      state.perDaysWeeklyTotalDeliveredOrders = null;
 
       sessionStorage.removeItem("userData");
       sessionStorage.removeItem("cartItems");
@@ -171,6 +186,27 @@ const userSlice = createSlice({
           ? action.payload(state.searchCategories)
           : action.payload;
     },
+    setThreeLatestOrderUpdate: (state, action) => {
+      state.threeLatestOrderUpdate = action.payload;
+    },
+    setTotalTodayDeliveredOrder: (state, action) => {
+      state.totalTodayDeliveredOrder = action.payload;
+    },
+    setRevenueOrder: (state, action) => {
+      state.revenueOrder = action.payload;
+    },
+    setActiveSellingFood: (state, action) => {
+      state.activeSellingFood = action.payload;
+    },
+    setTotalFoodInShop: (state, action) => {
+      state.totalFoodInShop = action.payload;
+    },
+    setPopularDishes: (state, action) => {
+      state.popularDishes = action.payload;
+    },
+    setPerDaysWeeklyTotalDeliveredOrders: (state, action) => {
+      state.perDaysWeeklyTotalDeliveredOrders = action.payload;
+    },
     setLoading: (state, action) => {
       state.loading = action.payload;
     },
@@ -210,5 +246,12 @@ export const {
   clearCart,
   setSocket,
   updateRealtimeOrderStatus,
+  setTotalTodayDeliveredOrder,
+  setThreeLatestOrderUpdate,
+  setRevenueOrder,
+  setActiveSellingFood,
+  setTotalFoodInShop,
+  setPopularDishes,
+  setPerDaysWeeklyTotalDeliveredOrders,
 } = userSlice.actions;
 export default userSlice.reducer;

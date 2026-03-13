@@ -7,6 +7,8 @@ const ownerSlice = createSlice({
         avaibleShippers: [],
         loading: false,
         error: null,
+
+        totalActiveOrders: [],
     },
     reducers: {
         setShopData: (state, action) => {
@@ -21,8 +23,11 @@ const ownerSlice = createSlice({
         setError: (state, action) => {
             state.error = action.payload;
         },
+        setTotalActiveOrders: (state, action) => {
+            state.totalActiveOrders = action.payload;
+        },
     },
 })
 
-export const { setShopData, setLoading, setError, setAvailableShippers } = ownerSlice.actions;
+export const { setShopData, setLoading, setError, setAvailableShippers, setTotalActiveOrders } = ownerSlice.actions;
 export default ownerSlice.reducer;
