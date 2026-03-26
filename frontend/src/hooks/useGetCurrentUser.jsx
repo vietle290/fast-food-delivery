@@ -9,11 +9,11 @@ import {
 } from "../redux/slice/userSlice";
 
 function useGetCurrentUser() {
-  const {authLoading} = useSelector((state) => state.user);
+  const {authLoading, userData} = useSelector((state) => state.user);
   const dispatch = useDispatch();
   
   useEffect(() => {
-    // if (userData) return;
+    if (userData) return;
     dispatch(setAuthLoading(true));
     const fetchCurrentUser = async () => {
       try {
@@ -38,8 +38,8 @@ function useGetCurrentUser() {
       }
     };
     fetchCurrentUser();
-  }, [dispatch]);
-  return authLoading;
+  }, [dispatch, userData]);
+  // return authLoading;
 }
 
 export default useGetCurrentUser;

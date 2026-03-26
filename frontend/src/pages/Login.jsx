@@ -43,7 +43,7 @@ function Login() {
   };
 
   useGetCurrentUser();
-  console.log("authLoading: ", authLoading);
+  // console.log("authLoading: ", authLoading);
 
   const handleLogin = async (e) => {
     e.preventDefault(); // Prevent form submission
