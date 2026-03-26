@@ -281,6 +281,11 @@ function Login() {
             style={{ borderColor: borderColor }}
           >
             <FcGoogle size={24} className="inline mr-2" />
+            {authLoading ? (
+              <ClipLoader color="#000000" size={20} />
+            ) : (
+              "Sign in with Google"
+            )}
             Sign in with Google
           </button>
         </form>
