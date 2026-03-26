@@ -286,7 +286,6 @@ function Login() {
             ) : (
               "Sign in with Google"
             )}
-            Sign in with Google
           </button>
         </form>
 
