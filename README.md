@@ -9,7 +9,6 @@ At present, features associated with sending emails (such as forgotten password 
 ## 🌐 Live Demo
 
 👉 **Frontend:** [https://fast-food-delivery-y483.onrender.com](https://fast-food-delivery-y483.onrender.com)  
-👉 **Backend API:** [https://fast-food-delivery-server.onrender.com](https://fast-food-delivery-server.onrender.com)
 
 ---
 
